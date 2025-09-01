@@ -19,7 +19,9 @@ CREATE TABLE "public"."Users" (
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "role" "public"."UserRole" NOT NULL DEFAULT 'USER',
+    "role" "public"."UserRole"[] DEFAULT ARRAY['USER']::"public"."UserRole"[],
+    "verification_code" TEXT,
+    "is_verified" BOOLEAN NOT NULL DEFAULT false,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
