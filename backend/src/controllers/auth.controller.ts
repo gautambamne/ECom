@@ -56,7 +56,7 @@ export const RegisterController = asyncHandler(async (req, res) => {
   }
 
   const {
-    password: _,
+    // password: _,
     verification_code: __,
     ...userWithoutSensitive
   } = userToBeReturned;
@@ -68,6 +68,14 @@ export const RegisterController = asyncHandler(async (req, res) => {
   );
 });
 
+
+
+
+
+
+
+
+
 export const LoginController = asyncHandler(async (req, res) => {
   const result = LoginSchema.safeParse(req.body);
   if (!result.success) {
@@ -78,5 +86,19 @@ export const LoginController = asyncHandler(async (req, res) => {
     );
   }
 
-  return res.json(new ApiResponse(result.data));
+  const { email, password } = result.data;
+  const savedUser = await prisma.users.findUnique({
+    where: { email },
+  });
+  if(!savedUser){
+    throw new ApiError(401, "Invalid credentials");
+  }
+  if(!savedUser.is_verified){
+    throw new ApiError(401, "Please verify your email to login");
+  }
+  const isPasswordValid = await passwordUtils.comparredPassword(password, savedUser.password);
+  if(!isPasswordValid){
+    throw new ApiError(401, "Invalid credentials");
+  }
+  return res.status(200).json( new ApiResponse({message: "Login successful"}) );
 });
