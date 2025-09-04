@@ -4,6 +4,7 @@ import { prisma } from "../db/connectDb";
 import type { Users } from "../generated/prisma";
 import { UserRole } from "../generated/prisma";
 import {
+  ForgotPasswordSchema,
   LoginSchema,
   RegistrationSchema,
   VerifySchema,
@@ -27,7 +28,6 @@ export const RegisterController = asyncHandler(async (req, res) => {
   }
 
   const { name, email, password } = result.data;
-
   const savedUser = await prisma.users.findUnique({
     where: { email },
   });
@@ -91,7 +91,6 @@ export const VerifyUser = asyncHandler(async (req, res) => {
   }
 
   const { email, verification_code } = result.data;
-
   const existingUser = await prisma.users.findUnique({
     where: { email },
   });
@@ -172,6 +171,7 @@ export const VerifyUser = asyncHandler(async (req, res) => {
     );
 });
 
+
 export const LoginController = asyncHandler(async (req, res) => {
   const result = LoginSchema.safeParse(req.body);
   if (!result.success) {
@@ -192,7 +192,10 @@ export const LoginController = asyncHandler(async (req, res) => {
   if (!savedUser.is_verified) {
     throw new ApiError(403, "Please verify your email to login");
   }
-  const isPasswordValid = await passwordUtils.comparredPassword(password,savedUser.password);
+  const isPasswordValid = await passwordUtils.comparredPassword(
+    password,
+    savedUser.password
+  );
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid credentials");
   }
@@ -247,3 +250,60 @@ export const LoginController = asyncHandler(async (req, res) => {
       })
     );
 });
+
+
+export const LogoutConroller = asyncHandler(async (req, res) => {
+  const result = req.cookies?.refresh_token;
+
+  if (result) {
+    try {
+      await prisma.sessions.delete({
+        where: {
+          token: result,
+        },
+      });
+    } catch (error) {
+      console.error(
+        "session for token not found during logout, proceeding to clear cookies",
+        error
+      );
+    }
+  }
+
+  res
+    .clearCookie("access_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+    })
+    .clearCookie("refresh_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+    })
+    .status(200)
+    .json(new ApiResponse({ message: "Logout Successfully" }));
+});
+
+
+export const ForgotPasswordController = asyncHandler(async(req, res)=>{
+  const result = ForgotPasswordSchema.safeParse(req.body);
+  if (!result.success) {
+    throw new ApiError(
+      400,
+      "validation Error",
+      zodErrorFormatter(result.error)
+    );
+  }
+  const {email} = result.data;
+  const existingUser = await prisma.users.findUnique({
+    where: { email },
+  })
+  if(!existingUser){
+    throw new ApiError(404, "User not exist with this email");
+  }
+
+})
+
