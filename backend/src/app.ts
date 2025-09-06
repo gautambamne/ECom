@@ -2,10 +2,12 @@ import express from 'express';
 import type{ Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import authRouter from './routes/auth';
+import authRouter from './routes/auth.routes';
 import { errorMiddleware } from './middleware/error.middleware';
 import { ApiResponse } from './advices/ApiResponse';
 import { ApiError } from './advices/ApiError';
+import { authMiddleware } from './middleware/auth.middleware';
+import sessionRouter from './routes/session.routes';
 
 const app = express();
 
@@ -39,6 +41,7 @@ app.use((err: syntaxErrorWithBody, req: Request, res: Response, next: NextFuncti
 
 // rotes would be added here
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/session',authMiddleware, sessionRouter)
 
 
 

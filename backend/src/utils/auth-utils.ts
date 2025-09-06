@@ -15,7 +15,7 @@ const verificationUtils = ()=>{
     return String(Math.floor(100000 + Math.random() * 900000));
 }
 
-interface IAccessPayload{
+export interface IAccessPayload{
     id: Users['id'];
     name: Users['name'];
     email: Users['email'];
