@@ -1,4 +1,3 @@
-import { de } from "zod/locales";
 import { prisma } from "../db/connectDb";
 import { Prisma, type Sessions } from "../generated/prisma";
 
@@ -18,8 +17,13 @@ export const sessionRepository = {
     updateSessionById: async(id: string, data: Prisma.SessionsUpdateInput): Promise<Sessions>=>{
         return await prisma.sessions.update({where: { id }, data});
     },
-    deleteSessionById: async(id: string): Promise<Sessions>=>{
-        return await prisma.sessions.delete({where: { id }});
+    deleteSessionById: async(id: string): Promise<boolean>=>{
+         try {
+            await prisma.sessions.delete({where: { id }});
+            return true;
+         } catch (error) {
+            return false;
+         }
     }
 
 }

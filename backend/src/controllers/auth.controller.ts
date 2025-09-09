@@ -1,6 +1,5 @@
 import { ApiError } from "../advices/ApiError";
 import { ApiResponse } from "../advices/ApiResponse";
-import { prisma } from "../db/connectDb";
 import type { Users } from "../generated/prisma";
 import { UserRole } from "../generated/prisma";
 import { sessionRepository } from "../repositories/session.repositories";
@@ -23,7 +22,7 @@ import {
 import { zodErrorFormatter } from "../utils/format-validation-error";
 
 
-const sanitizeUser = (user: Users)=>{
+export const sanitizeUser = (user: Users)=>{
    const{ password: _,
     verification_code: __,
     verification_code_expiry: ___,
