@@ -6,7 +6,6 @@ import authRouter from './routes/auth.routes';
 import { errorMiddleware } from './middleware/error.middleware';
 import { ApiResponse } from './advices/ApiResponse';
 import { ApiError } from './advices/ApiError';
-import { authMiddleware } from './middleware/auth.middleware';
 import sessionRouter from './routes/session.routes';
 import userRouter from './routes/user.routes';
 

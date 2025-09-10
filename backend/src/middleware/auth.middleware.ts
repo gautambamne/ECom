@@ -24,6 +24,7 @@ export const authMiddleware = (req:Request, res:Response, next:NextFunction)=>{
         const decoded = JwtUtils.verifyAccessToken(parsedToken!);
 
         req.user = decoded;
+        next();
 
     } catch (error) {
         next(new ApiError(StatusCodes.UNAUTHORIZED,"Invalid or expire token"))
