@@ -10,6 +10,7 @@ import {
   GetProductSchema,
   UpdateProductSchema,
 } from "../schema/product.schema";
+import { zodErrorFormatter } from "../utils/format-validation-error";
 
 
 // Helper function to sanitize product data
@@ -33,12 +34,7 @@ export const CreateProductController = asyncHandler(async (req: Request, res: Re
 
   const result = CreateProductSchema.safeParse(req.body);
   if (!result.success) {
-    throw new ApiError(400, "Validation failed", 
-      Object.fromEntries(
-        Object.entries(result.error.flatten().fieldErrors)
-        .map(([key, errors]) => [key, errors?.join(", ") || "Invalid input"])
-      )
-    );
+    throw new ApiError(400,"validation Error",zodErrorFormatter(result.error))
   }
 
   const product = await ProductService.createProduct(result.data, vendorId);
@@ -60,19 +56,12 @@ export const UpdateProductController = asyncHandler(async (req: Request, res: Re
 
   const idResult = GetProductSchema.safeParse({ id: req.params.id });
   if (!idResult.success) {
-    throw new ApiError(400, "Invalid product ID", {
-      id: "Invalid product ID format"
-    });
+    throw new ApiError(400, "Validation Error", zodErrorFormatter(idResult.error));
   }
 
   const updateResult = UpdateProductSchema.safeParse(req.body);
   if (!updateResult.success) {
-    throw new ApiError(400, "Validation failed", 
-      Object.fromEntries(
-        Object.entries(updateResult.error.flatten().fieldErrors)
-        .map(([key, errors]) => [key, errors?.join(", ") || "Invalid input"])
-      )
-    );
+    throw new ApiError(400, "Validation Error", zodErrorFormatter(updateResult.error));
   }
 
   const product = await ProductService.updateProduct(
@@ -98,7 +87,7 @@ export const DeleteProductController = asyncHandler(async (req: Request, res: Re
 
   const result = DeleteProductSchema.safeParse({ id: req.params.id });
   if (!result.success) {
-    throw new Error("Invalid product ID");
+    throw new ApiError(400, "Validation Error", zodErrorFormatter(result.error));
   }
 
   await ProductService.deleteProduct(result.data.id, vendorId);
@@ -113,7 +102,7 @@ export const DeleteProductController = asyncHandler(async (req: Request, res: Re
 export const GetProductController = asyncHandler(async (req: Request, res: Response) => {
   const result = GetProductSchema.safeParse({ id: req.params.id });
   if (!result.success) {
-    throw new Error("Invalid product ID");
+    throw new ApiError(400, "Validation Error", zodErrorFormatter(result.error));
   }
 
   const product = await ProductService.getProduct(result.data.id);
@@ -129,7 +118,7 @@ export const GetProductController = asyncHandler(async (req: Request, res: Respo
 export const GetProductsController = asyncHandler(async (req: Request, res: Response) => {
   const result = GetProductQuerySchema.safeParse(req.query);
   if (!result.success) {
-    throw new Error("Invalid query parameters");
+    throw new ApiError(400, "Validation Error", zodErrorFormatter(result.error));
   }
 
   const { products, pagination } = await ProductService.getProducts(result.data);
@@ -151,7 +140,7 @@ export const GetVendorProductsController = asyncHandler(async (req: Request, res
 
   const queryResult = GetProductQuerySchema.safeParse(req.query);
   if (!queryResult.success) {
-    throw new Error("Invalid query parameters");
+    throw new ApiError(400, "Validation Error", zodErrorFormatter(queryResult.error));
   }
 
   const { products, pagination } = await ProductService.getVendorProducts(
@@ -171,12 +160,12 @@ export const GetVendorProductsController = asyncHandler(async (req: Request, res
 export const GetProductsByCategoryController = asyncHandler(async (req: Request, res: Response) => {
   const result = GetProductSchema.safeParse({ id: req.params.categoryId });
   if (!result.success) {
-    throw new Error("Invalid category ID");
+    throw new ApiError(400, "Validation Error", zodErrorFormatter(result.error));
   }
 
   const queryResult = GetProductQuerySchema.safeParse(req.query);
   if (!queryResult.success) {
-    throw new Error("Invalid query parameters");
+    throw new ApiError(400, "Validation Error", zodErrorFormatter(queryResult.error));
   }
 
   const { products, pagination } = await ProductService.getProductsByCategory(
