@@ -10,13 +10,13 @@ const RegistrationSchema = z.object({
 });
 
 const LoginSchema = z.object({
-     email: z.email("Invalid email address"),
+    email: z.email("Invalid email address"),
     password: z.string()
         .min(6, "Password must be at least 6 characters long"),
 });
 
 const VerifySchema = z.object({
-     email: z.email("Invalid email address"),
+    email: z.email("Invalid email address"),
     verification_code: z.string()
         .min(6, "Verification code must be at least 6 characters long")
         .max(6, "Verification code must be exactly 6 characters long"),

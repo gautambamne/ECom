@@ -8,6 +8,7 @@ import { ApiResponse } from './advices/ApiResponse';
 import { ApiError } from './advices/ApiError';
 import sessionRouter from './routes/session.routes';
 import userRouter from './routes/user.routes';
+import productRouter from './routes/product.routes';
 
 const app = express();
 
@@ -39,10 +40,11 @@ app.use((err: syntaxErrorWithBody, req: Request, res: Response, next: NextFuncti
     next(err);
 })
 
-// rotes would be added here
+// routes would be added here
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/session', sessionRouter)
-app.use('/api/v1/users', userRouter)
+app.use('/api/v1/session', sessionRouter);
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/products', productRouter);
 
 
 
