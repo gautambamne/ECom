@@ -1,5 +1,5 @@
 import { Prisma } from "../generated/prisma";
-import { ProductRepository } from "../repositories/product.repository";
+import { ProductRepository } from "../repositories/product.repositories";
 import { ApiError } from "../advices/ApiError";
 import { CreateProductSchema, UpdateProductSchema, GetProductQuerySchema } from "../schema/product.schema";
 import type { z } from "zod";
