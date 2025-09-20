@@ -133,7 +133,7 @@ export const GetProductsController = asyncHandler(async (req: Request, res: Resp
 });
 
 export const GetVendorProductsController = asyncHandler(async (req: Request, res: Response) => {
-  const vendorId = req.params.vendorId || req.user?.id;
+  const vendorId = req.user?.id;
   if (!vendorId) {
     throw new Error("Vendor ID not found");
   }

@@ -15,7 +15,7 @@ const router = Router();
 
 // Public routes - no authentication needed
 router.get("/search", GetProductsController); // Search/filter products
-router.get("/category/:categoryId", GetProductsByCategoryController);
+router.get("/categories/:categoryId", GetProductsByCategoryController);
 router.get("/:id", GetProductController);
 
 // Protected routes - require authentication
