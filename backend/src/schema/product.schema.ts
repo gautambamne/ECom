@@ -19,15 +19,46 @@ const CreateProductSchema = z.object({
     .min(2, "Name must be at least 2 characters"),
   description: z.string().optional(),
   brand: z.string().optional(),
-  price: z
-    .number()
-    .positive("Price must be greater than 0"),
-  stock: z.number().int().nonnegative().default(0),
-  categories: z
-    .array(z.string().uuid("Invalid category id"))
-    .optional(),
-  variants: z.array(ProductVariantSchema)
-    .min(1, "At least one variant is required"), // If variants are required
+  price: z.preprocess(
+    (val) => val === "" ? undefined : Number(val),
+    z.number().positive("Price must be greater than 0")
+  ),
+  stock: z.preprocess(
+    (val) => val === "" ? 0 : Number(val),
+    z.number().int().nonnegative().default(0)
+  ),
+  categories: z.preprocess(
+    (val) => {
+      if (!val) return [];
+      if (typeof val === 'string') {
+        try {
+          return JSON.parse(val);
+        } catch {
+          return val.split(',').map(s => s.trim());
+        }
+      }
+      return val;
+    },
+    z.array(z.string().uuid("Invalid category id")).optional()
+  ),
+  variants: z.preprocess(
+    (val) => {
+      if (!val) return [];
+      if (typeof val === 'string') {
+        try {
+          return JSON.parse(val);
+        } catch {
+          return [];
+        }
+      }
+      return val;
+    },
+    z.array(ProductVariantSchema).min(1, "At least one variant is required")
+  ),
+  // Note: image field is handled by multer middleware and not validated here
+  // The actual file validation happens in the multer middleware
+  image: z.any().optional(), // This will be populated by multer
+  images: z.array(z.string().url()).optional(), // Array of image URLs for database storage
 });
 
 // Update Product Schema
@@ -35,10 +66,45 @@ const UpdateProductSchema = z.object({
   name: z.string().min(2).optional(),
   description: z.string().optional(),
   brand: z.string().optional(),
-  price: z.number().positive().optional(),
-  stock: z.number().int().nonnegative().optional(),
-  categories: z.array(z.string().uuid()).optional(),
-  variants: z.array(ProductVariantSchema).optional(),
+  price: z.preprocess(
+    (val) => val === "" ? undefined : Number(val),
+    z.number().positive("Price must be greater than 0").optional()
+  ),
+  stock: z.preprocess(
+    (val) => val === "" ? undefined : Number(val),
+    z.number().int().nonnegative().optional()
+  ),
+  categories: z.preprocess(
+    (val) => {
+      if (!val) return undefined;
+      if (typeof val === 'string') {
+        try {
+          return JSON.parse(val);
+        } catch {
+          return val.split(',').map(s => s.trim());
+        }
+      }
+      return val;
+    },
+    z.array(z.string().uuid("Invalid category id")).optional()
+  ),
+  variants: z.preprocess(
+    (val) => {
+      if (!val) return undefined;
+      if (typeof val === 'string') {
+        try {
+          return JSON.parse(val);
+        } catch {
+          return undefined;
+        }
+      }
+      return val;
+    },
+    z.array(ProductVariantSchema).optional()
+  ),
+  // Note: image field is handled by multer middleware and not validated here
+  image: z.any().optional(), // This will be populated by multer
+  images: z.array(z.string().url()).optional(), // Array of image URLs for database storage
 });
 
 const DeleteProductSchema = z.object({

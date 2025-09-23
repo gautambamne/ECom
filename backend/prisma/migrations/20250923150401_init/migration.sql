@@ -21,6 +21,7 @@ CREATE TABLE "public"."Users" (
     "password" TEXT NOT NULL,
     "role" "public"."UserRole"[] DEFAULT ARRAY['USER']::"public"."UserRole"[],
     "verification_code" TEXT,
+    "verification_code_expiry" TIMESTAMP(3),
     "is_verified" BOOLEAN NOT NULL DEFAULT false,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -31,7 +32,7 @@ CREATE TABLE "public"."Users" (
 -- CreateTable
 CREATE TABLE "public"."Sessions" (
     "id" TEXT NOT NULL,
-    "access_token" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
     "ip_address" TEXT NOT NULL,
     "user_agent" TEXT NOT NULL,
     "expire_at" TIMESTAMP(3) NOT NULL,
@@ -47,6 +48,7 @@ CREATE TABLE "public"."Product" (
     "name" TEXT NOT NULL,
     "description" TEXT,
     "brand" TEXT,
+    "images" TEXT[],
     "price" DOUBLE PRECISION NOT NULL,
     "stock" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -61,6 +63,7 @@ CREATE TABLE "public"."ProductVariant" (
     "id" TEXT NOT NULL,
     "size" "public"."ShoeSize" NOT NULL,
     "color" "public"."ShoeColor" NOT NULL,
+    "images" TEXT[],
     "stock" INTEGER NOT NULL DEFAULT 0,
     "product_id" TEXT NOT NULL,
 
@@ -156,7 +159,7 @@ CREATE TABLE "public"."_ProductCategories" (
 CREATE UNIQUE INDEX "Users_email_key" ON "public"."Users"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Sessions_access_token_key" ON "public"."Sessions"("access_token");
+CREATE UNIQUE INDEX "Sessions_token_key" ON "public"."Sessions"("token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Category_name_key" ON "public"."Category"("name");

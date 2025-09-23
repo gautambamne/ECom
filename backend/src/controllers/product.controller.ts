@@ -3,6 +3,7 @@ import asyncHandler from "../utils/asyncHandler";
 import { ApiResponse } from "../advices/ApiResponse";
 import { ApiError } from "../advices/ApiError";
 import { ProductService } from "../services/product.service";
+import { CloudinaryService } from "../services/cloudinary.service";
 import {
   CreateProductSchema,
   DeleteProductSchema,
@@ -32,12 +33,64 @@ export const CreateProductController = asyncHandler(async (req: Request, res: Re
     throw new Error("User ID not found in request");
   }
 
-  const result = CreateProductSchema.safeParse(req.body);
+  // // Log the incoming request for debugging
+  // console.log('Create Product Request:', {
+  //   hasFile: !!req.file,
+  //   fileInfo: req.file ? {
+  //     fieldname: req.file.fieldname,
+  //     mimetype: req.file.mimetype,
+  //     size: req.file.size,
+  //     hasBuffer: !!req.file.buffer
+  //   } : null,
+  //   bodyKeys: Object.keys(req.body)
+  // });
+
+  // Include the file in the validation data
+  const validationData = {
+    ...req.body,
+    image: req.file
+  };
+
+  const result = CreateProductSchema.safeParse(validationData);
   if (!result.success) {
-    throw new ApiError(400,"validation Error",zodErrorFormatter(result.error))
+    throw new ApiError(400, "Validation Error", zodErrorFormatter(result.error));
   }
 
-  const product = await ProductService.createProduct(result.data, vendorId);
+  let imageUrl: string | undefined;
+  let imagePublicId: string | undefined;
+
+  // Handle image upload if file is provided
+  if (req.file?.buffer) {
+    try {
+      const cloudinaryService = CloudinaryService.getInstance();
+      const uploadResult = await cloudinaryService.uploadImage(req.file.buffer, {
+        folder: 'products',
+        transformation: {
+          width: 800,
+          height: 600,
+          crop: 'fill',
+          quality: 'auto',
+          format: 'webp'
+        }
+      });
+
+      imageUrl = uploadResult.secure_url;
+      imagePublicId = uploadResult.public_id;
+
+      console.log('Image uploaded successfully:');
+    } catch (error: any) {
+      console.error('Image upload failed:', error);
+      throw new ApiError(500, `Failed to upload product image: ${error.message}`);
+    }
+  }
+
+  // Create product with image URL
+  const productData = {
+    ...result.data,
+    ...(imageUrl && { images: [imageUrl] })
+  };
+
+  const product = await ProductService.createProduct(productData, vendorId);
   const sanitizedProduct = sanitizeProduct(product);
 
   return res.status(201).json(
@@ -59,14 +112,79 @@ export const UpdateProductController = asyncHandler(async (req: Request, res: Re
     throw new ApiError(400, "Validation Error", zodErrorFormatter(idResult.error));
   }
 
-  const updateResult = UpdateProductSchema.safeParse(req.body);
+  // Include the file in the validation data
+  const validationData = {
+    ...req.body,
+    image: req.file
+  };
+
+  const updateResult = UpdateProductSchema.safeParse(validationData);
   if (!updateResult.success) {
     throw new ApiError(400, "Validation Error", zodErrorFormatter(updateResult.error));
   }
 
+  let imageUrl: string | undefined;
+  let imagePublicId: string | undefined;
+
+  // Handle image upload if new file is provided
+  if (req.file?.buffer) {
+    try {
+      const cloudinaryService = CloudinaryService.getInstance();
+      
+      // Get existing product to delete old images
+      const existingProduct = await ProductService.getProduct(idResult.data.id);
+      
+      // Delete old images if exists
+      if (existingProduct?.images && existingProduct.images.length > 0) {
+        try {
+          for (const imageUrl of existingProduct.images) {
+            const publicId = cloudinaryService.extractPublicId(imageUrl);
+            if (publicId) {
+              await cloudinaryService.deleteImage(publicId);
+              console.log('Old image deleted:', publicId);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to delete old images:', error);
+          // Continue with update even if delete fails
+        }
+      }
+      
+      // Upload new image
+      const uploadResult = await cloudinaryService.uploadImage(req.file.buffer, {
+        folder: 'products',
+        transformation: {
+          width: 800,
+          height: 600,
+          crop: 'fill',
+          quality: 'auto',
+          format: 'webp'
+        }
+      });
+
+      imageUrl = uploadResult.secure_url;
+      imagePublicId = uploadResult.public_id;
+
+      console.log('New image uploaded successfully:', {
+        url: imageUrl,
+        publicId: imagePublicId,
+        size: uploadResult.bytes
+      });
+    } catch (error: any) {
+      console.error('Image upload failed:', error);
+      throw new ApiError(500, `Failed to upload product image: ${error.message}`);
+    }
+  }
+
+  // Prepare update data
+  const updateData = {
+    ...updateResult.data,
+    ...(imageUrl && { images: [imageUrl] })
+  };
+
   const product = await ProductService.updateProduct(
     idResult.data.id,
-    updateResult.data,
+    updateData,
     vendorId
   );
   const sanitizedProduct = sanitizeProduct(product);
@@ -88,6 +206,26 @@ export const DeleteProductController = asyncHandler(async (req: Request, res: Re
   const result = DeleteProductSchema.safeParse({ id: req.params.id });
   if (!result.success) {
     throw new ApiError(400, "Validation Error", zodErrorFormatter(result.error));
+  }
+
+  // Get product to delete associated images
+  const product = await ProductService.getProduct(result.data.id);
+  
+  // Delete images from Cloudinary before deleting product
+  if (product?.images && product.images.length > 0) {
+    try {
+      const cloudinaryService = CloudinaryService.getInstance();
+      for (const imageUrl of product.images) {
+        const publicId = cloudinaryService.extractPublicId(imageUrl);
+        if (publicId) {
+          await cloudinaryService.deleteImage(publicId);
+          console.log('Product image deleted from Cloudinary:', publicId);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to delete product images from Cloudinary:', error);
+      // Continue with product deletion even if image deletion fails
+    }
   }
 
   await ProductService.deleteProduct(result.data.id, vendorId);

@@ -40,6 +40,8 @@ export const ProductService = {
                 brand: input.brand,
                 price: input.price,
                 stock: input.stock,
+                // Handle images - convert single image to array or use provided images array
+                images: (input as any).images || [], 
                 vendor: {
                     connect: { id: vendorId }
                 },
@@ -107,6 +109,8 @@ export const ProductService = {
                 brand: input.brand,
                 price: input.price,
                 stock: input.stock,
+                // Handle images update if provided
+                ...((input as any).images && { images: (input as any).images }),
                 categories,
                 variants
             });
