@@ -12,6 +12,8 @@ import productRouter from './routes/product.routes';
 import categoryRouter from './routes/category.routes';
 import cartRouter from './routes/cart.routes';
 import wishlistRouter from './routes/wishlist.routes';
+import orderRouter from './routes/order.routes';
+import paymentRouter from './routes/payment.routes';
 
 const app = express();
 
@@ -51,6 +53,8 @@ app.use('/api/v1/products', productRouter);
 app.use('/api/v1/categories', categoryRouter);
 app.use('/api/v1/cart', cartRouter);
 app.use('/api/v1/wishlist', wishlistRouter);
+app.use('/api/v1/orders', orderRouter);
+app.use('/api/v1/payments', paymentRouter);
 
 
 
