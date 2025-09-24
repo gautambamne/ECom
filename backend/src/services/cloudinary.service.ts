@@ -129,11 +129,11 @@ export class CloudinaryService {
         throw new ApiError(400, 'Public ID is required');
       }
 
-      console.log('Deleting image from Cloudinary:', publicId);
+      // console.log('Deleting image from Cloudinary:', publicId);
       
       const result = await cloudinary.uploader.destroy(publicId);
       
-      console.log('Cloudinary delete result:', result);
+      // console.log('Cloudinary delete result:', result);
       
       return result;
     } catch (error: any) {
@@ -151,11 +151,11 @@ export class CloudinaryService {
         throw new ApiError(400, 'Public IDs array is required');
       }
 
-      console.log('Deleting multiple images from Cloudinary:', publicIds);
+      // console.log('Deleting multiple images from Cloudinary:', publicIds);
       
       const result = await cloudinary.api.delete_resources(publicIds);
       
-      console.log('Cloudinary bulk delete result:', result);
+      // console.log('Cloudinary bulk delete result:', result);
       
       return result;
     } catch (error: any) {

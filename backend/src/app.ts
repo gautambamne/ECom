@@ -10,6 +10,8 @@ import sessionRouter from './routes/session.routes';
 import userRouter from './routes/user.routes';
 import productRouter from './routes/product.routes';
 import categoryRouter from './routes/category.routes';
+import cartRouter from './routes/cart.routes';
+import wishlistRouter from './routes/wishlist.routes';
 
 const app = express();
 
@@ -47,6 +49,8 @@ app.use('/api/v1/session', sessionRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/categories', categoryRouter);
+app.use('/api/v1/cart', cartRouter);
+app.use('/api/v1/wishlist', wishlistRouter);
 
 
 
