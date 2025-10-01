@@ -70,14 +70,14 @@ export function Navbar({ menuState, setMenuState }: { menuState: boolean, setMen
                 asChild
                 variant="outline"
                 size="sm">
-                <Link href="#">
+                <Link href="/login">
                   <span>Login</span>
                 </Link>
               </Button>
               <Button
                 asChild
                 size="sm">
-                <Link href="#">
+                <Link href="/register">
                   <span>Sign Up</span>
                 </Link>
               </Button>
