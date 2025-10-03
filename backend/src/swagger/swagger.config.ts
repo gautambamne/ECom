@@ -22,7 +22,7 @@ const swaggerDefinition = {
       description: 'Development server',
     },
     {
-      url: 'https://api.ecommerce.com/api/v1',
+      url: 'https://api.ecommerce.com/v1',
       description: 'Production server',
     },
   ],
@@ -40,72 +40,33 @@ const swaggerDefinition = {
       },
     },
     schemas: {
-      // User schemas
-      User: {
-        type: 'object',
-        required: ['id', 'name', 'email', 'role', 'isVerified'],
-        properties: {
-          id: {
-            type: 'string',
-            description: 'Unique identifier for the user',
-          },
-          name: {
-            type: 'string',
-            description: 'User\'s full name',
-            minLength: 3,
-            maxLength: 50,
-          },
-          email: {
-            type: 'string',
-            format: 'email',
-            description: 'User\'s email address',
-          },
-          role: {
-            type: 'string',
-            enum: ['USER', 'VENDOR', 'ADMIN'],
-            description: 'User\'s role in the system',
-          },
-          isVerified: {
-            type: 'boolean',
-            description: 'Whether the user\'s email is verified',
-          },
-          createdAt: {
-            type: 'string',
-            format: 'date-time',
-            description: 'User creation timestamp',
-          },
-          updatedAt: {
-            type: 'string',
-            format: 'date-time',
-            description: 'User last update timestamp',
-          },
-        },
-      },
-      
-      // Auth schemas
+      // Authentication request schemas
       RegisterRequest: {
         type: 'object',
         required: ['name', 'email', 'password'],
         properties: {
           name: {
             type: 'string',
-            minLength: 3,
-            maxLength: 50,
-            description: 'User\'s full name',
+            minLength: 2,
+            maxLength: 100,
+            description: 'User full name',
+            example: 'John Doe',
           },
           email: {
             type: 'string',
             format: 'email',
-            description: 'User\'s email address',
+            description: 'User email address',
+            example: 'john.doe@example.com',
           },
           password: {
             type: 'string',
             minLength: 6,
-            description: 'User\'s password',
+            description: 'User password (min 6 characters)',
+            example: 'password123',
           },
         },
       },
-      
+
       LoginRequest: {
         type: 'object',
         required: ['email', 'password'],
@@ -113,344 +74,408 @@ const swaggerDefinition = {
           email: {
             type: 'string',
             format: 'email',
-            description: 'User\'s email address',
+            description: 'User email address',
+            example: 'john.doe@example.com',
           },
           password: {
             type: 'string',
             minLength: 6,
-            description: 'User\'s password',
+            description: 'User password',
+            example: 'password123',
           },
         },
       },
-      
-      VerifyRequest: {
+
+      VerifyEmailRequest: {
         type: 'object',
         required: ['email', 'verification_code'],
         properties: {
           email: {
             type: 'string',
             format: 'email',
-            description: 'User\'s email address',
+            description: 'User email address',
+            example: 'john.doe@example.com',
           },
           verification_code: {
             type: 'string',
             minLength: 6,
             maxLength: 6,
+            pattern: '^[0-9]{6}$',
             description: '6-digit verification code',
+            example: '123456',
           },
         },
       },
-      
-      // Product schemas
-      Product: {
+
+      ForgotPasswordRequest: {
         type: 'object',
-        required: ['id', 'name', 'description', 'price', 'categoryId', 'vendorId'],
+        required: ['email'],
+        properties: {
+          email: {
+            type: 'string',
+            format: 'email',
+            description: 'User email address',
+            example: 'john.doe@example.com',
+          },
+        },
+      },
+
+      ResetPasswordRequest: {
+        type: 'object',
+        required: ['email', 'verification_code', 'newPassword'],
+        properties: {
+          email: {
+            type: 'string',
+            format: 'email',
+            description: 'User email address',
+            example: 'john.doe@example.com',
+          },
+          verification_code: {
+            type: 'string',
+            minLength: 6,
+            maxLength: 6,
+            pattern: '^[0-9]{6}$',
+            description: '6-digit verification code',
+            example: '123456',
+          },
+          newPassword: {
+            type: 'string',
+            minLength: 6,
+            description: 'New password (min 6 characters)',
+            example: 'newpassword123',
+          },
+        },
+      },
+
+      ResendVerificationCodeRequest: {
+        type: 'object',
+        required: ['email'],
+        properties: {
+          email: {
+            type: 'string',
+            format: 'email',
+            description: 'User email address',
+            example: 'john.doe@example.com',
+          },
+        },
+      },
+
+      CheckVerificationCodeRequest: {
+        type: 'object',
+        required: ['email', 'verification_code'],
+        properties: {
+          email: {
+            type: 'string',
+            format: 'email',
+            description: 'User email address',
+            example: 'john.doe@example.com',
+          },
+          verification_code: {
+            type: 'string',
+            minLength: 6,
+            maxLength: 6,
+            pattern: '^[0-9]{6}$',
+            description: '6-digit verification code',
+            example: '123456',
+          },
+        },
+      },
+
+      // User schema
+      User: {
+        type: 'object',
+        required: ['id', 'name', 'email', 'role', 'is_verified', 'created_at', 'updated_at'],
         properties: {
           id: {
             type: 'string',
-            description: 'Unique identifier for the product',
+            description: 'Unique user identifier',
+            example: 'cm1abc123def456',
           },
           name: {
             type: 'string',
-            description: 'Product name',
+            description: 'User full name',
+            example: 'John Doe',
           },
-          description: {
+          email: {
             type: 'string',
-            description: 'Product description',
+            format: 'email',
+            description: 'User email address',
+            example: 'john.doe@example.com',
           },
-          price: {
-            type: 'number',
-            format: 'decimal',
-            description: 'Product price',
-          },
-          stock: {
-            type: 'integer',
-            minimum: 0,
-            description: 'Available stock quantity',
-          },
-          images: {
+          role: {
             type: 'array',
             items: {
               type: 'string',
-              format: 'url',
+              enum: ['USER', 'ADMIN', 'SELLER'],
             },
-            description: 'Product image URLs',
+            description: 'User roles',
+            example: ['USER'],
           },
-          categoryId: {
-            type: 'string',
-            description: 'Category identifier',
-          },
-          vendorId: {
-            type: 'string',
-            description: 'Vendor identifier',
-          },
-          shoeSize: {
-            type: 'string',
-            enum: ['UK6', 'UK7', 'UK8', 'UK9', 'UK10', 'UK11'],
-            description: 'Shoe size (if applicable)',
-          },
-          shoeColor: {
-            type: 'string',
-            enum: ['RED', 'BLACK', 'WHITE', 'BLUE', 'GREEN', 'YELLOW', 'GREY'],
-            description: 'Shoe color (if applicable)',
-          },
-          createdAt: {
-            type: 'string',
-            format: 'date-time',
-            description: 'Product creation timestamp',
-          },
-          updatedAt: {
-            type: 'string',
-            format: 'date-time',
-            description: 'Product last update timestamp',
-          },
-        },
-      },
-      
-      CreateProductRequest: {
-        type: 'object',
-        required: ['name', 'description', 'price', 'categoryId'],
-        properties: {
-          name: {
-            type: 'string',
-            description: 'Product name',
-          },
-          description: {
-            type: 'string',
-            description: 'Product description',
-          },
-          price: {
-            type: 'number',
-            format: 'decimal',
-            description: 'Product price',
-          },
-          stock: {
-            type: 'integer',
-            minimum: 0,
-            description: 'Available stock quantity',
-          },
-          categoryId: {
-            type: 'string',
-            description: 'Category identifier',
-          },
-          shoeSize: {
-            type: 'string',
-            enum: ['UK6', 'UK7', 'UK8', 'UK9', 'UK10', 'UK11'],
-            description: 'Shoe size (if applicable)',
-          },
-          shoeColor: {
-            type: 'string',
-            enum: ['RED', 'BLACK', 'WHITE', 'BLUE', 'GREEN', 'YELLOW', 'GREY'],
-            description: 'Shoe color (if applicable)',
-          },
-        },
-      },
-      
-      // Category schema
-      Category: {
-        type: 'object',
-        required: ['id', 'name'],
-        properties: {
-          id: {
-            type: 'string',
-            description: 'Unique identifier for the category',
-          },
-          name: {
-            type: 'string',
-            description: 'Category name',
-          },
-          description: {
-            type: 'string',
-            description: 'Category description',
-          },
-          createdAt: {
-            type: 'string',
-            format: 'date-time',
-            description: 'Category creation timestamp',
-          },
-          updatedAt: {
-            type: 'string',
-            format: 'date-time',
-            description: 'Category last update timestamp',
-          },
-        },
-      },
-      
-      // Cart schemas
-      CartItem: {
-        type: 'object',
-        required: ['id', 'productId', 'quantity'],
-        properties: {
-          id: {
-            type: 'string',
-            description: 'Unique identifier for the cart item',
-          },
-          productId: {
-            type: 'string',
-            description: 'Product identifier',
-          },
-          quantity: {
-            type: 'integer',
-            minimum: 1,
-            description: 'Quantity of the product',
-          },
-          product: {
-            $ref: '#/components/schemas/Product',
-          },
-        },
-      },
-      
-      Cart: {
-        type: 'object',
-        required: ['id', 'userId', 'items'],
-        properties: {
-          id: {
-            type: 'string',
-            description: 'Unique identifier for the cart',
-          },
-          userId: {
-            type: 'string',
-            description: 'User identifier',
-          },
-          items: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/CartItem',
-            },
-            description: 'Cart items',
-          },
-          totalAmount: {
-            type: 'number',
-            format: 'decimal',
-            description: 'Total cart amount',
-          },
-        },
-      },
-      
-      // Order schemas
-      Order: {
-        type: 'object',
-        required: ['id', 'userId', 'status', 'totalAmount'],
-        properties: {
-          id: {
-            type: 'string',
-            description: 'Unique identifier for the order',
-          },
-          userId: {
-            type: 'string',
-            description: 'User identifier',
-          },
-          status: {
-            type: 'string',
-            enum: ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'],
-            description: 'Order status',
-          },
-          totalAmount: {
-            type: 'number',
-            format: 'decimal',
-            description: 'Total order amount',
-          },
-          shippingAddress: {
-            type: 'string',
-            description: 'Shipping address',
-          },
-          createdAt: {
-            type: 'string',
-            format: 'date-time',
-            description: 'Order creation timestamp',
-          },
-          updatedAt: {
-            type: 'string',
-            format: 'date-time',
-            description: 'Order last update timestamp',
-          },
-        },
-      },
-      
-      // Payment schema
-      Payment: {
-        type: 'object',
-        required: ['id', 'orderId', 'amount', 'status'],
-        properties: {
-          id: {
-            type: 'string',
-            description: 'Unique identifier for the payment',
-          },
-          orderId: {
-            type: 'string',
-            description: 'Order identifier',
-          },
-          amount: {
-            type: 'number',
-            format: 'decimal',
-            description: 'Payment amount',
-          },
-          status: {
-            type: 'string',
-            enum: ['PENDING', 'SUCCESS', 'FAILED'],
-            description: 'Payment status',
-          },
-          paymentMethod: {
-            type: 'string',
-            description: 'Payment method used',
-          },
-          transactionId: {
-            type: 'string',
-            description: 'Transaction identifier',
-          },
-          createdAt: {
-            type: 'string',
-            format: 'date-time',
-            description: 'Payment creation timestamp',
-          },
-        },
-      },
-      
-      // Response schemas
-      ApiResponse: {
-        type: 'object',
-        properties: {
-          success: {
+          is_verified: {
             type: 'boolean',
-            description: 'Indicates if the request was successful',
+            description: 'Email verification status',
+            example: true,
           },
-          message: {
+          created_at: {
             type: 'string',
-            description: 'Response message',
+            format: 'date-time',
+            description: 'Account creation timestamp',
+            example: '2024-01-15T10:30:00Z',
+          },
+          updated_at: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Last update timestamp',
+            example: '2024-01-15T10:30:00Z',
+          },
+        },
+      },
+
+      // Response schemas - Updated to match actual ApiResponse format
+      AuthSuccessResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-03T10:30:00.000Z',
           },
           data: {
             type: 'object',
-            description: 'Response data',
+            required: ['user', 'access_token', 'message'],
+            properties: {
+              user: {
+                $ref: '#/components/schemas/User',
+              },
+              access_token: {
+                type: 'string',
+                description: 'JWT access token',
+                example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+              },
+              message: {
+                type: 'string',
+                example: 'Authentication successful',
+                description: 'Success message',
+              },
+            },
           },
-          error: {
-            type: 'object',
-            description: 'Error details (if any)',
+          api_error: {
+            type: 'null',
+            example: null,
           },
         },
       },
-      
+
+      RegisterSuccessResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-03T10:30:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['user', 'message'],
+            properties: {
+              user: {
+                $ref: '#/components/schemas/User',
+              },
+              message: {
+                type: 'string',
+                example: 'Account Successfullty Registered',
+                description: 'Success message',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      BasicSuccessResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-03T10:30:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['message'],
+            properties: {
+              message: {
+                type: 'string',
+                description: 'Success message',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      RefreshTokenResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-03T10:30:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['access_token', 'message'],
+            properties: {
+              access_token: {
+                type: 'string',
+                description: 'New JWT access token',
+                example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+              },
+              message: {
+                type: 'string',
+                example: 'Access token refreshed successfully',
+                description: 'Success message',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      // Error Response schemas - Updated to match actual ApiResponse format
+      ValidationErrorResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-03T10:30:00.000Z',
+          },
+          data: {
+            type: 'null',
+            example: null,
+          },
+          api_error: {
+            type: 'object',
+            required: ['status_code', 'message', 'errors'],
+            properties: {
+              status_code: {
+                type: 'integer',
+                example: 400,
+                description: 'HTTP status code',
+              },
+              message: {
+                type: 'string',
+                example: 'validation Error',
+                description: 'Error message',
+              },
+              errors: {
+                type: 'object',
+                description: 'Detailed validation errors',
+                additionalProperties: {
+                  type: 'string',
+                },
+                example: {
+                  'email': 'Invalid email address',
+                  'password': 'Password must be at least 6 characters'
+                },
+              },
+            },
+          },
+        },
+      },
+
+      AuthErrorResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-03T10:30:00.000Z',
+          },
+          data: {
+            type: 'null',
+            example: null,
+          },
+          api_error: {
+            type: 'object',
+            required: ['status_code', 'message'],
+            properties: {
+              status_code: {
+                type: 'integer',
+                description: 'HTTP status code',
+              },
+              message: {
+                type: 'string',
+                description: 'Error message',
+              },
+              errors: {
+                type: 'object',
+                description: 'Additional error details',
+                additionalProperties: {
+                  type: 'string',
+                },
+                example: {},
+              },
+            },
+          },
+        },
+      },
+
       ErrorResponse: {
         type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
         properties: {
-          success: {
-            type: 'boolean',
-            example: false,
-            description: 'Always false for error responses',
-          },
-          message: {
+          local_date_time: {
             type: 'string',
-            description: 'Error message',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-03T10:30:00.000Z',
           },
-          error: {
+          data: {
+            type: 'null',
+            example: null,
+          },
+          api_error: {
             type: 'object',
+            required: ['status_code', 'message'],
             properties: {
-              code: {
+              status_code: {
                 type: 'integer',
-                description: 'Error code',
+                description: 'HTTP status code',
               },
-              details: {
+              message: {
                 type: 'string',
-                description: 'Error details',
+                description: 'Error message',
+              },
+              errors: {
+                type: 'object',
+                description: 'Additional error details',
+                additionalProperties: {
+                  type: 'string',
+                },
+                example: {},
               },
             },
           },

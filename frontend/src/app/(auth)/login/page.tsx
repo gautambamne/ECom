@@ -1,9 +1,8 @@
 import { LogoIcon } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import LoginForm from "./login-form";
 
 export default function LoginPage() {
   return (
@@ -19,10 +18,7 @@ export default function LoginPage() {
 
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_30%,black)] dark:bg-black"></div>
 
-      <form
-        action=""
-        className="relative z-10 bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5 dark:[--color-muted:var(--color-zinc-900)]"
-      >
+      <div className="relative z-10 bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5 dark:[--color-muted:var(--color-zinc-900)]">
         <div className="p-8 pb-6">
           <div className="text-center">
             <Link href="/" aria-label="go home" className="mx-auto block w-fit">
@@ -34,38 +30,8 @@ export default function LoginPage() {
             <p className="text-sm">Welcome back! Sign in to continue</p>
           </div>
 
-          <div className="mt-6 space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="block text-sm">
-                Email
-              </Label>
-              <Input type="email" required name="email" id="email" />
-            </div>
-
-            <div className="space-y-0.5">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="pwd" className="text-sm">
-                  Password
-                </Label>
-                <Button asChild variant="link" size="sm">
-                  <Link
-                    href="#"
-                    className="link intent-info variant-ghost text-sm"
-                  >
-                    Forgot your Password ?
-                  </Link>
-                </Button>
-              </div>
-              <Input
-                type="password"
-                required
-                name="pwd"
-                id="pwd"
-                className="input sz-md variant-mixed"
-              />
-            </div>
-
-            <Button className="w-full">Sign In</Button>
+          <div className="mt-6">
+            <LoginForm />
           </div>
 
           <div className="my-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
@@ -134,7 +100,7 @@ export default function LoginPage() {
             </Button>
           </p>
         </div>
-      </form>
+      </div>
     </section>
   );
 }

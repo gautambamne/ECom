@@ -31,12 +31,13 @@ export const sanitizeUser = (user: Users)=>{
   return userWithoutSenesitive;
 }
 
-const handleAuthSuccess = async(user: Users, req: any, res: any)=>{
+const handleAuthSuccess = async(user: Users, message:string, req: any, res: any)=>{
     const access_token = JwtUtils.generateAccesToken({
     id: user.id,
     name: user.name,
     email: user.email,
     role: user.role,
+
   });
 
   const refresh_token = JwtUtils.generateRefreshToken({ id: user.id });
@@ -71,7 +72,7 @@ const handleAuthSuccess = async(user: Users, req: any, res: any)=>{
       new ApiResponse({
         user: userWithoutSenesitive,
         access_token: access_token,
-        message: "Authentication successful",
+        message: message,
       })
     );
 }
@@ -161,7 +162,7 @@ export const VerifyUser = asyncHandler(async (req, res) => {
       verification_code: null,
       verification_code_expiry: null,
   })
-  await handleAuthSuccess(userToBeReturned, req, res);
+  await handleAuthSuccess(userToBeReturned, "User Verify Successfully" ,req, res);
 
 });
 
@@ -185,7 +186,7 @@ export const LoginController = asyncHandler(async (req, res) => {
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid credentials");
   }
-  await handleAuthSuccess(savedUser, req, res)
+  await handleAuthSuccess(savedUser, "Login Successfully" ,req, res)
 
 });
 

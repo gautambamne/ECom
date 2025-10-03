@@ -12,39 +12,25 @@
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterRequest'
-          example:
-            name: "John Doe"
-            email: "john.doe@example.com"
-            password: "password123"
     responses:
       '201':
         description: User registered successfully
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
-            example:
-              success: true
-              message: "User registered successfully. Please check your email for verification code."
-              data:
-                user:
-                  id: "cm1234567890"
-                  name: "John Doe"
-                  email: "john.doe@example.com"
-                  role: "USER"
-                  isVerified: false
+              $ref: '#/components/schemas/RegisterSuccessResponse'
       '400':
-        description: Bad request - Invalid input
+        description: Bad request - Validation error
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ErrorResponse'
-            example:
-              success: false
-              message: "Validation failed"
-              error:
-                code: 400
-                details: "Email already exists"
+              $ref: '#/components/schemas/ValidationErrorResponse'
+      '409':
+        description: Conflict - Email already exists
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthErrorResponse'
       '500':
         description: Internal server error
         content:
@@ -63,33 +49,26 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/VerifyRequest'
-          example:
-            email: "john.doe@example.com"
-            verification_code: "123456"
+            $ref: '#/components/schemas/VerifyEmailRequest'
     responses:
       '200':
         description: Email verified successfully
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
-            example:
-              success: true
-              message: "Email verified successfully"
-              data:
-                user:
-                  id: "cm1234567890"
-                  name: "John Doe"
-                  email: "john.doe@example.com"
-                  role: "USER"
-                  isVerified: true
+              $ref: '#/components/schemas/AuthSuccessResponse'
       '400':
         description: Invalid verification code
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ErrorResponse'
+              $ref: '#/components/schemas/ValidationErrorResponse'
+      '404':
+        description: User not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthErrorResponse'
 
 /auth/login:
   post:
@@ -103,9 +82,6 @@
         application/json:
           schema:
             $ref: '#/components/schemas/LoginRequest'
-          example:
-            email: "john.doe@example.com"
-            password: "password123"
     responses:
       '200':
         description: Login successful
@@ -118,31 +94,25 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
-            example:
-              success: true
-              message: "Login successful"
-              data:
-                user:
-                  id: "cm1234567890"
-                  name: "John Doe"
-                  email: "john.doe@example.com"
-                  role: "USER"
-                  isVerified: true
-                accessToken: "jwt_access_token_here"
-                refreshToken: "jwt_refresh_token_here"
+              $ref: '#/components/schemas/AuthSuccessResponse'
+      '400':
+        description: Validation error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationErrorResponse'
       '401':
         description: Invalid credentials
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ErrorResponse'
+              $ref: '#/components/schemas/AuthErrorResponse'
       '403':
         description: Email not verified
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ErrorResponse'
+              $ref: '#/components/schemas/AuthErrorResponse'
 
 /auth/logout:
   post:
@@ -159,17 +129,13 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
-            example:
-              success: true
-              message: "Logout successful"
-              data: null
+              $ref: '#/components/schemas/BasicSuccessResponse'
       '401':
         description: Unauthorized
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ErrorResponse'
+              $ref: '#/components/schemas/AuthErrorResponse'
 
 /auth/refresh-token:
   post:
@@ -185,18 +151,13 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
-            example:
-              success: true
-              message: "Token refreshed successfully"
-              data:
-                accessToken: "new_jwt_access_token_here"
+              $ref: '#/components/schemas/RefreshTokenResponse'
       '401':
         description: Invalid refresh token
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ErrorResponse'
+              $ref: '#/components/schemas/AuthErrorResponse'
 
 /auth/forgot-password:
   post:
@@ -209,32 +170,26 @@
       content:
         application/json:
           schema:
-            type: object
-            required: [email]
-            properties:
-              email:
-                type: string
-                format: email
-                description: User's email address
-          example:
-            email: "john.doe@example.com"
+            $ref: '#/components/schemas/ForgotPasswordRequest'
     responses:
       '200':
         description: Password reset code sent
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
-            example:
-              success: true
-              message: "Password reset code sent to your email"
-              data: null
+              $ref: '#/components/schemas/BasicSuccessResponse'
+      '400':
+        description: Validation error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationErrorResponse'
       '404':
         description: User not found
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ErrorResponse'
+              $ref: '#/components/schemas/AuthErrorResponse'
 
 /auth/check-verification-code:
   post:
@@ -247,34 +202,26 @@
       content:
         application/json:
           schema:
-            type: object
-            required: [email, verification_code]
-            properties:
-              email:
-                type: string
-                format: email
-                description: User's email address
-              verification_code:
-                type: string
-                minLength: 6
-                maxLength: 6
-                description: 6-digit verification code
-          example:
-            email: "john.doe@example.com"
-            verification_code: "123456"
+            $ref: '#/components/schemas/CheckVerificationCodeRequest'
     responses:
       '200':
         description: Verification code is valid
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/BasicSuccessResponse'
       '400':
         description: Invalid verification code
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ErrorResponse'
+              $ref: '#/components/schemas/ValidationErrorResponse'
+      '404':
+        description: User not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthErrorResponse'
 
 /auth/reset-password:
   post:
@@ -287,39 +234,26 @@
       content:
         application/json:
           schema:
-            type: object
-            required: [email, verification_code, newPassword]
-            properties:
-              email:
-                type: string
-                format: email
-                description: User's email address
-              verification_code:
-                type: string
-                minLength: 6
-                maxLength: 6
-                description: 6-digit verification code
-              newPassword:
-                type: string
-                minLength: 6
-                description: New password
-          example:
-            email: "john.doe@example.com"
-            verification_code: "123456"
-            newPassword: "newpassword123"
+            $ref: '#/components/schemas/ResetPasswordRequest'
     responses:
       '200':
         description: Password reset successfully
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/BasicSuccessResponse'
       '400':
         description: Invalid verification code or password
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ErrorResponse'
+              $ref: '#/components/schemas/ValidationErrorResponse'
+      '404':
+        description: User not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthErrorResponse'
 
 /auth/resend-verification-code:
   post:
@@ -332,25 +266,23 @@
       content:
         application/json:
           schema:
-            type: object
-            required: [email]
-            properties:
-              email:
-                type: string
-                format: email
-                description: User's email address
-          example:
-            email: "john.doe@example.com"
+            $ref: '#/components/schemas/ResendVerificationCodeRequest'
     responses:
       '200':
         description: Verification code resent
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/BasicSuccessResponse'
+      '400':
+        description: Validation error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationErrorResponse'
       '404':
         description: User not found
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ErrorResponse'
+              $ref: '#/components/schemas/AuthErrorResponse'

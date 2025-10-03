@@ -1,17 +1,30 @@
-   interface IUser {
-        id: string,
-        name: string,
-        email: string,
-        role: string,
-        isVerified: boolean
-    }//for IRegistration and IVerify
+interface IUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string[];
+  is_verified: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
-    interface ILoginResposne {
-        user: IUser,
-        accessToken: string,
-        refreshToken: string
-    }
+interface IRegistrationResponse {
+  user: IUser;
+  message: string;
+}
 
-    interface IRefreshResponse{
-        accessToken:string
-    }
+interface IVerifyResponse {
+  user: IUser;
+  access_token: string;
+  message: string;
+}
+interface ILoginResposne {
+  user: IUser;
+  access_token: string;
+  message: string;
+}
+
+interface IRefreshResponse {
+  access_token: string;
+  message: string;
+}

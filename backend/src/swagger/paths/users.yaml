@@ -1,10 +1,10 @@
 # User Endpoints
 
-/users/profile:
+/users/me:
   get:
     tags:
       - Users
-    summary: Get user profile
+    summary: Get current user profile
     description: Retrieves the authenticated user's profile information
     security:
       - bearerAuth: []
@@ -17,8 +17,7 @@
             schema:
               $ref: '#/components/schemas/ApiResponse'
             example:
-              success: true
-              message: "User profile retrieved successfully"
+              local_date_time: "2023-10-01T10:00:00Z"
               data:
                 user:
                   id: "user123"
@@ -27,6 +26,8 @@
                   role: "USER"
                   isVerified: true
                   createdAt: "2023-10-01T10:00:00Z"
+                  updatedAt: "2023-10-01T10:00:00Z"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -34,11 +35,12 @@
             schema:
               $ref: '#/components/schemas/ErrorResponse'
 
+/users/update:
   put:
     tags:
       - Users
     summary: Update user profile
-    description: Updates the authenticated user's profile information
+    description: Updates the authenticated user's name
     security:
       - bearerAuth: []
       - cookieAuth: []
@@ -48,6 +50,8 @@
         application/json:
           schema:
             type: object
+            required:
+              - name
             properties:
               name:
                 type: string
@@ -55,21 +59,6 @@
                 maxLength: 50
                 description: User's full name
                 example: "John Smith"
-              email:
-                type: string
-                format: email
-                description: User's email address
-                example: "john.smith@example.com"
-              currentPassword:
-                type: string
-                minLength: 6
-                description: Current password (required when changing email or password)
-                example: "currentpassword123"
-              newPassword:
-                type: string
-                minLength: 6
-                description: New password (optional)
-                example: "newpassword123"
     responses:
       '200':
         description: User profile updated successfully
@@ -78,287 +67,79 @@
             schema:
               $ref: '#/components/schemas/ApiResponse'
             example:
-              success: true
-              message: "Profile updated successfully"
+              local_date_time: "2023-10-01T12:00:00Z"
               data:
                 user:
                   id: "user123"
                   name: "John Smith"
-                  email: "john.smith@example.com"
-                  role: "USER"
-                  isVerified: true
-                  updatedAt: "2023-10-01T12:00:00Z"
-      '401':
-        description: Unauthorized
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-      '400':
-        description: Bad request - Invalid input or wrong current password
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-
-/users/{id}:
-  get:
-    tags:
-      - Users
-    summary: Get user by ID (Admin only)
-    description: Retrieves a specific user by ID. Only admins can access other users' profiles.
-    security:
-      - bearerAuth: []
-      - cookieAuth: []
-    parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-        description: User ID
-        example: "user123"
-    responses:
-      '200':
-        description: User retrieved successfully
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ApiResponse'
-            example:
-              success: true
-              message: "User retrieved successfully"
-              data:
-                user:
-                  id: "user123"
-                  name: "John Doe"
                   email: "john.doe@example.com"
                   role: "USER"
                   isVerified: true
                   createdAt: "2023-10-01T10:00:00Z"
+                  updatedAt: "2023-10-01T12:00:00Z"
+              api_error: null
+      '400':
+        description: Bad request - Invalid input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
       '401':
         description: Unauthorized
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ErrorResponse'
-      '403':
-        description: Forbidden - Not an admin
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-      '404':
-        description: User not found
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
 
+/users/update-password:
   put:
     tags:
       - Users
-    summary: Update user (Admin only)
-    description: Updates a user's information. Only admins can update other users.
+    summary: Update user password
+    description: Updates the authenticated user's password
     security:
       - bearerAuth: []
       - cookieAuth: []
-    parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-        description: User ID
-        example: "user123"
     requestBody:
       required: true
       content:
         application/json:
           schema:
             type: object
+            required:
+              - currentPassword
+              - newPassword
             properties:
-              name:
+              currentPassword:
                 type: string
-                minLength: 3
-                maxLength: 50
-                description: User's full name
-                example: "John Smith"
-              email:
+                minLength: 6
+                description: Current password
+                example: "currentpassword123"
+              newPassword:
                 type: string
-                format: email
-                description: User's email address
-                example: "john.smith@example.com"
-              role:
-                type: string
-                enum: [USER, VENDOR, ADMIN]
-                description: User's role
-                example: "VENDOR"
-              isVerified:
-                type: boolean
-                description: Email verification status
-                example: true
+                minLength: 6
+                description: New password
+                example: "newpassword123"
     responses:
       '200':
-        description: User updated successfully
+        description: Password updated successfully
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ApiResponse'
             example:
-              success: true
-              message: "User updated successfully"
+              local_date_time: "2023-10-01T12:00:00Z"
               data:
-                user:
-                  id: "user123"
-                  name: "John Smith"
-                  email: "john.smith@example.com"
-                  role: "VENDOR"
-                  isVerified: true
-                  updatedAt: "2023-10-01T12:00:00Z"
+                message: "Password updated successfully"
+              api_error: null
+      '400':
+        description: Bad request - Invalid input or wrong current password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
       '401':
         description: Unauthorized
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-      '403':
-        description: Forbidden - Not an admin
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-      '404':
-        description: User not found
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-
-  delete:
-    tags:
-      - Users
-    summary: Delete user (Admin only)
-    description: Deletes a user account. Only admins can delete users.
-    security:
-      - bearerAuth: []
-      - cookieAuth: []
-    parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-        description: User ID
-        example: "user123"
-    responses:
-      '200':
-        description: User deleted successfully
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ApiResponse'
-            example:
-              success: true
-              message: "User deleted successfully"
-              data: null
-      '401':
-        description: Unauthorized
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-      '403':
-        description: Forbidden - Not an admin
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-      '404':
-        description: User not found
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-
-/users:
-  get:
-    tags:
-      - Users
-    summary: Get all users (Admin only)
-    description: Retrieves a list of all users with pagination. Only admins can access this endpoint.
-    security:
-      - bearerAuth: []
-      - cookieAuth: []
-    parameters:
-      - in: query
-        name: role
-        schema:
-          type: string
-          enum: [USER, VENDOR, ADMIN]
-        description: Filter users by role
-      - in: query
-        name: isVerified
-        schema:
-          type: boolean
-        description: Filter users by verification status
-      - in: query
-        name: search
-        schema:
-          type: string
-        description: Search users by name or email
-      - in: query
-        name: page
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-        description: Page number for pagination
-      - in: query
-        name: limit
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 10
-        description: Number of users per page
-    responses:
-      '200':
-        description: Users retrieved successfully
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ApiResponse'
-            example:
-              success: true
-              message: "Users retrieved successfully"
-              data:
-                users:
-                  - id: "user123"
-                    name: "John Doe"
-                    email: "john.doe@example.com"
-                    role: "USER"
-                    isVerified: true
-                    createdAt: "2023-10-01T10:00:00Z"
-                  - id: "user124"
-                    name: "Jane Smith"
-                    email: "jane.smith@example.com"
-                    role: "VENDOR"
-                    isVerified: true
-                    createdAt: "2023-10-01T11:00:00Z"
-                pagination:
-                  page: 1
-                  limit: 10
-                  total: 50
-                  totalPages: 5
-      '401':
-        description: Unauthorized
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-      '403':
-        description: Forbidden - Not an admin
         content:
           application/json:
             schema:
