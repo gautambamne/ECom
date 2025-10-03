@@ -2,6 +2,8 @@ import express from 'express';
 import type{ Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './swagger/swagger.config';
 import authRouter from './routes/auth.routes';
 import { errorMiddleware } from './middleware/error.middleware';
 import { ApiResponse } from './advices/ApiResponse';
@@ -34,6 +36,27 @@ app.use(express.static('public'));
 
 app.use(cookieParser());
 
+// Swagger Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    explorer: true,
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'E-Commerce API Documentation',
+    swaggerOptions: {
+        persistAuthorization: true,
+        displayRequestDuration: true,
+        docExpansion: 'none',
+        filter: true,
+        showRequestHeaders: true,
+        tryItOutEnabled: true,
+    },
+}));
+
+// Swagger JSON endpoint
+app.get('/api-docs.json', (req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+});
+
 interface syntaxErrorWithBody extends SyntaxError {
     body?: any
 }
@@ -56,7 +79,34 @@ app.use('/api/v1/wishlist', wishlistRouter);
 app.use('/api/v1/orders', orderRouter);
 app.use('/api/v1/payments', paymentRouter);
 
+// API Root endpoint
+app.get('/api/v1', (req: Request, res: Response) => {
+    res.json(new ApiResponse({
+        message: 'Welcome to E-Commerce API',
+        version: '1.0.0',
+        documentation: '/api-docs',
+        endpoints: {
+            auth: '/api/v1/auth',
+            users: '/api/v1/users',
+            products: '/api/v1/products',
+            categories: '/api/v1/categories',
+            cart: '/api/v1/cart',
+            wishlist: '/api/v1/wishlist',
+            orders: '/api/v1/orders',
+            payments: '/api/v1/payments',
+            session: '/api/v1/session',
+        }
+    }));
+});
 
+// Health check endpoint
+app.get('/health', (req: Request, res: Response) => {
+    res.json(new ApiResponse({
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+    }));
+});
 
 // error handling middleware would be added here
 app.use(errorMiddleware);

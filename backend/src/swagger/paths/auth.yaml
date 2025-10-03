@@ -1,0 +1,356 @@
+# Authentication Endpoints
+
+/auth/register:
+  post:
+    tags:
+      - Authentication
+    summary: Register a new user
+    description: Creates a new user account and sends verification email
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RegisterRequest'
+          example:
+            name: "John Doe"
+            email: "john.doe@example.com"
+            password: "password123"
+    responses:
+      '201':
+        description: User registered successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "User registered successfully. Please check your email for verification code."
+              data:
+                user:
+                  id: "cm1234567890"
+                  name: "John Doe"
+                  email: "john.doe@example.com"
+                  role: "USER"
+                  isVerified: false
+      '400':
+        description: Bad request - Invalid input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+            example:
+              success: false
+              message: "Validation failed"
+              error:
+                code: 400
+                details: "Email already exists"
+      '500':
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/auth/verify:
+  post:
+    tags:
+      - Authentication
+    summary: Verify user email
+    description: Verifies user email using the verification code sent to their email
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VerifyRequest'
+          example:
+            email: "john.doe@example.com"
+            verification_code: "123456"
+    responses:
+      '200':
+        description: Email verified successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Email verified successfully"
+              data:
+                user:
+                  id: "cm1234567890"
+                  name: "John Doe"
+                  email: "john.doe@example.com"
+                  role: "USER"
+                  isVerified: true
+      '400':
+        description: Invalid verification code
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/auth/login:
+  post:
+    tags:
+      - Authentication
+    summary: User login
+    description: Authenticates user and returns access and refresh tokens
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LoginRequest'
+          example:
+            email: "john.doe@example.com"
+            password: "password123"
+    responses:
+      '200':
+        description: Login successful
+        headers:
+          Set-Cookie:
+            description: Access and refresh tokens set as HTTP-only cookies
+            schema:
+              type: string
+              example: "accessToken=jwt_token_here; HttpOnly; Secure; SameSite=Strict"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Login successful"
+              data:
+                user:
+                  id: "cm1234567890"
+                  name: "John Doe"
+                  email: "john.doe@example.com"
+                  role: "USER"
+                  isVerified: true
+                accessToken: "jwt_access_token_here"
+                refreshToken: "jwt_refresh_token_here"
+      '401':
+        description: Invalid credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '403':
+        description: Email not verified
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/auth/logout:
+  post:
+    tags:
+      - Authentication
+    summary: User logout
+    description: Logs out user and clears authentication cookies
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    responses:
+      '200':
+        description: Logout successful
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Logout successful"
+              data: null
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/auth/refresh-token:
+  post:
+    tags:
+      - Authentication
+    summary: Refresh access token
+    description: Generates new access token using refresh token
+    security:
+      - cookieAuth: []
+    responses:
+      '200':
+        description: Token refreshed successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Token refreshed successfully"
+              data:
+                accessToken: "new_jwt_access_token_here"
+      '401':
+        description: Invalid refresh token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/auth/forgot-password:
+  post:
+    tags:
+      - Authentication
+    summary: Forgot password
+    description: Sends password reset code to user's email
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [email]
+            properties:
+              email:
+                type: string
+                format: email
+                description: User's email address
+          example:
+            email: "john.doe@example.com"
+    responses:
+      '200':
+        description: Password reset code sent
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Password reset code sent to your email"
+              data: null
+      '404':
+        description: User not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/auth/check-verification-code:
+  post:
+    tags:
+      - Authentication
+    summary: Check verification code
+    description: Validates the verification code for password reset
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [email, verification_code]
+            properties:
+              email:
+                type: string
+                format: email
+                description: User's email address
+              verification_code:
+                type: string
+                minLength: 6
+                maxLength: 6
+                description: 6-digit verification code
+          example:
+            email: "john.doe@example.com"
+            verification_code: "123456"
+    responses:
+      '200':
+        description: Verification code is valid
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+      '400':
+        description: Invalid verification code
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/auth/reset-password:
+  post:
+    tags:
+      - Authentication
+    summary: Reset password
+    description: Resets user password using verification code
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [email, verification_code, newPassword]
+            properties:
+              email:
+                type: string
+                format: email
+                description: User's email address
+              verification_code:
+                type: string
+                minLength: 6
+                maxLength: 6
+                description: 6-digit verification code
+              newPassword:
+                type: string
+                minLength: 6
+                description: New password
+          example:
+            email: "john.doe@example.com"
+            verification_code: "123456"
+            newPassword: "newpassword123"
+    responses:
+      '200':
+        description: Password reset successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+      '400':
+        description: Invalid verification code or password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/auth/resend-verification-code:
+  post:
+    tags:
+      - Authentication
+    summary: Resend verification code
+    description: Resends verification code to user's email
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [email]
+            properties:
+              email:
+                type: string
+                format: email
+                description: User's email address
+          example:
+            email: "john.doe@example.com"
+    responses:
+      '200':
+        description: Verification code resent
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+      '404':
+        description: User not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'

@@ -1,0 +1,271 @@
+# Wishlist Endpoints
+
+/wishlist:
+  get:
+    tags:
+      - Wishlist
+    summary: Get user's wishlist
+    description: Retrieves the authenticated user's wishlist with all items
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: Page number for pagination
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+        description: Number of items per page
+    responses:
+      '200':
+        description: Wishlist retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Wishlist retrieved successfully"
+              data:
+                wishlist:
+                  id: "wishlist123"
+                  userId: "user123"
+                  items:
+                    - id: "wishlistItem123"
+                      productId: "prod123"
+                      addedAt: "2023-10-01T10:00:00Z"
+                      product:
+                        id: "prod123"
+                        name: "Nike Air Force 1"
+                        price: 89.99
+                        images: ["https://example.com/image1.jpg"]
+                        category:
+                          name: "Sneakers"
+                pagination:
+                  page: 1
+                  limit: 10
+                  total: 5
+                  totalPages: 1
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Wishlist not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/wishlist/add:
+  post:
+    tags:
+      - Wishlist
+    summary: Add item to wishlist
+    description: Adds a product to the user's wishlist
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [productId]
+            properties:
+              productId:
+                type: string
+                description: Product ID to add to wishlist
+                example: "prod123"
+    responses:
+      '200':
+        description: Item added to wishlist successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Item added to wishlist successfully"
+              data:
+                wishlistItem:
+                  id: "wishlistItem123"
+                  productId: "prod123"
+                  addedAt: "2023-10-01T10:00:00Z"
+                  product:
+                    id: "prod123"
+                    name: "Nike Air Force 1"
+                    price: 89.99
+                    images: ["https://example.com/image1.jpg"]
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Product not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '400':
+        description: Product already in wishlist
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+            example:
+              success: false
+              message: "Product is already in your wishlist"
+              error:
+                code: 400
+                details: "Duplicate wishlist item"
+
+/wishlist/remove/{productId}:
+  delete:
+    tags:
+      - Wishlist
+    summary: Remove item from wishlist
+    description: Removes a specific product from the user's wishlist
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+        description: Product ID to remove from wishlist
+        example: "prod123"
+    responses:
+      '200':
+        description: Item removed from wishlist successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Item removed from wishlist successfully"
+              data: null
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Wishlist item not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/wishlist/clear:
+  delete:
+    tags:
+      - Wishlist
+    summary: Clear wishlist
+    description: Removes all items from the user's wishlist
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    responses:
+      '200':
+        description: Wishlist cleared successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Wishlist cleared successfully"
+              data: null
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/wishlist/move-to-cart/{productId}:
+  post:
+    tags:
+      - Wishlist
+    summary: Move item from wishlist to cart
+    description: Moves a product from wishlist to cart with specified quantity
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+        description: Product ID to move to cart
+        example: "prod123"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [quantity]
+            properties:
+              quantity:
+                type: integer
+                minimum: 1
+                description: Quantity to add to cart
+                example: 2
+    responses:
+      '200':
+        description: Item moved to cart successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Item moved to cart successfully"
+              data:
+                cartItem:
+                  id: "cartItem123"
+                  productId: "prod123"
+                  quantity: 2
+                  product:
+                    id: "prod123"
+                    name: "Nike Air Force 1"
+                    price: 89.99
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Wishlist item not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '400':
+        description: Invalid quantity or insufficient stock
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'

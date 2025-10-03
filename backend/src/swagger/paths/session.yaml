@@ -1,0 +1,262 @@
+# Session Endpoints
+
+/session/validate:
+  get:
+    tags:
+      - Session
+    summary: Validate session
+    description: Validates the current user session and returns user information
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    responses:
+      '200':
+        description: Session is valid
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Session is valid"
+              data:
+                user:
+                  id: "user123"
+                  name: "John Doe"
+                  email: "john.doe@example.com"
+                  role: "USER"
+                  isVerified: true
+                sessionInfo:
+                  issuedAt: "2023-10-01T10:00:00Z"
+                  expiresAt: "2023-10-01T22:00:00Z"
+      '401':
+        description: Invalid or expired session
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+            example:
+              success: false
+              message: "Session is invalid or expired"
+              error:
+                code: 401
+                details: "Please log in again"
+
+/session/info:
+  get:
+    tags:
+      - Session
+    summary: Get session information
+    description: Retrieves detailed information about the current session
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    responses:
+      '200':
+        description: Session information retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Session information retrieved successfully"
+              data:
+                session:
+                  userId: "user123"
+                  issuedAt: "2023-10-01T10:00:00Z"
+                  expiresAt: "2023-10-01T22:00:00Z"
+                  lastActivity: "2023-10-01T15:30:00Z"
+                  ipAddress: "192.168.1.100"
+                  userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                  isActive: true
+      '401':
+        description: Unauthorized - Invalid session
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/session/extend:
+  post:
+    tags:
+      - Session
+    summary: Extend session
+    description: Extends the current session expiration time
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    responses:
+      '200':
+        description: Session extended successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Session extended successfully"
+              data:
+                session:
+                  expiresAt: "2023-10-02T10:00:00Z"
+                  extendedAt: "2023-10-01T16:00:00Z"
+      '401':
+        description: Unauthorized - Invalid session
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '400':
+        description: Bad request - Session cannot be extended
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/session/terminate:
+  post:
+    tags:
+      - Session
+    summary: Terminate session
+    description: Terminates the current session (same as logout)
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    responses:
+      '200':
+        description: Session terminated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Session terminated successfully"
+              data: null
+      '401':
+        description: Unauthorized - Invalid session
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/session/all:
+  get:
+    tags:
+      - Session
+    summary: Get all user sessions
+    description: Retrieves all active sessions for the authenticated user
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    responses:
+      '200':
+        description: User sessions retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "User sessions retrieved successfully"
+              data:
+                sessions:
+                  - id: "session123"
+                    userId: "user123"
+                    issuedAt: "2023-10-01T10:00:00Z"
+                    expiresAt: "2023-10-01T22:00:00Z"
+                    lastActivity: "2023-10-01T15:30:00Z"
+                    ipAddress: "192.168.1.100"
+                    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                    isActive: true
+                    isCurrent: true
+                  - id: "session124"
+                    userId: "user123"
+                    issuedAt: "2023-09-30T08:00:00Z"
+                    expiresAt: "2023-09-30T20:00:00Z"
+                    lastActivity: "2023-09-30T18:45:00Z"
+                    ipAddress: "192.168.1.105"
+                    userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)"
+                    isActive: true
+                    isCurrent: false
+      '401':
+        description: Unauthorized - Invalid session
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/session/terminate-all:
+  post:
+    tags:
+      - Session
+    summary: Terminate all sessions
+    description: Terminates all sessions for the authenticated user except the current one
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    responses:
+      '200':
+        description: All sessions terminated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "All other sessions terminated successfully"
+              data:
+                terminatedSessions: 2
+      '401':
+        description: Unauthorized - Invalid session
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/session/terminate/{sessionId}:
+  delete:
+    tags:
+      - Session
+    summary: Terminate specific session
+    description: Terminates a specific session by ID
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: path
+        name: sessionId
+        required: true
+        schema:
+          type: string
+        description: Session ID to terminate
+        example: "session124"
+    responses:
+      '200':
+        description: Session terminated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Session terminated successfully"
+              data: null
+      '401':
+        description: Unauthorized - Invalid session
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Session not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '403':
+        description: Forbidden - Cannot terminate other users' sessions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'

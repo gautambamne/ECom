@@ -1,0 +1,243 @@
+# Cart Endpoints
+
+/cart:
+  get:
+    tags:
+      - Cart
+    summary: Get user's cart
+    description: Retrieves the current user's shopping cart with all items
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    responses:
+      '200':
+        description: Cart retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Cart retrieved successfully"
+              data:
+                cart:
+                  id: "cart123"
+                  userId: "user123"
+                  items:
+                    - id: "item123"
+                      productId: "prod123"
+                      quantity: 2
+                      product:
+                        id: "prod123"
+                        name: "Nike Air Force 1"
+                        price: 89.99
+                        images: ["https://example.com/image1.jpg"]
+                  totalAmount: 179.98
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Cart not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/cart/add:
+  post:
+    tags:
+      - Cart
+    summary: Add item to cart
+    description: Adds a product to the user's shopping cart
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [productId, quantity]
+            properties:
+              productId:
+                type: string
+                description: Product ID to add to cart
+                example: "prod123"
+              quantity:
+                type: integer
+                minimum: 1
+                description: Quantity of the product
+                example: 2
+    responses:
+      '200':
+        description: Item added to cart successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Item added to cart successfully"
+              data:
+                cartItem:
+                  id: "item123"
+                  productId: "prod123"
+                  quantity: 2
+                  product:
+                    id: "prod123"
+                    name: "Nike Air Force 1"
+                    price: 89.99
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Product not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '400':
+        description: Invalid quantity or insufficient stock
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/cart/update/{itemId}:
+  put:
+    tags:
+      - Cart
+    summary: Update cart item quantity
+    description: Updates the quantity of a specific item in the cart
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: path
+        name: itemId
+        required: true
+        schema:
+          type: string
+        description: Cart item ID
+        example: "item123"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [quantity]
+            properties:
+              quantity:
+                type: integer
+                minimum: 1
+                description: New quantity for the cart item
+                example: 3
+    responses:
+      '200':
+        description: Cart item updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Cart item updated successfully"
+              data:
+                cartItem:
+                  id: "item123"
+                  productId: "prod123"
+                  quantity: 3
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Cart item not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '400':
+        description: Invalid quantity or insufficient stock
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/cart/remove/{itemId}:
+  delete:
+    tags:
+      - Cart
+    summary: Remove item from cart
+    description: Removes a specific item from the user's cart
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: path
+        name: itemId
+        required: true
+        schema:
+          type: string
+        description: Cart item ID
+        example: "item123"
+    responses:
+      '200':
+        description: Item removed from cart successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Item removed from cart successfully"
+              data: null
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Cart item not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/cart/clear:
+  delete:
+    tags:
+      - Cart
+    summary: Clear cart
+    description: Removes all items from the user's cart
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    responses:
+      '200':
+        description: Cart cleared successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Cart cleared successfully"
+              data: null
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'

@@ -39,11 +39,12 @@ export default function Home() {
                                 </div>
                             </div>
                             <Image
-                                className="-z-10 order-first ml-auto h-56 w-full object-cover invert sm:h-96 lg:absolute lg:inset-0 lg:-right-20 lg:-top-96 lg:order-last lg:h-max lg:w-2/3 lg:object-contain dark:mix-blend-lighten dark:invert-0"
-                                src=""
+                                className="-z-10 order-first ml-auto h-56 w-full object-cover invert sm:h-80 md:h-96 lg:order-last lg:h-96 lg:w-1/2 xl:h-[500px] xl:w-2/5 dark:mix-blend-lighten dark:invert-0"
+                                src="/1.jpg"
                                 alt="Abstract Object"
-                                height="4000"
-                                width="3000"
+                                height={4000}
+                                width={4000}
+                                priority
                             />
                         </div>
                     </div>

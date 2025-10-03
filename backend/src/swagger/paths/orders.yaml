@@ -1,0 +1,307 @@
+# Order Endpoints
+
+/orders:
+  get:
+    tags:
+      - Orders
+    summary: Get user's orders
+    description: Retrieves all orders for the authenticated user
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum: [PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED]
+        description: Filter orders by status
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: Page number for pagination
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+        description: Number of orders per page
+    responses:
+      '200':
+        description: Orders retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Orders retrieved successfully"
+              data:
+                orders:
+                  - id: "order123"
+                    userId: "user123"
+                    status: "CONFIRMED"
+                    totalAmount: 179.98
+                    shippingAddress: "123 Main St, City, Country"
+                    createdAt: "2023-10-01T10:00:00Z"
+                    items:
+                      - id: "orderItem123"
+                        productId: "prod123"
+                        quantity: 2
+                        price: 89.99
+                        product:
+                          name: "Nike Air Force 1"
+                          images: ["https://example.com/image1.jpg"]
+                pagination:
+                  page: 1
+                  limit: 10
+                  total: 5
+                  totalPages: 1
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+  post:
+    tags:
+      - Orders
+    summary: Create a new order
+    description: Creates a new order from the user's cart items
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [shippingAddress]
+            properties:
+              shippingAddress:
+                type: string
+                description: Shipping address for the order
+                example: "123 Main St, City, Country"
+              notes:
+                type: string
+                description: Additional notes for the order
+                example: "Please deliver after 6 PM"
+    responses:
+      '201':
+        description: Order created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Order created successfully"
+              data:
+                order:
+                  id: "order123"
+                  userId: "user123"
+                  status: "PENDING"
+                  totalAmount: 179.98
+                  shippingAddress: "123 Main St, City, Country"
+                  createdAt: "2023-10-01T10:00:00Z"
+                  items:
+                    - id: "orderItem123"
+                      productId: "prod123"
+                      quantity: 2
+                      price: 89.99
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '400':
+        description: Bad request - Empty cart or invalid data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/orders/{id}:
+  get:
+    tags:
+      - Orders
+    summary: Get order by ID
+    description: Retrieves a specific order by its ID
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: Order ID
+        example: "order123"
+    responses:
+      '200':
+        description: Order retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Order retrieved successfully"
+              data:
+                order:
+                  id: "order123"
+                  userId: "user123"
+                  status: "CONFIRMED"
+                  totalAmount: 179.98
+                  shippingAddress: "123 Main St, City, Country"
+                  createdAt: "2023-10-01T10:00:00Z"
+                  items:
+                    - id: "orderItem123"
+                      productId: "prod123"
+                      quantity: 2
+                      price: 89.99
+                      product:
+                        name: "Nike Air Force 1"
+                        images: ["https://example.com/image1.jpg"]
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Order not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '403':
+        description: Forbidden - Not the order owner
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/orders/{id}/cancel:
+  put:
+    tags:
+      - Orders
+    summary: Cancel order
+    description: Cancels an order. Only pending orders can be cancelled.
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: Order ID
+        example: "order123"
+    responses:
+      '200':
+        description: Order cancelled successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Order cancelled successfully"
+              data:
+                order:
+                  id: "order123"
+                  status: "CANCELLED"
+                  updatedAt: "2023-10-01T12:00:00Z"
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Order not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '400':
+        description: Bad request - Order cannot be cancelled
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/orders/{id}/status:
+  put:
+    tags:
+      - Orders
+    summary: Update order status (Admin/Vendor only)
+    description: Updates the status of an order. Only admins or the vendor can update order status.
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: Order ID
+        example: "order123"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [status]
+            properties:
+              status:
+                type: string
+                enum: [PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED]
+                description: New order status
+                example: "SHIPPED"
+    responses:
+      '200':
+        description: Order status updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Order status updated successfully"
+              data:
+                order:
+                  id: "order123"
+                  status: "SHIPPED"
+                  updatedAt: "2023-10-01T12:00:00Z"
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '403':
+        description: Forbidden - Not authorized to update order status
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Order not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'

@@ -1,0 +1,242 @@
+# Category Endpoints
+
+/categories:
+  get:
+    tags:
+      - Categories
+    summary: Get all categories
+    description: Retrieves a list of all product categories
+    responses:
+      '200':
+        description: Categories retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Categories retrieved successfully"
+              data:
+                categories:
+                  - id: "cat123"
+                    name: "Sneakers"
+                    description: "Athletic footwear"
+                    createdAt: "2023-10-01T10:00:00Z"
+                  - id: "cat124"
+                    name: "Boots"
+                    description: "Sturdy footwear"
+                    createdAt: "2023-10-01T10:00:00Z"
+      '500':
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+  post:
+    tags:
+      - Categories
+    summary: Create a new category (Admin only)
+    description: Creates a new product category. Only admins can create categories.
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [name]
+            properties:
+              name:
+                type: string
+                description: Category name
+                example: "Running Shoes"
+              description:
+                type: string
+                description: Category description
+                example: "Shoes designed for running and jogging"
+    responses:
+      '201':
+        description: Category created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Category created successfully"
+              data:
+                category:
+                  id: "cat125"
+                  name: "Running Shoes"
+                  description: "Shoes designed for running and jogging"
+                  createdAt: "2023-10-01T10:00:00Z"
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '403':
+        description: Forbidden - Not an admin
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '400':
+        description: Bad request - Invalid input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/categories/{id}:
+  get:
+    tags:
+      - Categories
+    summary: Get category by ID
+    description: Retrieves a specific category by its ID
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: Category ID
+        example: "cat123"
+    responses:
+      '200':
+        description: Category retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Category retrieved successfully"
+              data:
+                category:
+                  id: "cat123"
+                  name: "Sneakers"
+                  description: "Athletic footwear"
+                  createdAt: "2023-10-01T10:00:00Z"
+      '404':
+        description: Category not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+  put:
+    tags:
+      - Categories
+    summary: Update category (Admin only)
+    description: Updates a category. Only admins can update categories.
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: Category ID
+        example: "cat123"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Category name
+                example: "Athletic Sneakers"
+              description:
+                type: string
+                description: Category description
+                example: "High-performance athletic footwear"
+    responses:
+      '200':
+        description: Category updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Category updated successfully"
+              data:
+                category:
+                  id: "cat123"
+                  name: "Athletic Sneakers"
+                  description: "High-performance athletic footwear"
+                  updatedAt: "2023-10-01T12:00:00Z"
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '403':
+        description: Forbidden - Not an admin
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Category not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+  delete:
+    tags:
+      - Categories
+    summary: Delete category (Admin only)
+    description: Deletes a category. Only admins can delete categories.
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: Category ID
+        example: "cat123"
+    responses:
+      '200':
+        description: Category deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              success: true
+              message: "Category deleted successfully"
+              data: null
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '403':
+        description: Forbidden - Not an admin
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Category not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
