@@ -76,7 +76,7 @@ export const updatePasswordController = asyncHandler(async(req, res)=>{
          throw new ApiError(StatusCodes.UNAUTHORIZED , "User not authenticated")
     }
 
-    const isPassValid = passwordUtils.comparredPassword(currrentPassword, user.password);
+    const isPassValid = await passwordUtils.comparredPassword(currrentPassword, user.password);
 
     if(!isPassValid){
          throw new ApiError(StatusCodes.UNAUTHORIZED , "The Password isnt match with your current password try to reset")

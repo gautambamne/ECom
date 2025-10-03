@@ -1,10 +1,17 @@
+'use client'
+
 import { LogoIcon } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import LoginForm from "./login-form";
+import ForgotPasswordForm from "./forgot-password";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const isForgotPassword = searchParams.get('mode') === 'forgot';
+
   return (
     <section className="relative flex h-screen items-center justify-center bg-muted dark:bg-black">
       <div
@@ -25,13 +32,18 @@ export default function LoginPage() {
               <LogoIcon />
             </Link>
             <h1 className="mb-1 mt-4 text-xl font-semibold">
-              Sign In to Sneaky
+              {isForgotPassword ? "Reset Your Password" : "Sign In to Sneaky"}
             </h1>
-            <p className="text-sm">Welcome back! Sign in to continue</p>
+            <p className="text-sm">
+              {isForgotPassword
+                ? "Follow the steps to reset your password securely"
+                : "Welcome back! Sign in to continue"
+              }
+            </p>
           </div>
 
           <div className="mt-6">
-            <LoginForm />
+            {isForgotPassword ? <ForgotPasswordForm /> : <LoginForm />}
           </div>
 
           <div className="my-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
@@ -94,10 +106,21 @@ export default function LoginPage() {
 
         <div className="p-3">
           <p className="text-accent-foreground text-center text-sm">
-            Don't have an account ?
-            <Button asChild variant="link" className="px-2">
-              <Link href="/register">Create account</Link>
-            </Button>
+            {isForgotPassword ? (
+              <>
+                Remember your password?
+                <Button asChild variant="link" className="px-2">
+                  <Link href="/login">Back to Sign In</Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                Don't have an account ?
+                <Button asChild variant="link" className="px-2">
+                  <Link href="/register">Create account</Link>
+                </Button>
+              </>
+            )}
           </p>
         </div>
       </div>

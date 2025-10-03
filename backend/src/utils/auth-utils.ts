@@ -3,11 +3,11 @@ import jwt, { type JwtPayload } from 'jsonwebtoken';
 import type { Users } from '../generated/prisma';
 
 const passwordUtils = {
-    generatedHashPassword: (password: string)=>{
-        return bcrypt.hashSync(password, 10);
+    generatedHashPassword: async (password: string)=>{
+        return bcrypt.hash(password, 10);
     },
-    comparredPassword: (originalPassword: string, hashedPassword: string)=>{
-        return bcrypt.compareSync(originalPassword, hashedPassword);
+    comparredPassword: async (originalPassword: string, hashedPassword: string)=>{
+        return bcrypt.compare(originalPassword, hashedPassword);
     }
 }
 

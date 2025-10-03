@@ -212,10 +212,9 @@ export const ForgotPasswordController = asyncHandler(async(req, res)=>{
   });
 
   // TODO: Mail Functionality
-
   res.status(200).json(
   new ApiResponse({
-    message: "Verification code sent to your email"
+    message: `Verification code sent to your email`
   }));
 });
 
@@ -272,6 +271,7 @@ export const CheckVerificationCodeController = asyncHandler(async(req, res)=>{
   if(!existingUser.verification_code_expiry || existingUser.verification_code_expiry.getTime() < Date.now()){
     throw new ApiError(400, "Verification code expired");
   }
+  
   res.status(200).json(
   new ApiResponse({
     message: "Verification code is valid"
@@ -289,6 +289,7 @@ export const ResetPasswordController = asyncHandler(async(req, res)=>{
   const {email, verification_code, new_password} = result.data;
 
   const existingUser = await UserRepository.getUserByEmail(email);
+  
   if(!existingUser){
     throw new ApiError(404, "User not exist with this email");
   }

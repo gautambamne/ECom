@@ -88,7 +88,7 @@ function onSubmit (data: ILoginSchema) {
                 </FormLabel>
                 <Button asChild variant="link" size="sm">
                   <Link
-                    href="#"
+                    href="/login?mode=forgot"
                     className="link intent-info variant-ghost text-sm"
                   >
                     Forgot your Password ?

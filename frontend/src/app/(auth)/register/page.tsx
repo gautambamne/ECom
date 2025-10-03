@@ -1,9 +1,8 @@
 import { LogoIcon } from '@/components/ui/logo'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import RegisterForm from './register-form'
 
 export default function RegisterPage() {
     return (
@@ -17,8 +16,7 @@ export default function RegisterPage() {
                 )}
             />
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_30%,black)] dark:bg-black"></div>
-            <form
-                action=""
+            <div
                 className="relative z-10 bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5 dark:[--color-muted:var(--color-zinc-900)]"
             >
                 <div className="p-8 pb-6">
@@ -81,68 +79,8 @@ export default function RegisterPage() {
                         </Button>
                     </div>
 
-                    <hr className="my-4 border-dashed" />
-
-                    <div className="space-y-5">
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="firstname"
-                                    className="block text-sm">
-                                    Firstname
-                                </Label>
-                                <Input
-                                    type="text"
-                                    required
-                                    name="firstname"
-                                    id="firstname"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="lastname"
-                                    className="block text-sm">
-                                    Lastname
-                                </Label>
-                                <Input
-                                    type="text"
-                                    required
-                                    name="lastname"
-                                    id="lastname"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label
-                                htmlFor="email"
-                                className="block text-sm">
-                                Email
-                            </Label>
-                            <Input
-                                type="email"
-                                required
-                                name="email"
-                                id="email"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label
-                                htmlFor="pwd"
-                                className="text-sm">
-                                Password
-                            </Label>
-                            <Input
-                                type="password"
-                                required
-                                name="pwd"
-                                id="pwd"
-                                className="input sz-md variant-mixed"
-                            />
-                        </div>
-
-                        <Button className="w-full">Continue</Button>
+                    <div className="mt-6">
+                        <RegisterForm />
                     </div>
                 </div>
 
@@ -157,7 +95,7 @@ export default function RegisterPage() {
                         </Button>
                     </p>
                 </div>
-            </form>
+            </div>
         </section>
     );
 }

@@ -6,7 +6,12 @@ const RegistrationSchema = z.object({
         .max(50, "Name must be at most 50 characters long"),
     email: z.email("Invalid email address"),
     password: z.string()
-        .min(6, "Password must be at least 6 characters long")
+        .min(6, "Password must be at least 6 characters long"),
+    confirmPassword: z.string()
+        .min(6, "Confirm password must be at least 6 characters long"),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
 });
 
 const LoginSchema = z.object({
@@ -35,11 +40,11 @@ const ForgotPasswordSchema = z.object({
 
 const ResendVerificationCodeSchema = z.object({
      email: z.email("Invalid email address"),
-}); 
+});
 
 const ResetPasswordSchema = z.object({
      email: z.email("Invalid email address"),
-    
+
      verification_code: z.string()
         .min(6, "Verification code must be at least 6 characters long")
         .max(6, "Verification code must be exactly 6 characters long"),

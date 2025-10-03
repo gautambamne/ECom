@@ -16,6 +16,12 @@ export const UserRepository = {
         const cachedUser = await RedisService.getAndRefresh<Users>(cacheKey);
 
         if(cachedUser){
+            // Revive Date objects from cache
+            if (cachedUser.verification_code_expiry) {
+                cachedUser.verification_code_expiry = new Date(cachedUser.verification_code_expiry);
+            }
+            cachedUser.created_at = new Date(cachedUser.created_at);
+            cachedUser.updated_at = new Date(cachedUser.updated_at);
             return cachedUser
         }
 
@@ -35,6 +41,12 @@ export const UserRepository = {
         const cachedUser = await RedisService.getAndRefresh<Users>(cacheKey);
     
         if (cachedUser) {
+            // Revive Date objects from cache
+            if (cachedUser.verification_code_expiry) {
+                cachedUser.verification_code_expiry = new Date(cachedUser.verification_code_expiry);
+            }
+            cachedUser.created_at = new Date(cachedUser.created_at);
+            cachedUser.updated_at = new Date(cachedUser.updated_at);
             return cachedUser;
         }
 
