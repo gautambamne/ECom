@@ -5,7 +5,7 @@
     tags:
       - Orders
     summary: Get user's orders
-    description: Retrieves all orders for the authenticated user
+    description: Retrieves all orders for the authenticated user with optional filtering and pagination
     security:
       - bearerAuth: []
       - cookieAuth: []
@@ -16,6 +16,7 @@
           type: string
           enum: [PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED]
         description: Filter orders by status
+        example: "CONFIRMED"
       - in: query
         name: page
         schema:
@@ -23,6 +24,7 @@
           minimum: 1
           default: 1
         description: Page number for pagination
+        example: 1
       - in: query
         name: limit
         schema:
@@ -31,37 +33,42 @@
           maximum: 100
           default: 10
         description: Number of orders per page
+        example: 10
     responses:
       '200':
         description: Orders retrieved successfully
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/OrdersListResponse'
             example:
-              success: true
-              message: "Orders retrieved successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 orders:
                   - id: "order123"
-                    userId: "user123"
+                    user_id: "user123"
                     status: "CONFIRMED"
-                    totalAmount: 179.98
-                    shippingAddress: "123 Main St, City, Country"
-                    createdAt: "2023-10-01T10:00:00Z"
+                    total_price: 179.98
+                    created_at: "2023-10-01T10:00:00.000Z"
                     items:
                       - id: "orderItem123"
-                        productId: "prod123"
+                        product_id: "prod123"
                         quantity: 2
                         price: 89.99
                         product:
+                          id: "prod123"
                           name: "Nike Air Force 1"
+                          price: 89.99
                           images: ["https://example.com/image1.jpg"]
-                pagination:
-                  page: 1
-                  limit: 10
-                  total: 5
-                  totalPages: 1
+                          brand: "Nike"
+                          stock: 50
+                    payment:
+                      id: "payment123"
+                      amount: 179.98
+                      status: "SUCCESS"
+                      method: "card"
+                message: "Orders retrieved successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -83,39 +90,54 @@
         application/json:
           schema:
             type: object
-            required: [shippingAddress]
             properties:
-              shippingAddress:
-                type: string
-                description: Shipping address for the order
-                example: "123 Main St, City, Country"
-              notes:
-                type: string
-                description: Additional notes for the order
-                example: "Please deliver after 6 PM"
+              items:
+                type: array
+                description: Specific cart items to include in the order (optional - uses entire cart if not provided)
+                items:
+                  type: object
+                  required: [productId, quantity]
+                  properties:
+                    productId:
+                      type: string
+                      description: Product ID
+                      example: "prod123"
+                    quantity:
+                      type: integer
+                      minimum: 1
+                      description: Quantity to order
+                      example: 2
     responses:
       '201':
         description: Order created successfully
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/OrderCreateResponse'
             example:
-              success: true
-              message: "Order created successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 order:
                   id: "order123"
-                  userId: "user123"
+                  user_id: "user123"
                   status: "PENDING"
-                  totalAmount: 179.98
-                  shippingAddress: "123 Main St, City, Country"
-                  createdAt: "2023-10-01T10:00:00Z"
+                  total_price: 179.98
+                  created_at: "2023-10-01T10:00:00.000Z"
                   items:
                     - id: "orderItem123"
-                      productId: "prod123"
+                      product_id: "prod123"
                       quantity: 2
                       price: 89.99
+                      product:
+                        id: "prod123"
+                        name: "Nike Air Force 1"
+                        price: 89.99
+                        images: ["https://example.com/image1.jpg"]
+                        brand: "Nike"
+                        stock: 50
+                  payment: null
+                message: "Order created successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -129,18 +151,18 @@
             schema:
               $ref: '#/components/schemas/ErrorResponse'
 
-/orders/{id}:
+/orders/{orderId}:
   get:
     tags:
       - Orders
     summary: Get order by ID
-    description: Retrieves a specific order by its ID
+    description: Retrieves a specific order by its ID. Users can only access their own orders.
     security:
       - bearerAuth: []
       - cookieAuth: []
     parameters:
       - in: path
-        name: id
+        name: orderId
         required: true
         schema:
           type: string
@@ -152,26 +174,35 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/OrderResponse'
             example:
-              success: true
-              message: "Order retrieved successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 order:
                   id: "order123"
-                  userId: "user123"
+                  user_id: "user123"
                   status: "CONFIRMED"
-                  totalAmount: 179.98
-                  shippingAddress: "123 Main St, City, Country"
-                  createdAt: "2023-10-01T10:00:00Z"
+                  total_price: 179.98
+                  created_at: "2023-10-01T10:00:00.000Z"
                   items:
                     - id: "orderItem123"
-                      productId: "prod123"
+                      product_id: "prod123"
                       quantity: 2
                       price: 89.99
                       product:
+                        id: "prod123"
                         name: "Nike Air Force 1"
+                        price: 89.99
                         images: ["https://example.com/image1.jpg"]
+                        brand: "Nike"
+                        stock: 50
+                  payment:
+                    id: "payment123"
+                    amount: 179.98
+                    status: "SUCCESS"
+                    method: "card"
+                message: "Order retrieved successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -191,18 +222,18 @@
             schema:
               $ref: '#/components/schemas/ErrorResponse'
 
-/orders/{id}/cancel:
-  put:
+/orders/{orderId}/cancel:
+  patch:
     tags:
       - Orders
     summary: Cancel order
-    description: Cancels an order. Only pending orders can be cancelled.
+    description: Cancels an order. Only pending or confirmed orders can be cancelled by their owner.
     security:
       - bearerAuth: []
       - cookieAuth: []
     parameters:
       - in: path
-        name: id
+        name: orderId
         required: true
         schema:
           type: string
@@ -214,15 +245,20 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/OrderResponse'
             example:
-              success: true
-              message: "Order cancelled successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 order:
                   id: "order123"
+                  user_id: "user123"
                   status: "CANCELLED"
-                  updatedAt: "2023-10-01T12:00:00Z"
+                  total_price: 179.98
+                  created_at: "2023-10-01T10:00:00.000Z"
+                  items: [...]
+                  payment: {...}
+                message: "Order cancelled successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -235,25 +271,31 @@
           application/json:
             schema:
               $ref: '#/components/schemas/ErrorResponse'
+      '403':
+        description: Forbidden - Not the order owner
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
       '400':
-        description: Bad request - Order cannot be cancelled
+        description: Bad request - Order cannot be cancelled at this stage
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ErrorResponse'
 
-/orders/{id}/status:
-  put:
+/orders/{orderId}/status:
+  patch:
     tags:
       - Orders
     summary: Update order status (Admin/Vendor only)
-    description: Updates the status of an order. Only admins or the vendor can update order status.
+    description: Updates the status of an order. Only admins or vendors can update order status.
     security:
       - bearerAuth: []
       - cookieAuth: []
     parameters:
       - in: path
-        name: id
+        name: orderId
         required: true
         schema:
           type: string
@@ -278,15 +320,20 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/OrderResponse'
             example:
-              success: true
-              message: "Order status updated successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 order:
                   id: "order123"
+                  user_id: "user123"
                   status: "SHIPPED"
-                  updatedAt: "2023-10-01T12:00:00Z"
+                  total_price: 179.98
+                  created_at: "2023-10-01T10:00:00.000Z"
+                  items: [...]
+                  payment: {...}
+                message: "Order status updated successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -301,6 +348,12 @@
               $ref: '#/components/schemas/ErrorResponse'
       '404':
         description: Order not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '400':
+        description: Bad request - Invalid status transition
         content:
           application/json:
             schema:

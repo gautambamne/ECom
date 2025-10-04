@@ -118,7 +118,14 @@ const links = [
 
 export default function FooterSection() {
     return (
-        <footer className="border-b bg-white pt-20 dark:bg-transparent">
+        <footer className="border-b backdrop-blur-3xl bg-white/80 dark:bg-black/95 shadow-sm
+                 bg-gradient-to-r from-white/90 via-white/80 to-white/90
+                 dark:from-black/98 dark:via-black/95 dark:to-black/98
+                 before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent
+                 dark:before:via-slate-800/8 before:pointer-events-none
+                 after:absolute after:inset-0 after:bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),rgba(255,255,255,0))]
+                 dark:after:bg-[radial-gradient(circle_at_50%_120%,rgba(30,58,138,0.12),rgba(0,0,0,0))]
+                 after:pointer-events-none overflow-hidden pt-20">
             <div className="mx-auto max-w-5xl px-6">
                 <div className="grid gap-12 md:grid-cols-5">
                     <div className="md:col-span-2">

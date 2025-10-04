@@ -37,27 +37,25 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/PaymentsListResponse'
             example:
-              success: true
-              message: "Payments retrieved successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 payments:
                   - id: "payment123"
-                    orderId: "order123"
+                    order_id: "order123"
                     amount: 179.98
                     status: "SUCCESS"
-                    paymentMethod: "Credit Card"
-                    transactionId: "txn_1234567890"
-                    createdAt: "2023-10-01T10:00:00Z"
+                    method: "card"
+                    created_at: "2023-10-01T10:00:00.000Z"
                     order:
                       id: "order123"
-                      totalAmount: 179.98
-                pagination:
-                  page: 1
-                  limit: 10
-                  total: 3
-                  totalPages: 1
+                      user_id: "user123"
+                      status: "CONFIRMED"
+                      total_price: 179.98
+                      created_at: "2023-10-01T10:00:00.000Z"
+                message: "Payments retrieved successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -65,7 +63,6 @@
             schema:
               $ref: '#/components/schemas/ErrorResponse'
 
-/payments/create:
   post:
     tags:
       - Payments
@@ -80,46 +77,46 @@
         application/json:
           schema:
             type: object
-            required: [orderId, paymentMethod]
+            required: [orderId, amount, paymentMethod]
             properties:
               orderId:
                 type: string
                 description: Order ID to create payment for
                 example: "order123"
+              amount:
+                type: number
+                format: float
+                description: Payment amount
+                example: 179.98
               paymentMethod:
                 type: string
                 description: Payment method
-                example: "Credit Card"
-              paymentDetails:
-                type: object
-                description: Additional payment details
-                properties:
-                  cardNumber:
-                    type: string
-                    description: Credit card number (masked)
-                    example: "**** **** **** 1234"
-                  expiryDate:
-                    type: string
-                    description: Card expiry date
-                    example: "12/25"
+                example: "card"
     responses:
       '201':
         description: Payment created successfully
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/PaymentCreateResponse'
             example:
-              success: true
-              message: "Payment created successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 payment:
                   id: "payment123"
-                  orderId: "order123"
+                  order_id: "order123"
                   amount: 179.98
                   status: "PENDING"
-                  paymentMethod: "Credit Card"
-                  createdAt: "2023-10-01T10:00:00Z"
+                  method: "card"
+                  created_at: "2023-10-01T10:00:00.000Z"
+                  order:
+                    id: "order123"
+                    user_id: "user123"
+                    status: "PENDING"
+                    total_price: 179.98
+                    created_at: "2023-10-01T10:00:00.000Z"
+                message: "Payment created successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -139,7 +136,7 @@
             schema:
               $ref: '#/components/schemas/ErrorResponse'
 
-/payments/{id}:
+/payments/{paymentId}:
   get:
     tags:
       - Payments
@@ -150,7 +147,7 @@
       - cookieAuth: []
     parameters:
       - in: path
-        name: id
+        name: paymentId
         required: true
         schema:
           type: string
@@ -162,23 +159,25 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/PaymentResponse'
             example:
-              success: true
-              message: "Payment retrieved successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 payment:
                   id: "payment123"
-                  orderId: "order123"
+                  order_id: "order123"
                   amount: 179.98
                   status: "SUCCESS"
-                  paymentMethod: "Credit Card"
-                  transactionId: "txn_1234567890"
-                  createdAt: "2023-10-01T10:00:00Z"
+                  method: "card"
+                  created_at: "2023-10-01T10:00:00.000Z"
                   order:
                     id: "order123"
-                    totalAmount: 179.98
+                    user_id: "user123"
                     status: "CONFIRMED"
+                    total_price: 179.98
+                    created_at: "2023-10-01T10:00:00.000Z"
+                message: "Payment retrieved successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -198,56 +197,48 @@
             schema:
               $ref: '#/components/schemas/ErrorResponse'
 
-/payments/{id}/confirm:
-  put:
+/payments/{paymentId}/process:
+  post:
     tags:
       - Payments
-    summary: Confirm payment
-    description: Confirms a pending payment (typically called by payment gateway webhook)
+    summary: Process payment
+    description: Processes a pending payment (simulates payment gateway processing)
     security:
       - bearerAuth: []
       - cookieAuth: []
     parameters:
       - in: path
-        name: id
+        name: paymentId
         required: true
         schema:
           type: string
         description: Payment ID
         example: "payment123"
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required: [transactionId]
-            properties:
-              transactionId:
-                type: string
-                description: Transaction ID from payment gateway
-                example: "txn_1234567890"
-              status:
-                type: string
-                enum: [SUCCESS, FAILED]
-                description: Payment status
-                example: "SUCCESS"
     responses:
       '200':
-        description: Payment confirmed successfully
+        description: Payment processed successfully
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/PaymentResponse'
             example:
-              success: true
-              message: "Payment confirmed successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 payment:
                   id: "payment123"
+                  order_id: "order123"
+                  amount: 179.98
                   status: "SUCCESS"
-                  transactionId: "txn_1234567890"
-                  updatedAt: "2023-10-01T10:05:00Z"
+                  method: "card"
+                  created_at: "2023-10-01T10:00:00.000Z"
+                  order:
+                    id: "order123"
+                    user_id: "user123"
+                    status: "CONFIRMED"
+                    total_price: 179.98
+                    created_at: "2023-10-01T10:00:00.000Z"
+                message: "Payment processed successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -261,62 +252,67 @@
             schema:
               $ref: '#/components/schemas/ErrorResponse'
       '400':
-        description: Bad request - Payment cannot be confirmed
+        description: Bad request - Payment cannot be processed
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ErrorResponse'
 
-/payments/{id}/refund:
-  put:
+/payments/{paymentId}/status:
+  patch:
     tags:
       - Payments
-    summary: Refund payment (Admin only)
-    description: Processes a refund for a successful payment. Only admins can process refunds.
+    summary: Update payment status (Admin only)
+    description: Updates the status of a payment. Only admins can update payment status.
     security:
       - bearerAuth: []
       - cookieAuth: []
     parameters:
       - in: path
-        name: id
+        name: paymentId
         required: true
         schema:
           type: string
         description: Payment ID
         example: "payment123"
     requestBody:
-      required: false
+      required: true
       content:
         application/json:
           schema:
             type: object
+            required: [status]
             properties:
-              reason:
+              status:
                 type: string
-                description: Reason for refund
-                example: "Customer requested cancellation"
-              amount:
-                type: number
-                format: decimal
-                description: Refund amount (defaults to full payment amount)
-                example: 89.99
+                enum: [PENDING, SUCCESS, FAILED]
+                description: New payment status
+                example: "SUCCESS"
     responses:
       '200':
-        description: Payment refunded successfully
+        description: Payment status updated successfully
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/PaymentResponse'
             example:
-              success: true
-              message: "Payment refunded successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 payment:
                   id: "payment123"
-                  status: "REFUNDED"
-                  refundAmount: 179.98
-                  refundReason: "Customer requested cancellation"
-                  updatedAt: "2023-10-01T14:00:00Z"
+                  order_id: "order123"
+                  amount: 179.98
+                  status: "SUCCESS"
+                  method: "card"
+                  created_at: "2023-10-01T10:00:00.000Z"
+                  order:
+                    id: "order123"
+                    user_id: "user123"
+                    status: "CONFIRMED"
+                    total_price: 179.98
+                    created_at: "2023-10-01T10:00:00.000Z"
+                message: "Payment status updated successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -325,6 +321,73 @@
               $ref: '#/components/schemas/ErrorResponse'
       '403':
         description: Forbidden - Not an admin
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Payment not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '400':
+        description: Bad request - Invalid status transition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/payments/{paymentId}/refund:
+  post:
+    tags:
+      - Payments
+    summary: Refund payment
+    description: Processes a refund for a successful payment
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: path
+        name: paymentId
+        required: true
+        schema:
+          type: string
+        description: Payment ID
+        example: "payment123"
+    responses:
+      '200':
+        description: Payment refunded successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentResponse'
+            example:
+              local_date_time: "2025-10-04T10:00:00.000Z"
+              data:
+                payment:
+                  id: "payment123"
+                  order_id: "order123"
+                  amount: 179.98
+                  status: "REFUNDED"
+                  method: "card"
+                  created_at: "2023-10-01T10:00:00.000Z"
+                  order:
+                    id: "order123"
+                    user_id: "user123"
+                    status: "CANCELLED"
+                    total_price: 179.98
+                    created_at: "2023-10-01T10:00:00.000Z"
+                message: "Payment refunded successfully"
+              api_error: null
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '403':
+        description: Forbidden - Not the payment owner
         content:
           application/json:
             schema:

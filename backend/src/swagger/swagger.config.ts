@@ -231,6 +231,255 @@ const swaggerDefinition = {
         },
       },
 
+      // Product schema
+      Product: {
+        type: 'object',
+        required: ['id', 'name', 'price', 'stock', 'created_at', 'updated_at'],
+        properties: {
+          id: {
+            type: 'string',
+            description: 'Unique product identifier',
+            example: 'prod123',
+          },
+          name: {
+            type: 'string',
+            description: 'Product name',
+            example: 'Nike Air Force 1',
+          },
+          description: {
+            type: 'string',
+            description: 'Product description',
+            example: 'Classic basketball sneakers',
+          },
+          brand: {
+            type: 'string',
+            description: 'Product brand',
+            example: 'Nike',
+          },
+          images: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description: 'Product image URLs',
+            example: ['https://example.com/image1.jpg'],
+          },
+          price: {
+            type: 'number',
+            format: 'float',
+            description: 'Product price',
+            example: 89.99,
+          },
+          stock: {
+            type: 'integer',
+            description: 'Available stock quantity',
+            example: 50,
+          },
+          categories: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/Category',
+            },
+            description: 'Product categories',
+          },
+          variants: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/ProductVariant',
+            },
+            description: 'Product variants (size, color, stock)',
+          },
+          vendor: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'string',
+                description: 'Vendor ID',
+                example: 'vendor123',
+              },
+              name: {
+                type: 'string',
+                description: 'Vendor name',
+                example: 'Nike Store',
+              },
+              email: {
+                type: 'string',
+                format: 'email',
+                description: 'Vendor email',
+                example: 'vendor@nike.com',
+              },
+            },
+            description: 'Product vendor information',
+          },
+          created_at: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Product creation timestamp',
+            example: '2024-01-15T10:30:00Z',
+          },
+          updated_at: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Last update timestamp',
+            example: '2024-01-15T10:30:00Z',
+          },
+        },
+      },
+
+      // ProductVariant schema
+      ProductVariant: {
+        type: 'object',
+        required: ['size', 'color', 'stock'],
+        properties: {
+          id: {
+            type: 'string',
+            description: 'Variant ID',
+            example: 'variant123',
+          },
+          size: {
+            type: 'string',
+            description: 'Product size',
+            example: 'UK9',
+            enum: ['UK6', 'UK7', 'UK8', 'UK9', 'UK10', 'UK11'],
+          },
+          color: {
+            type: 'string',
+            description: 'Product color',
+            example: 'WHITE',
+            enum: ['RED', 'BLACK', 'WHITE', 'BLUE', 'GREEN', 'YELLOW', 'GREY'],
+          },
+          stock: {
+            type: 'integer',
+            description: 'Stock for this variant',
+            example: 10,
+          },
+          product_id: {
+            type: 'string',
+            description: 'Parent product ID',
+            example: 'prod123',
+          },
+        },
+      },
+
+      // OrderItem schema
+      OrderItem: {
+        type: 'object',
+        required: ['id', 'quantity', 'price', 'order_id', 'product_id'],
+        properties: {
+          id: {
+            type: 'string',
+            description: 'Unique order item identifier',
+            example: 'orderItem123',
+          },
+          quantity: {
+            type: 'integer',
+            description: 'Quantity ordered',
+            example: 2,
+          },
+          price: {
+            type: 'number',
+            format: 'float',
+            description: 'Price per unit at time of order',
+            example: 89.99,
+          },
+          order_id: {
+            type: 'string',
+            description: 'Order ID',
+            example: 'order123',
+          },
+          product_id: {
+            type: 'string',
+            description: 'Product ID',
+            example: 'prod123',
+          },
+          product: {
+            $ref: '#/components/schemas/Product',
+          },
+        },
+      },
+
+      // Payment schema
+      Payment: {
+        type: 'object',
+        required: ['id', 'amount', 'status', 'method', 'created_at'],
+        properties: {
+          id: {
+            type: 'string',
+            description: 'Unique payment identifier',
+            example: 'payment123',
+          },
+          amount: {
+            type: 'number',
+            format: 'float',
+            description: 'Payment amount',
+            example: 179.98,
+          },
+          status: {
+            type: 'string',
+            enum: ['PENDING', 'SUCCESS', 'FAILED'],
+            description: 'Payment status',
+            example: 'COMPLETED',
+          },
+          method: {
+            type: 'string',
+            description: 'Payment method',
+            example: 'card',
+          },
+          created_at: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Payment creation timestamp',
+            example: '2024-01-15T10:30:00Z',
+          },
+        },
+      },
+
+      // Order schema
+      Order: {
+        type: 'object',
+        required: ['id', 'status', 'total_price', 'created_at', 'user_id'],
+        properties: {
+          id: {
+            type: 'string',
+            description: 'Unique order identifier',
+            example: 'order123',
+          },
+          status: {
+            type: 'string',
+            enum: ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'],
+            description: 'Order status',
+            example: 'CONFIRMED',
+          },
+          total_price: {
+            type: 'number',
+            format: 'float',
+            description: 'Total order amount',
+            example: 179.98,
+          },
+          created_at: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Order creation timestamp',
+            example: '2023-10-01T10:00:00.000Z',
+          },
+          user_id: {
+            type: 'string',
+            description: 'User ID who placed the order',
+            example: 'user123',
+          },
+          items: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/OrderItem',
+            },
+            description: 'Order items',
+          },
+          payment: {
+            $ref: '#/components/schemas/Payment',
+          },
+        },
+      },
+
       // Response schemas - Updated to match actual ApiResponse format
       AuthSuccessResponse: {
         type: 'object',
@@ -522,6 +771,560 @@ const swaggerDefinition = {
             type: 'string',
             description: 'User ID associated with the session',
             example: 'user-uuid-123',
+          },
+        },
+      },
+
+      // Order Response schemas
+      OrderResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['order', 'message'],
+            properties: {
+              order: {
+                $ref: '#/components/schemas/Order',
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Order retrieved successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      OrdersListResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['orders', 'message'],
+            properties: {
+              orders: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/Order',
+                },
+                description: 'List of orders',
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Orders retrieved successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      OrderCreateResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['order', 'message'],
+            properties: {
+              order: {
+                $ref: '#/components/schemas/Order',
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Order created successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      // Product Response schemas
+      ProductResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['product'],
+            properties: {
+              product: {
+                $ref: '#/components/schemas/Product',
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Product retrieved successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      ProductsListResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['products', 'pagination'],
+            properties: {
+              products: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/Product',
+                },
+                description: 'List of products',
+              },
+              pagination: {
+                type: 'object',
+                required: ['page', 'limit', 'total', 'totalPages'],
+                properties: {
+                  page: {
+                    type: 'integer',
+                    description: 'Current page number',
+                    example: 1,
+                  },
+                  limit: {
+                    type: 'integer',
+                    description: 'Items per page',
+                    example: 10,
+                  },
+                  total: {
+                    type: 'integer',
+                    description: 'Total number of items',
+                    example: 100,
+                  },
+                  totalPages: {
+                    type: 'integer',
+                    description: 'Total number of pages',
+                    example: 10,
+                  },
+                },
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Products retrieved successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      ProductCreateResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['product', 'message'],
+            properties: {
+              product: {
+                $ref: '#/components/schemas/Product',
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Product created successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      // Wishlist schemas
+      Wishlist: {
+        type: 'object',
+        required: ['id', 'user_id', 'items', 'created_at', 'updated_at'],
+        properties: {
+          id: {
+            type: 'string',
+            description: 'Unique wishlist identifier',
+            example: 'wishlist123',
+          },
+          user_id: {
+            type: 'string',
+            description: 'User ID associated with the wishlist',
+            example: 'user123',
+          },
+          items: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/WishlistItem',
+            },
+            description: 'Wishlist items',
+          },
+          created_at: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Wishlist creation timestamp',
+            example: '2024-01-15T10:30:00Z',
+          },
+          updated_at: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Last update timestamp',
+            example: '2024-01-15T10:30:00Z',
+          },
+        },
+      },
+
+      WishlistItem: {
+        type: 'object',
+        required: ['id', 'wishlist_id', 'product_id', 'product', 'created_at'],
+        properties: {
+          id: {
+            type: 'string',
+            description: 'Unique wishlist item identifier',
+            example: 'wishlistItem123',
+          },
+          wishlist_id: {
+            type: 'string',
+            description: 'Wishlist ID',
+            example: 'wishlist123',
+          },
+          product_id: {
+            type: 'string',
+            description: 'Product ID',
+            example: 'prod123',
+          },
+          product: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'string',
+                description: 'Product ID',
+                example: 'prod123',
+              },
+              name: {
+                type: 'string',
+                description: 'Product name',
+                example: 'Nike Air Force 1',
+              },
+              price: {
+                type: 'number',
+                format: 'float',
+                description: 'Product price',
+                example: 89.99,
+              },
+              images: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+                description: 'Product images',
+                example: ['https://example.com/image1.jpg'],
+              },
+              brand: {
+                type: 'string',
+                description: 'Product brand',
+                example: 'Nike',
+              },
+              stock: {
+                type: 'integer',
+                description: 'Available stock',
+                example: 50,
+              },
+            },
+            description: 'Product information',
+          },
+          created_at: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Item added timestamp',
+            example: '2024-01-15T10:30:00Z',
+          },
+        },
+      },
+
+      // Wishlist Response schemas
+      WishlistResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['wishlist', 'message'],
+            properties: {
+              wishlist: {
+                $ref: '#/components/schemas/Wishlist',
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Wishlist retrieved successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      WishlistItemResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['wishlistItem', 'message'],
+            properties: {
+              wishlistItem: {
+                $ref: '#/components/schemas/WishlistItem',
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Product added to wishlist successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      WishlistStatusResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['isInWishlist', 'message'],
+            properties: {
+              isInWishlist: {
+                type: 'boolean',
+                description: 'Whether the product is in the wishlist',
+                example: true,
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Wishlist status checked successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      WishlistCountResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['count', 'message'],
+            properties: {
+              count: {
+                type: 'integer',
+                description: 'Number of items in wishlist',
+                example: 5,
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Wishlist item count retrieved successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      // Payment Response schemas
+      PaymentResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['payment', 'message'],
+            properties: {
+              payment: {
+                $ref: '#/components/schemas/Payment',
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Payment retrieved successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      PaymentsListResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['payments', 'message'],
+            properties: {
+              payments: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/Payment',
+                },
+                description: 'List of payments',
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Payments retrieved successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      PaymentCreateResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['payment', 'message'],
+            properties: {
+              payment: {
+                $ref: '#/components/schemas/Payment',
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Payment created successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
           },
         },
       },

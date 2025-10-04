@@ -67,6 +67,7 @@
             schema:
               $ref: '#/components/schemas/AuthErrorResponse'
 
+/session/all-except-current:
   delete:
     tags:
       - Session

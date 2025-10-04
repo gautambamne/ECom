@@ -29,13 +29,13 @@
           type: number
         description: Maximum price filter
       - in: query
-        name: shoeSize
+        name: size
         schema:
           type: string
           enum: [UK6, UK7, UK8, UK9, UK10, UK11]
         description: Filter by shoe size
       - in: query
-        name: shoeColor
+        name: color
         schema:
           type: string
           enum: [RED, BLACK, WHITE, BLUE, GREEN, YELLOW, GREY]
@@ -55,48 +55,45 @@
           maximum: 100
           default: 10
         description: Number of products per page
-      - in: query
-        name: sortBy
-        schema:
-          type: string
-          enum: [price, name, createdAt]
-          default: createdAt
-        description: Sort field
-      - in: query
-        name: sortOrder
-        schema:
-          type: string
-          enum: [asc, desc]
-          default: desc
-        description: Sort order
     responses:
       '200':
         description: Products retrieved successfully
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/ProductsListResponse'
             example:
-              success: true
-              message: "Products retrieved successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 products:
                   - id: "cm1234567890"
                     name: "Nike Air Force 1"
                     description: "Classic white sneakers"
+                    brand: "Nike"
                     price: 89.99
                     stock: 50
                     images: ["https://example.com/image1.jpg"]
-                    categoryId: "cat123"
-                    vendorId: "vendor123"
-                    shoeSize: "UK9"
-                    shoeColor: "WHITE"
-                    createdAt: "2023-10-01T10:00:00Z"
+                    categories: []
+                    variants:
+                      - size: "UK9"
+                        color: "WHITE"
+                        stock: 25
+                      - size: "UK10"
+                        color: "WHITE"
+                        stock: 25
+                    vendor:
+                      id: "vendor123"
+                      name: "Nike Store"
+                      email: "vendor@nike.com"
+                    created_at: "2023-10-01T10:00:00.000Z"
+                    updated_at: "2023-10-01T10:00:00.000Z"
                 pagination:
                   page: 1
                   limit: 10
                   total: 100
                   totalPages: 10
+                message: "Products retrieved successfully"
+              api_error: null
       '500':
         description: Internal server error
         content:
@@ -131,23 +128,34 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/ProductCreateResponse'
             example:
-              success: true
-              message: "Product created successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 product:
                   id: "cm1234567890"
                   name: "Nike Air Force 1"
                   description: "Classic white sneakers"
+                  brand: "Nike"
                   price: 89.99
                   stock: 50
                   images: ["https://example.com/image1.jpg"]
-                  categoryId: "cat123"
-                  vendorId: "vendor123"
-                  shoeSize: "UK9"
-                  shoeColor: "WHITE"
-                  createdAt: "2023-10-01T10:00:00Z"
+                  categories: []
+                  variants:
+                    - size: "UK9"
+                      color: "WHITE"
+                      stock: 25
+                    - size: "UK10"
+                      color: "WHITE"
+                      stock: 25
+                  vendor:
+                    id: "vendor123"
+                    name: "Nike Store"
+                    email: "vendor@nike.com"
+                  created_at: "2023-10-01T10:00:00.000Z"
+                  updated_at: "2023-10-01T10:00:00.000Z"
+                message: "Product created successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -187,23 +195,33 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/ProductResponse'
             example:
-              success: true
-              message: "Product retrieved successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 product:
                   id: "cm1234567890"
                   name: "Nike Air Force 1"
                   description: "Classic white sneakers"
+                  brand: "Nike"
                   price: 89.99
                   stock: 50
                   images: ["https://example.com/image1.jpg"]
-                  categoryId: "cat123"
-                  vendorId: "vendor123"
-                  shoeSize: "UK9"
-                  shoeColor: "WHITE"
-                  createdAt: "2023-10-01T10:00:00Z"
+                  categories: []
+                  variants:
+                    - size: "UK9"
+                      color: "WHITE"
+                      stock: 25
+                    - size: "UK10"
+                      color: "WHITE"
+                      stock: 25
+                  vendor:
+                    id: "vendor123"
+                    name: "Nike Store"
+                    email: "vendor@nike.com"
+                  created_at: "2023-10-01T10:00:00.000Z"
+                  updated_at: "2023-10-01T10:00:00.000Z"
+              api_error: null
       '404':
         description: Product not found
         content:
@@ -246,7 +264,34 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/ProductResponse'
+            example:
+              local_date_time: "2025-10-04T10:00:00.000Z"
+              data:
+                product:
+                  id: "cm1234567890"
+                  name: "Nike Air Force 1"
+                  description: "Classic white sneakers"
+                  brand: "Nike"
+                  price: 89.99
+                  stock: 50
+                  images: ["https://example.com/image1.jpg"]
+                  categories: []
+                  variants:
+                    - size: "UK9"
+                      color: "WHITE"
+                      stock: 25
+                    - size: "UK10"
+                      color: "WHITE"
+                      stock: 25
+                  vendor:
+                    id: "vendor123"
+                    name: "Nike Store"
+                    email: "vendor@nike.com"
+                  created_at: "2023-10-01T10:00:00.000Z"
+                  updated_at: "2023-10-01T10:00:00.000Z"
+                message: "Product updated successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -288,11 +333,12 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/BasicSuccessResponse'
             example:
-              success: true
-              message: "Product deleted successfully"
-              data: null
+              local_date_time: "2025-10-04T10:00:00.000Z"
+              data:
+                message: "Product deleted successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -347,25 +393,39 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/ProductsListResponse'
             example:
-              success: true
-              message: "Products retrieved successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 products:
                   - id: "cm1234567890"
                     name: "Nike Air Force 1"
                     description: "Classic white sneakers"
+                    brand: "Nike"
                     price: 89.99
                     stock: 50
                     images: ["https://example.com/image1.jpg"]
-                    categoryId: "cat123"
-                    vendorId: "vendor123"
+                    categories: []
+                    variants:
+                      - size: "UK9"
+                        color: "WHITE"
+                        stock: 25
+                      - size: "UK10"
+                        color: "WHITE"
+                        stock: 25
+                    vendor:
+                      id: "vendor123"
+                      name: "Nike Store"
+                      email: "vendor@nike.com"
+                    created_at: "2023-10-01T10:00:00.000Z"
+                    updated_at: "2023-10-01T10:00:00.000Z"
                 pagination:
                   page: 1
                   limit: 10
                   total: 25
                   totalPages: 3
+                message: "Products retrieved successfully"
+              api_error: null
       '404':
         description: Category not found
         content:
@@ -404,25 +464,39 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/ProductsListResponse'
             example:
-              success: true
-              message: "Products retrieved successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 products:
                   - id: "cm1234567890"
                     name: "Nike Air Force 1"
                     description: "Classic white sneakers"
+                    brand: "Nike"
                     price: 89.99
                     stock: 50
                     images: ["https://example.com/image1.jpg"]
-                    categoryId: "cat123"
-                    vendorId: "vendor123"
+                    categories: []
+                    variants:
+                      - size: "UK9"
+                        color: "WHITE"
+                        stock: 25
+                      - size: "UK10"
+                        color: "WHITE"
+                        stock: 25
+                    vendor:
+                      id: "vendor123"
+                      name: "Nike Store"
+                      email: "vendor@nike.com"
+                    created_at: "2023-10-01T10:00:00.000Z"
+                    updated_at: "2023-10-01T10:00:00.000Z"
                 pagination:
                   page: 1
                   limit: 10
                   total: 15
                   totalPages: 2
+                message: "Products retrieved successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -431,6 +505,66 @@
               $ref: '#/components/schemas/ErrorResponse'
       '403':
         description: Forbidden - Not a vendor
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/products/vendor/{vendorId}:
+  get:
+    tags:
+      - Products
+    summary: Get products by vendor (public)
+    description: Retrieves all products from a specific vendor (public access)
+    parameters:
+      - in: path
+        name: vendorId
+        required: true
+        schema:
+          type: string
+        description: Vendor ID to get products for
+        example: "vendor123"
+    responses:
+      '200':
+        description: Vendor products retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductsListResponse'
+            example:
+              local_date_time: "2025-10-04T10:00:00.000Z"
+              data:
+                products:
+                  - id: "cm1234567890"
+                    name: "Nike Air Force 1"
+                    description: "Classic white sneakers"
+                    brand: "Nike"
+                    price: 89.99
+                    stock: 50
+                    images: ["https://example.com/image1.jpg"]
+                    categories: []
+                    variants:
+                      - size: "UK9"
+                        color: "WHITE"
+                        stock: 25
+                      - size: "UK10"
+                        color: "WHITE"
+                        stock: 25
+                    vendor:
+                      id: "vendor123"
+                      name: "Nike Store"
+                      email: "vendor@nike.com"
+                    created_at: "2023-10-01T10:00:00.000Z"
+                    updated_at: "2023-10-01T10:00:00.000Z"
+                pagination:
+                  page: 1
+                  limit: 10
+                  total: 50
+                  totalPages: 5
+                message: "Vendor products retrieved successfully"
+              api_error: null
+      '404':
+        description: Vendor not found
         content:
           application/json:
             schema:

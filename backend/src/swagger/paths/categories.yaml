@@ -5,7 +5,31 @@
     tags:
       - Categories
     summary: Get all categories
-    description: Retrieves a list of all product categories
+    description: Retrieves a paginated list of all product categories
+    parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: Page number
+        example: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+        description: Number of items per page
+        example: 10
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search term to filter categories by name
+        example: "sneakers"
     responses:
       '200':
         description: Categories retrieved successfully
@@ -14,20 +38,21 @@
             schema:
               $ref: '#/components/schemas/ApiResponse'
             example:
-              success: true
-              message: "Categories retrieved successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 categories:
                   - id: "cat123"
                     name: "Sneakers"
-                    description: "Athletic footwear"
-                    createdAt: "2023-10-01T10:00:00Z"
                   - id: "cat124"
                     name: "Boots"
-                    description: "Sturdy footwear"
-                    createdAt: "2023-10-01T10:00:00Z"
-      '500':
-        description: Internal server error
+                pagination:
+                  page: 1
+                  limit: 10
+                  total: 2
+                  pages: 1
+              api_error: null
+      '400':
+        description: Bad request - Invalid query parameters
         content:
           application/json:
             schema:
@@ -53,10 +78,6 @@
                 type: string
                 description: Category name
                 example: "Running Shoes"
-              description:
-                type: string
-                description: Category description
-                example: "Shoes designed for running and jogging"
     responses:
       '201':
         description: Category created successfully
@@ -65,14 +86,13 @@
             schema:
               $ref: '#/components/schemas/ApiResponse'
             example:
-              success: true
-              message: "Category created successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 category:
                   id: "cat125"
                   name: "Running Shoes"
-                  description: "Shoes designed for running and jogging"
-                  createdAt: "2023-10-01T10:00:00Z"
+                message: "Category created successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -86,7 +106,7 @@
             schema:
               $ref: '#/components/schemas/ErrorResponse'
       '400':
-        description: Bad request - Invalid input
+        description: Bad request - Invalid input or category name already exists
         content:
           application/json:
             schema:
@@ -114,14 +134,18 @@
             schema:
               $ref: '#/components/schemas/ApiResponse'
             example:
-              success: true
-              message: "Category retrieved successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 category:
                   id: "cat123"
                   name: "Sneakers"
-                  description: "Athletic footwear"
-                  createdAt: "2023-10-01T10:00:00Z"
+              api_error: null
+      '400':
+        description: Bad request - Invalid category ID
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
       '404':
         description: Category not found
         content:
@@ -129,7 +153,7 @@
             schema:
               $ref: '#/components/schemas/ErrorResponse'
 
-  put:
+  patch:
     tags:
       - Categories
     summary: Update category (Admin only)
@@ -156,10 +180,6 @@
                 type: string
                 description: Category name
                 example: "Athletic Sneakers"
-              description:
-                type: string
-                description: Category description
-                example: "High-performance athletic footwear"
     responses:
       '200':
         description: Category updated successfully
@@ -168,14 +188,13 @@
             schema:
               $ref: '#/components/schemas/ApiResponse'
             example:
-              success: true
-              message: "Category updated successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 category:
                   id: "cat123"
                   name: "Athletic Sneakers"
-                  description: "High-performance athletic footwear"
-                  updatedAt: "2023-10-01T12:00:00Z"
+                message: "Category updated successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -184,6 +203,12 @@
               $ref: '#/components/schemas/ErrorResponse'
       '403':
         description: Forbidden - Not an admin
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '400':
+        description: Bad request - Invalid input or category name already exists
         content:
           application/json:
             schema:
@@ -199,7 +224,7 @@
     tags:
       - Categories
     summary: Delete category (Admin only)
-    description: Deletes a category. Only admins can delete categories.
+    description: Deletes a category. Only admins can delete categories. Cannot delete categories that have associated products.
     security:
       - bearerAuth: []
       - cookieAuth: []
@@ -219,9 +244,10 @@
             schema:
               $ref: '#/components/schemas/ApiResponse'
             example:
-              success: true
-              message: "Category deleted successfully"
-              data: null
+              local_date_time: "2025-10-04T10:00:00.000Z"
+              data:
+                message: "Category deleted successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -230,6 +256,12 @@
               $ref: '#/components/schemas/ErrorResponse'
       '403':
         description: Forbidden - Not an admin
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '400':
+        description: Bad request - Category has associated products
         content:
           application/json:
             schema:
