@@ -12,7 +12,7 @@ export default function Home() {
             <main className="overflow-x-hidden">
                 <section>
                     <div className="pb-24 pt-12 md:pb-32 lg:pb-56 lg:pt-44">
-                        <div className="relative mx-auto flex max-w-6xl flex-col px-6 lg:block">
+                        <div className="relative mx-auto flex flex-col px-12 lg:block">
                             <div className="mx-auto max-w-lg text-center lg:ml-0 lg:w-1/2 lg:text-left">
                                 <h1 className="mt-8 max-w-2xl text-balance text-5xl font-medium md:text-6xl lg:mt-16 xl:text-7xl">Ship 10x Faster with NS</h1>
                                 <p className="mt-8 max-w-2xl text-pretty text-lg">Highly customizable components for building modern websites and applications that look and feel the way you mean it.</p>
@@ -50,10 +50,10 @@ export default function Home() {
                     </div>
                 </section>
                 <section className="bg-background pb-16 md:pb-32">
-                    <div className="group relative m-auto max-w-6xl px-6">
+                    <div className="group relative m-auto px-12">
                         <div className="flex flex-col items-center md:flex-row">
                             <div className="md:max-w-44 md:border-r md:pr-6">
-                                <p className="text-end text-sm">Powering the best teams</p>
+                                <p className="text-end text-sm font-bold">Powering the best teams</p>
                             </div>
                             <div className="relative py-6 md:w-[calc(100%-11rem)]">
                                 <InfiniteSlider
@@ -62,75 +62,66 @@ export default function Home() {
                                     gap={112}>
                                     <div className="flex">
                                         <img
-                                            className="mx-auto h-5 w-fit dark:invert"
-                                            src="https://html.tailus.io/blocks/customers/nvidia.svg"
-                                            alt="Nvidia Logo"
-                                            height="20"
+                                            className="mx-auto h-8 w-fit dark:invert"
+                                            src="/Adidas.svg"
+                                            alt="Adidas Logo"
+                                            height="100"
                                             width="auto"
                                         />
                                     </div>
 
                                     <div className="flex">
                                         <img
-                                            className="mx-auto h-4 w-fit dark:invert"
-                                            src="https://html.tailus.io/blocks/customers/column.svg"
-                                            alt="Column Logo"
-                                            height="16"
+                                            className="mx-auto h-8 w-fit"
+                                            src="/Bata.svg"
+                                            alt="Bata Logo"
+                                            height="32"
                                             width="auto"
                                         />
                                     </div>
                                     <div className="flex">
                                         <img
-                                            className="mx-auto h-4 w-fit dark:invert"
-                                            src="https://html.tailus.io/blocks/customers/github.svg"
-                                            alt="GitHub Logo"
-                                            height="16"
+                                            className="mx-auto h-8 w-fit dark:invert"
+                                            src="/Puma.svg"
+                                            alt="Puma Logo"
+                                            height="100"
                                             width="auto"
                                         />
                                     </div>
                                     <div className="flex">
                                         <img
-                                            className="mx-auto h-5 w-fit dark:invert"
+                                            className="mx-auto h-8 w-fit dark:invert"
                                             src="https://html.tailus.io/blocks/customers/nike.svg"
                                             alt="Nike Logo"
-                                            height="20"
+                                            height="32"
                                             width="auto"
                                         />
                                     </div>
                                     <div className="flex">
                                         <img
-                                            className="mx-auto h-5 w-fit dark:invert"
-                                            src="https://html.tailus.io/blocks/customers/lemonsqueezy.svg"
-                                            alt="Lemon Squeezy Logo"
-                                            height="20"
+                                            className="mx-auto h-8 w-fit dark:invert"
+                                            src="/Reebok.svg"
+                                            alt="Reebok Logo"
+                                            height="32"
                                             width="auto"
                                         />
                                     </div>
                                     <div className="flex">
                                         <img
-                                            className="mx-auto h-4 w-fit dark:invert"
-                                            src="https://html.tailus.io/blocks/customers/laravel.svg"
-                                            alt="Laravel Logo"
-                                            height="16"
-                                            width="auto"
-                                        />
-                                    </div>
-                                    <div className="flex">
-                                        <img
-                                            className="mx-auto h-7 w-fit dark:invert"
-                                            src="https://html.tailus.io/blocks/customers/lilly.svg"
-                                            alt="Lilly Logo"
-                                            height="28"
+                                            className="mx-auto h-8 w-fit"
+                                            src="/khadim.svg"
+                                            alt="Khadim Logo"
+                                            height="32"
                                             width="auto"
                                         />
                                     </div>
 
                                     <div className="flex">
                                         <img
-                                            className="mx-auto h-6 w-fit dark:invert"
+                                            className="mx-auto h-8 w-fit dark:invert"
                                             src="https://html.tailus.io/blocks/customers/openai.svg"
                                             alt="OpenAI Logo"
-                                            height="24"
+                                            height="32"
                                             width="auto"
                                         />
                                     </div>

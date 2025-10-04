@@ -48,7 +48,7 @@ export function Navbar({ menuState, setMenuState }: { menuState: boolean, setMen
                  after:absolute after:inset-0 after:bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),rgba(255,255,255,0))]
                  dark:after:bg-[radial-gradient(circle_at_50%_120%,rgba(30,58,138,0.12),rgba(0,0,0,0))]
                  after:pointer-events-none overflow-hidden">
-      <div className="mx-auto max-w-6xl px-6 transition-all duration-300">
+      <div className="mx-auto px-12 transition-all duration-300">
         <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
           <div className="flex w-full items-center justify-between gap-12 lg:w-auto">
             <Link

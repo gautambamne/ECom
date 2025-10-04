@@ -126,7 +126,7 @@ export default function FooterSection() {
                  after:absolute after:inset-0 after:bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),rgba(255,255,255,0))]
                  dark:after:bg-[radial-gradient(circle_at_50%_120%,rgba(30,58,138,0.12),rgba(0,0,0,0))]
                  after:pointer-events-none overflow-hidden pt-20">
-            <div className="mx-auto max-w-5xl px-6">
+            <div className="mx-auto px-12">
                 <div className="grid gap-12 md:grid-cols-5">
                     <div className="md:col-span-2">
                         <Link
