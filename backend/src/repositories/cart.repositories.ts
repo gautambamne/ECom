@@ -151,6 +151,31 @@ export const CartRepository = {
         }
     },
 
+    // Get single cart item
+    getCartItem: async (userId: string, itemId: string): Promise<CartItem> => {
+        const item = await prisma.cartItem.findFirst({
+            where: {
+                id: itemId,
+                cart: { user_id: userId }
+            },
+            include: {
+                product: {
+                    include: {
+                        vendor: true,
+                        variants: true,
+                        categories: true
+                    }
+                }
+            }
+        });
+
+        if (!item) {
+            throw new Error("Cart item not found");
+        }
+
+        return item;
+    },
+
     // Update cart item quantity
     updateCartItem: async (userId: string, itemId: string, quantity: number): Promise<CartItem> => {
         // Verify the item belongs to user's cart

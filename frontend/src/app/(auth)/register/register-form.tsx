@@ -10,9 +10,11 @@ import { toast } from 'sonner';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function RegisterForm() {
     const {setLogout} = useAuthStore();
+    const router = useRouter();
     const form = useForm<IRegistrationSchema>({
         resolver: zodResolver(RegistrationSchema),
         defaultValues: {
@@ -29,8 +31,9 @@ export default function RegisterForm() {
         mutationFn: AuthActions.RegisterAction,
         onSuccess: (data) => {
             toast.success(data.message)
-            // Optionally redirect to verification page or login
-            // You might want to redirect to a verification page here
+            // Redirect to verification page with email
+            const email = form.getValues('email');
+            router.push(`/register?mode=verify&email=${encodeURIComponent(email)}`);
         },
         onError: (error: ApiError) => {
             setLogout()

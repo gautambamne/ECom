@@ -61,6 +61,19 @@ export const CartService = {
         }
     },
 
+    // Get single cart item
+    async getCartItem(userId: string, itemId: string) {
+        try {
+            const cartItem = await CartRepository.getCartItem(userId, itemId);
+            return cartItem;
+        } catch (error: any) {
+            if (error.message === "Cart item not found") {
+                throw new ApiError(404, error.message);
+            }
+            throw new ApiError(500, "Failed to get cart item");
+        }
+    },
+
     // Remove item from cart
     async removeFromCart(userId: string, itemId: string) {
         try {

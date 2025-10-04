@@ -7,8 +7,8 @@ export const AuthActions = {
         return response.data.data
     },
 
-    VerifyAction: async (data: IVerifySchema): Promise<IVerifyResponse>=>{
-        const response = await axiosInstance.post<ApiResponse<IVerifyResponse>>("/auth/verify", data)
+    VerifyAction: async (data: IVerifySchema): Promise<IUniversalMessageResponse>=>{
+        const response = await axiosInstance.post<ApiResponse<IUniversalMessageResponse>>("/auth/verify", data)
         return response.data.data
     },
 

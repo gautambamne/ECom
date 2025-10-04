@@ -162,7 +162,12 @@ export const VerifyUser = asyncHandler(async (req, res) => {
       verification_code: null,
       verification_code_expiry: null,
   })
-  await handleAuthSuccess(userToBeReturned, "User Verify Successfully" ,req, res);
+  
+  res.status(200).json(
+    new ApiResponse({
+      message: "Email verified successfully"
+    })
+  );
 
 });
 

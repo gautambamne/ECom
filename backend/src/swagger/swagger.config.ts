@@ -481,6 +481,50 @@ const swaggerDefinition = {
           },
         },
       },
+
+      Session: {
+        type: 'object',
+        required: ['id', 'token', 'ip_address', 'user_agent', 'expire_at', 'created_at', 'user_id'],
+        properties: {
+          id: {
+            type: 'string',
+            description: 'Unique session identifier',
+            example: 'session-uuid-123',
+          },
+          token: {
+            type: 'string',
+            description: 'Refresh token hash',
+            example: 'hashed_refresh_token_value',
+          },
+          ip_address: {
+            type: 'string',
+            description: 'IP address of the session',
+            example: '192.168.1.100',
+          },
+          user_agent: {
+            type: 'string',
+            description: 'User agent string',
+            example: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          },
+          expire_at: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Session expiration timestamp',
+            example: '2025-10-10T10:00:00.000Z',
+          },
+          created_at: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Session creation timestamp',
+            example: '2025-10-03T10:00:00.000Z',
+          },
+          user_id: {
+            type: 'string',
+            description: 'User ID associated with the session',
+            example: 'user-uuid-123',
+          },
+        },
+      },
     },
   },
   security: [

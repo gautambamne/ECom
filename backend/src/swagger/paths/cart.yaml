@@ -17,22 +17,25 @@
             schema:
               $ref: '#/components/schemas/ApiResponse'
             example:
-              success: true
-              message: "Cart retrieved successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 cart:
                   id: "cart123"
-                  userId: "user123"
+                  user_id: "user123"
                   items:
                     - id: "item123"
-                      productId: "prod123"
                       quantity: 2
+                      product_id: "prod123"
+                      cart_id: "cart123"
                       product:
                         id: "prod123"
                         name: "Nike Air Force 1"
                         price: 89.99
                         images: ["https://example.com/image1.jpg"]
-                  totalAmount: 179.98
+                        brand: "Nike"
+                        stock: 50
+                message: "Cart retrieved successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -46,7 +49,34 @@
             schema:
               $ref: '#/components/schemas/ErrorResponse'
 
-/cart/add:
+  delete:
+    tags:
+      - Cart
+    summary: Clear cart
+    description: Removes all items from the user's cart
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    responses:
+      '200':
+        description: Cart cleared successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              local_date_time: "2025-10-04T10:00:00.000Z"
+              data:
+                message: "Cart cleared successfully"
+              api_error: null
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+/cart/items:
   post:
     tags:
       - Cart
@@ -73,24 +103,29 @@
                 description: Quantity of the product
                 example: 2
     responses:
-      '200':
+      '201':
         description: Item added to cart successfully
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ApiResponse'
             example:
-              success: true
-              message: "Item added to cart successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 cartItem:
                   id: "item123"
-                  productId: "prod123"
                   quantity: 2
+                  product_id: "prod123"
+                  cart_id: "cart123"
                   product:
                     id: "prod123"
                     name: "Nike Air Force 1"
                     price: 89.99
+                    images: ["https://example.com/image1.jpg"]
+                    brand: "Nike"
+                    stock: 50
+                message: "Item added to cart successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -110,7 +145,60 @@
             schema:
               $ref: '#/components/schemas/ErrorResponse'
 
-/cart/update/{itemId}:
+/cart/items/{itemId}:
+  get:
+    tags:
+      - Cart
+    summary: Get single cart item
+    description: Retrieves details of a specific cart item
+    security:
+      - bearerAuth: []
+      - cookieAuth: []
+    parameters:
+      - in: path
+        name: itemId
+        required: true
+        schema:
+          type: string
+        description: Cart item ID
+        example: "item123"
+    responses:
+      '200':
+        description: Cart item retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResponse'
+            example:
+              local_date_time: "2025-10-04T10:00:00.000Z"
+              data:
+                cartItem:
+                  id: "item123"
+                  quantity: 2
+                  product_id: "prod123"
+                  cart_id: "cart123"
+                  product:
+                    id: "prod123"
+                    name: "Nike Air Force 1"
+                    price: 89.99
+                    images: ["https://example.com/image1.jpg"]
+                    brand: "Nike"
+                    stock: 50
+                message: "Cart item retrieved successfully"
+              api_error: null
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Cart item not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
   put:
     tags:
       - Cart
@@ -148,13 +236,22 @@
             schema:
               $ref: '#/components/schemas/ApiResponse'
             example:
-              success: true
-              message: "Cart item updated successfully"
+              local_date_time: "2025-10-04T10:00:00.000Z"
               data:
                 cartItem:
                   id: "item123"
-                  productId: "prod123"
                   quantity: 3
+                  product_id: "prod123"
+                  cart_id: "cart123"
+                  product:
+                    id: "prod123"
+                    name: "Nike Air Force 1"
+                    price: 89.99
+                    images: ["https://example.com/image1.jpg"]
+                    brand: "Nike"
+                    stock: 50
+                message: "Cart item updated successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -174,7 +271,6 @@
             schema:
               $ref: '#/components/schemas/ErrorResponse'
 
-/cart/remove/{itemId}:
   delete:
     tags:
       - Cart
@@ -199,9 +295,10 @@
             schema:
               $ref: '#/components/schemas/ApiResponse'
             example:
-              success: true
-              message: "Item removed from cart successfully"
-              data: null
+              local_date_time: "2025-10-04T10:00:00.000Z"
+              data:
+                message: "Item removed from cart successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:
@@ -215,26 +312,28 @@
             schema:
               $ref: '#/components/schemas/ErrorResponse'
 
-/cart/clear:
-  delete:
+/cart/count:
+  get:
     tags:
       - Cart
-    summary: Clear cart
-    description: Removes all items from the user's cart
+    summary: Get cart item count
+    description: Retrieves the total number of items in the user's cart
     security:
       - bearerAuth: []
       - cookieAuth: []
     responses:
       '200':
-        description: Cart cleared successfully
+        description: Cart item count retrieved successfully
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ApiResponse'
             example:
-              success: true
-              message: "Cart cleared successfully"
-              data: null
+              local_date_time: "2025-10-04T10:00:00.000Z"
+              data:
+                count: 5
+                message: "Cart item count retrieved successfully"
+              api_error: null
       '401':
         description: Unauthorized
         content:

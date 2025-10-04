@@ -77,6 +77,27 @@ export const UpdateCartItemController = asyncHandler(async (req: Request, res: R
     );
 });
 
+export const GetCartItemController = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+        throw new ApiError(401, "User not authenticated");
+    }
+
+    const { itemId } = req.params;
+    if (!itemId) {
+        throw new ApiError(400, "Item ID is required");
+    }
+
+    const cartItem = await CartService.getCartItem(userId, itemId);
+
+    return res.status(200).json(
+        new ApiResponse({
+            cartItem,
+            message: "Cart item retrieved successfully"
+        })
+    );
+});
+
 export const RemoveFromCartController = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {

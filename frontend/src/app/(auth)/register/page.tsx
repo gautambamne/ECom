@@ -1,10 +1,17 @@
+'use client'
 import { LogoIcon } from '@/components/ui/logo'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import RegisterForm from './register-form'
+import VerificationForm from './verification-form'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 
-export default function RegisterPage() {
+function RegisterPageContent() {
+    const searchParams = useSearchParams();
+    const isVerify = searchParams.get('mode') === 'verify';
+
     return (
         <section className="relative flex h-screen items-center justify-center bg-muted dark:bg-black">
             <div
@@ -17,7 +24,7 @@ export default function RegisterPage() {
             />
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_30%,black)] dark:bg-black"></div>
             <div
-                className="relative z-10 bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5 dark:[--color-muted:var(--color-zinc-900)]"
+                className="relative z-10 bg-stone-100 dark:bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5 dark:[--color-muted:var(--color-zinc-900)]"
             >
                 <div className="p-8 pb-6">
                     <div>
@@ -26,8 +33,15 @@ export default function RegisterPage() {
                             aria-label="go home">
                             <LogoIcon />
                         </Link>
-                        <h1 className="mb-1 mt-4 text-xl font-semibold">Create a Sneaky Account</h1>
-                        <p className="text-sm">Welcome! Create an account to get started</p>
+                        <h1 className="mb-1 mt-4 text-xl font-semibold">
+                            {isVerify ? "Verify Your Email" : "Create a Sneaky Account"}
+                        </h1>
+                        <p className="text-sm">
+                            {isVerify
+                                ? "Enter the verification code sent to your email"
+                                : "Welcome! Create an account to get started"
+                            }
+                        </p>
                     </div>
 
                     <div className="mt-6 grid grid-cols-2 gap-3">
@@ -80,22 +94,44 @@ export default function RegisterPage() {
                     </div>
 
                     <div className="mt-6">
-                        <RegisterForm />
+                        {isVerify ? <VerificationForm /> : <RegisterForm />}
                     </div>
                 </div>
 
                 <div className="bg-muted rounded-(--radius) border p-3">
                     <p className="text-accent-foreground text-center text-sm">
-                        Have an account ?
-                        <Button
-                            asChild
-                            variant="link"
-                            className="px-2">
-                            <Link href="/login">Sign In</Link>
-                        </Button>
+                        {isVerify ? (
+                            <>
+                                Didn't receive the code?
+                                <Button
+                                    asChild
+                                    variant="link"
+                                    className="px-2">
+                                    <Link href="/register">Back to Register</Link>
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                Have an account ?
+                                <Button
+                                    asChild
+                                    variant="link"
+                                    className="px-2">
+                                    <Link href="/login">Sign In</Link>
+                                </Button>
+                            </>
+                        )}
                     </p>
                 </div>
             </div>
         </section>
+    );
+}
+
+export default function RegisterPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <RegisterPageContent />
+        </Suspense>
     );
 }
