@@ -23,6 +23,21 @@ const sanitizeWishlist = (wishlist: any) => {
     };
 };
 
+// Helper function to sanitize wishlist item data
+const sanitizeWishlistItem = (wishlistItem: any) => {
+    return {
+        ...wishlistItem,
+        product: {
+            id: wishlistItem.product.id,
+            name: wishlistItem.product.name,
+            price: wishlistItem.product.price,
+            images: wishlistItem.product.images,
+            brand: wishlistItem.product.brand,
+            stock: wishlistItem.product.stock
+        }
+    };
+};
+
 export const GetWishlistController = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
@@ -47,10 +62,11 @@ export const AddToWishlistController = asyncHandler(async (req: Request, res: Re
     }
 
     const wishlistItem = await WishlistService.addToWishlist(userId, req.body);
+    const sanitizedWishlistItem = sanitizeWishlistItem(wishlistItem);
 
     return res.status(201).json(
         new ApiResponse({
-            wishlistItem,
+            wishlistItem: sanitizedWishlistItem,
             message: "Product added to wishlist successfully"
         })
     );

@@ -15,7 +15,7 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/CartResponse'
             example:
               local_date_time: "2025-10-04T10:00:00.000Z"
               data:
@@ -63,7 +63,7 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/BasicSuccessResponse'
             example:
               local_date_time: "2025-10-04T10:00:00.000Z"
               data:
@@ -108,7 +108,7 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/CartItemResponse'
             example:
               local_date_time: "2025-10-04T10:00:00.000Z"
               data:
@@ -168,7 +168,7 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/CartItemResponse'
             example:
               local_date_time: "2025-10-04T10:00:00.000Z"
               data:
@@ -234,7 +234,7 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/CartItemResponse'
             example:
               local_date_time: "2025-10-04T10:00:00.000Z"
               data:
@@ -293,7 +293,7 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/BasicSuccessResponse'
             example:
               local_date_time: "2025-10-04T10:00:00.000Z"
               data:
@@ -327,7 +327,7 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiResponse'
+              $ref: '#/components/schemas/CartCountResponse'
             example:
               local_date_time: "2025-10-04T10:00:00.000Z"
               data:

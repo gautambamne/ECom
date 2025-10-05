@@ -40,6 +40,38 @@ const swaggerDefinition = {
       },
     },
     schemas: {
+      // Generic API Response schema
+      ApiResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp in ISO format',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            description: 'Response data payload',
+            oneOf: [
+              { type: 'object' },
+              { type: 'array' },
+              { type: 'string' },
+              { type: 'number' },
+              { type: 'boolean' },
+              { type: 'null' }
+            ],
+          },
+          api_error: {
+            oneOf: [
+              { $ref: '#/components/schemas/ErrorResponse' },
+              { type: 'null' }
+            ],
+            description: 'Error information if request failed',
+          },
+        },
+      },
+
       // Authentication request schemas
       RegisterRequest: {
         type: 'object',
@@ -357,6 +389,100 @@ const swaggerDefinition = {
             type: 'string',
             description: 'Parent product ID',
             example: 'prod123',
+          },
+        },
+      },
+
+      // CartItem schema
+      CartItem: {
+        type: 'object',
+        required: ['id', 'quantity', 'product_id', 'cart_id', 'product'],
+        properties: {
+          id: {
+            type: 'string',
+            description: 'Unique cart item identifier',
+            example: 'item123',
+          },
+          quantity: {
+            type: 'integer',
+            description: 'Quantity of the product in cart',
+            example: 2,
+          },
+          product_id: {
+            type: 'string',
+            description: 'Product ID',
+            example: 'prod123',
+          },
+          cart_id: {
+            type: 'string',
+            description: 'Cart ID',
+            example: 'cart123',
+          },
+          product: {
+            type: 'object',
+            required: ['id', 'name', 'price', 'images', 'brand', 'stock'],
+            properties: {
+              id: {
+                type: 'string',
+                description: 'Product ID',
+                example: 'prod123',
+              },
+              name: {
+                type: 'string',
+                description: 'Product name',
+                example: 'Nike Air Force 1',
+              },
+              price: {
+                type: 'number',
+                format: 'float',
+                description: 'Product price',
+                example: 89.99,
+              },
+              images: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+                description: 'Product image URLs',
+                example: ['https://example.com/image1.jpg'],
+              },
+              brand: {
+                type: 'string',
+                description: 'Product brand',
+                example: 'Nike',
+              },
+              stock: {
+                type: 'integer',
+                description: 'Available stock quantity',
+                example: 50,
+              },
+            },
+            description: 'Product details',
+          },
+        },
+      },
+
+      // Cart schema
+      Cart: {
+        type: 'object',
+        required: ['id', 'user_id', 'items'],
+        properties: {
+          id: {
+            type: 'string',
+            description: 'Unique cart identifier',
+            example: 'cart123',
+          },
+          user_id: {
+            type: 'string',
+            description: 'User ID who owns the cart',
+            example: 'user123',
+          },
+          items: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/CartItem',
+            },
+            description: 'Cart items',
           },
         },
       },
@@ -1319,6 +1445,102 @@ const swaggerDefinition = {
                 type: 'string',
                 description: 'Success message',
                 example: 'Payment created successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      // Cart Response schemas
+      CartResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['cart', 'message'],
+            properties: {
+              cart: {
+                $ref: '#/components/schemas/Cart',
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Cart retrieved successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      CartItemResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['cartItem', 'message'],
+            properties: {
+              cartItem: {
+                $ref: '#/components/schemas/CartItem',
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Item added to cart successfully',
+              },
+            },
+          },
+          api_error: {
+            type: 'null',
+            example: null,
+          },
+        },
+      },
+
+      CartCountResponse: {
+        type: 'object',
+        required: ['local_date_time', 'data', 'api_error'],
+        properties: {
+          local_date_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Response timestamp',
+            example: '2025-10-04T10:00:00.000Z',
+          },
+          data: {
+            type: 'object',
+            required: ['count', 'message'],
+            properties: {
+              count: {
+                type: 'integer',
+                description: 'Number of items in cart',
+                example: 5,
+              },
+              message: {
+                type: 'string',
+                description: 'Success message',
+                example: 'Cart item count retrieved successfully',
               },
             },
           },
