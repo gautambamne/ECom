@@ -6,6 +6,7 @@ import { PaymentService } from "../services/payment.service";
 import { CreatePaymentSchema, UpdatePaymentStatusSchema, PaymentIdSchema, PaymentQuerySchema } from "../schema/payment.schema";
 
 export const PaymentController = {
+    
     // Create payment for order
     createPayment: asyncHandler(async (req: Request, res: Response) => {
         const userId = (req as any).user?.id;
@@ -22,6 +23,7 @@ export const PaymentController = {
         }));
     }),
 
+    
     // Get payment by ID
     getPaymentById: asyncHandler(async (req: Request, res: Response) => {
         const userId = (req as any).user?.id;

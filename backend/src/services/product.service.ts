@@ -4,7 +4,111 @@ import { ApiError } from "../advices/ApiError";
 import { CreateProductSchema, UpdateProductSchema, GetProductQuerySchema } from "../schema/product.schema";
 import type { z } from "zod";
 
+interface ProductSummary {
+    total_stock: number;
+    available_variants: number;
+    average_rating?: number;
+    total_reviews?: number;
+    discount_percentage?: number;
+    is_on_sale: boolean;
+    currency: string;
+}
+
+interface FormattedProduct {
+    product_id: number;
+    name: string;
+    description?: string;
+    brand?: string;
+    category: string;
+    images: string[];
+    price: number;
+    discount_price?: number | null;
+    stock: number;
+    variants: {
+        size: string;
+        color: string;
+        stock: number;
+        available: boolean;
+    }[];
+    vendor: {
+        id: string;
+        name: string;
+        email: string;
+    };
+    summary: ProductSummary;
+    in_stock: boolean;
+    is_active: boolean;
+    currency: string;
+    created_at: string;
+    updated_at: string;
+}
+
 export const ProductService = {
+    // Format product for API response
+    formatProductResponse(product: any): FormattedProduct {
+        const totalStock = product.variants?.reduce((sum: number, variant: any) => sum + variant.stock, 0) || product.stock;
+        const availableVariants = product.variants?.filter((v: any) => v.stock > 0).length || 0;
+        
+        const discountPercentage = product.discount_price 
+            ? Math.round(((product.price - product.discount_price) / product.price) * 100)
+            : undefined;
+
+        return {
+            product_id: Math.abs(product.id.split('-').join('').slice(0, 8).split('').reduce((a: number, b: string) => ((a << 5) - a) + b.charCodeAt(0), 0)),
+            name: product.name,
+            description: product.description,
+            brand: product.brand,
+            category: product.categories?.[0]?.name || "Uncategorized",
+            images: product.images || [],
+            price: product.price,
+            discount_price: product.discount_price,
+            stock: totalStock,
+            variants: product.variants?.map((variant: any) => ({
+                size: variant.size,
+                color: variant.color,
+                stock: variant.stock,
+                available: variant.stock > 0
+            })) || [],
+            vendor: {
+                id: product.vendor?.id || product.vendor_id,
+                name: product.vendor?.name || "Unknown Vendor",
+                email: product.vendor?.email || ""
+            },
+            summary: {
+                total_stock: totalStock,
+                available_variants: availableVariants,
+                discount_percentage: discountPercentage,
+                is_on_sale: !!product.discount_price,
+                currency: product.currency || "INR"
+            },
+            in_stock: totalStock > 0,
+            is_active: product.is_active !== false,
+            currency: product.currency || "INR",
+            created_at: product.created_at?.toISOString() || new Date().toISOString(),
+            updated_at: product.updated_at?.toISOString() || new Date().toISOString()
+        };
+    },
+
+    // Calculate stock across all variants
+    calculateTotalStock(variants: any[]): number {
+        return variants?.reduce((total, variant) => total + variant.stock, 0) || 0;
+    },
+
+    // Validate stock availability
+    async validateProductStock(productId: string, requestedQuantity: number): Promise<{ available: boolean; maxAvailable: number }> {
+        const product = await ProductRepository.getProductById(productId);
+        if (!product) {
+            throw new ApiError(404, "Product not found");
+        }
+
+        // For now, use the main product stock until we enhance the repository to include variants
+        const totalStock = product.stock;
+        
+        return {
+            available: totalStock >= requestedQuantity,
+            maxAvailable: totalStock
+        };
+    },
     async createProduct(
         input: z.infer<typeof CreateProductSchema>,
         vendorId: string
@@ -142,12 +246,15 @@ export const ProductService = {
         return await ProductRepository.deleteProductById(id);
     },
 
-    async getProduct(id: string) {
+    async getProduct(id: string): Promise<FormattedProduct> {
         const product = await ProductRepository.getProductById(id);
         if (!product) {
             throw new ApiError(404, "Product not found");
         }
-        return product;
+        
+        // For now, format with the basic product data
+        // We'll enhance this when we update the repository
+        return this.formatProductResponse(product);
     },
 
     async getProducts(query: z.infer<typeof GetProductQuerySchema>) {
@@ -210,7 +317,7 @@ export const ProductService = {
         });
 
         return {
-            products,
+            products: products.map(product => this.formatProductResponse(product)),
             pagination: {
                 page,
                 limit,
@@ -233,7 +340,7 @@ export const ProductService = {
         });
 
         return {
-            products,
+            products: products.map(product => this.formatProductResponse(product)),
             pagination: {
                 page,
                 limit,
@@ -256,7 +363,48 @@ export const ProductService = {
         });
 
         return {
-            products,
+            products: products.map(product => this.formatProductResponse(product)),
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit)
+            }
+        };
+    },
+
+    // Search products with advanced filtering
+    async searchProducts(query: z.infer<typeof GetProductQuerySchema>) {
+        const result = await this.getProducts(query);
+        return result;
+    },
+
+    // Get featured products
+    async getFeaturedProducts(limit: number = 10) {
+        const { products } = await ProductRepository.getProducts({
+            take: limit,
+            where: { is_active: true },
+            orderBy: { created_at: 'desc' }
+        });
+
+        return products.map(product => this.formatProductResponse(product));
+    },
+
+    // Get products on sale
+    async getProductsOnSale(page: number = 1, limit: number = 10) {
+        const skip = (page - 1) * limit;
+        const { products, total } = await ProductRepository.getProducts({
+            skip,
+            take: limit,
+            where: { 
+                is_active: true,
+                discount_price: { not: null }
+            },
+            orderBy: { created_at: 'desc' }
+        });
+
+        return {
+            products: products.map(product => this.formatProductResponse(product)),
             pagination: {
                 page,
                 limit,

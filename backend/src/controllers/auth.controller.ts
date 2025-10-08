@@ -171,7 +171,6 @@ export const VerifyUser = asyncHandler(async (req, res) => {
 
 });
 
-
 export const LoginController = asyncHandler(async (req, res) => {
   const result = LoginSchema.safeParse(req.body);
   if (!result.success) {
@@ -363,6 +362,7 @@ export const RefreshTokenController = asyncHandler(async(req, res)=>{
   )
 });
 
+
 export const LogoutController = asyncHandler(async (req, res) => {
   const result = req.cookies?.refresh_token;
 
@@ -380,5 +380,6 @@ export const LogoutController = asyncHandler(async (req, res) => {
     message: "Logout successful"
   }));
 });
+
 
 

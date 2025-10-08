@@ -5,6 +5,7 @@ import { sessionRepository } from "../repositories/session.repositories";
 import asyncHandler from "../utils/asyncHandler";
 import { StatusCodes } from "http-status-codes";
 
+
 export const getAllSessionController = asyncHandler(async(req, res)=>{
     if(!req.user){
         throw new ApiError(StatusCodes.UNAUTHORIZED, "User not authenticated")
@@ -62,6 +63,7 @@ export const deleteAllSessionExceptCurrent = asyncHandler(async(req, res)=>{
         message: "Session successfully deleted"
     }))
 });
+
 
 
 

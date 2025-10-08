@@ -8,6 +8,7 @@ import { PasswordChangeSchema, UpdateUserSchema } from "../schema/user.schema";
 import { zodErrorFormatter } from "../utils/format-validation-error";
 import { passwordUtils } from "../utils/auth-utils";
 
+
 export const meController = asyncHandler(async(req, res)=>{
     if(!req.user){
         throw new ApiError(StatusCodes.UNAUTHORIZED, "User not autheticated")
@@ -28,6 +29,7 @@ export const meController = asyncHandler(async(req, res)=>{
     }))
 
 });
+
 
 export const updateUserController = asyncHandler(async(req, res)=>{
     if(!req.user){
@@ -57,6 +59,7 @@ export const updateUserController = asyncHandler(async(req, res)=>{
         user:sanatizedUser
     }))
 });
+
 
 export const updatePasswordController = asyncHandler(async(req, res)=>{
     if(!req.user){
@@ -94,3 +97,4 @@ export const updatePasswordController = asyncHandler(async(req, res)=>{
         user : sanatizedUser
    }))
 });
+

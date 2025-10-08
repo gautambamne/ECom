@@ -181,6 +181,72 @@ export const ProductRepository = {
         return { products, total };
     },
 
+    // Update product stock
+    updateProductStock: async(productId: string, newStock: number): Promise<Product> => {
+        const product = await prisma.product.update({
+            where: { id: productId },
+            data: { stock: newStock },
+            include: {
+                variants: true,
+                categories: true,
+                vendor: true
+            }
+        });
+
+        // Update cache
+        const cacheKey = `product:${productId}`;
+        await RedisService.set(cacheKey, product);
+
+        return product;
+    },
+
+    // Check if products have sufficient stock
+    checkProductsStock: async(productIds: string[]): Promise<{ [key: string]: number }> => {
+        const products = await prisma.product.findMany({
+            where: {
+                id: {
+                    in: productIds
+                }
+            },
+            select: {
+                id: true,
+                stock: true
+            }
+        });
+
+        return products.reduce((acc, product) => {
+            acc[product.id] = product.stock;
+            return acc;
+        }, {} as { [key: string]: number });
+    },
+
+    // Get product with relations (for services)
+    getProductWithRelations: async(id: string): Promise<Product & {
+        variants: ProductVariant[];
+        categories: { id: string; name: string }[];
+        vendor: { id: string; name: string; email: string };
+    } | null> => {
+        return await prisma.product.findUnique({
+            where: { id },
+            include: {
+                variants: true,
+                categories: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                vendor: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
+            }
+        });
+    },
+
     // Vendor-specific operations
     getProductsByVendor: async(vendorId: string, params: {
         skip?: number;

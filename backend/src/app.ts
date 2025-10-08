@@ -2,8 +2,6 @@ import express from 'express';
 import type{ Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from './swagger/swagger.config';
 import authRouter from './routes/auth.routes';
 import { errorMiddleware } from './middleware/error.middleware';
 import { ApiResponse } from './advices/ApiResponse';
@@ -36,27 +34,6 @@ app.use(express.static('public'));
 
 app.use(cookieParser());
 
-// Swagger Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-    explorer: true,
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'E-Commerce API Documentation',
-    swaggerOptions: {
-        persistAuthorization: true,
-        displayRequestDuration: true,
-        docExpansion: 'none',
-        filter: true,
-        showRequestHeaders: true,
-        tryItOutEnabled: true,
-    },
-}));
-
-// Swagger JSON endpoint
-app.get('/api-docs.json', (req: Request, res: Response) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(swaggerSpec);
-});
-
 interface syntaxErrorWithBody extends SyntaxError {
     body?: any
 }
@@ -84,7 +61,6 @@ app.get('/api/v1', (req: Request, res: Response) => {
     res.json(new ApiResponse({
         message: 'Welcome to E-Commerce API',
         version: '1.0.0',
-        documentation: '/api-docs',
         endpoints: {
             auth: '/api/v1/auth',
             users: '/api/v1/users',

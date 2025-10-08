@@ -4,24 +4,6 @@ import { ApiResponse } from "../advices/ApiResponse";
 import { ApiError } from "../advices/ApiError";
 import { CartService } from "../services/cart.service";
 
-// Helper function to sanitize cart data
-const sanitizeCart = (cart: any) => {
-    const { user, ...sanitizedCart } = cart;
-    return {
-        ...sanitizedCart,
-        items: cart.items.map((item: any) => ({
-            ...item,
-            product: {
-                id: item.product.id,
-                name: item.product.name,
-                price: item.product.price,
-                images: item.product.images,
-                brand: item.product.brand,
-                stock: item.product.stock
-            }
-        }))
-    };
-};
 
 export const GetCartController = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
@@ -29,16 +11,15 @@ export const GetCartController = asyncHandler(async (req: Request, res: Response
         throw new ApiError(401, "User not authenticated");
     }
 
-    const cart = await CartService.getCart(userId);
-    const sanitizedCart = sanitizeCart(cart);
+    const cartData = await CartService.getCart(userId);
 
-    return res.status(200).json(
-        new ApiResponse({
-            cart: sanitizedCart,
-            message: "Cart retrieved successfully"
-        })
-    );
+    return res.status(200).json({
+        success: true,
+        message: "Cart fetched successfully",
+        data: cartData
+    });
 });
+
 
 export const AddToCartController = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
@@ -48,13 +29,21 @@ export const AddToCartController = asyncHandler(async (req: Request, res: Respon
 
     const cartItem = await CartService.addToCart(userId, req.body);
 
-    return res.status(201).json(
-        new ApiResponse({
-            cartItem,
-            message: "Item added to cart successfully"
-        })
-    );
+    return res.status(201).json({
+        success: true,
+        message: "Item added to cart successfully",
+        data: {
+            cartItem: {
+                id: cartItem.id,
+                product_id: cartItem.product_id,
+                quantity: cartItem.quantity,
+                price: cartItem.price,
+                total: cartItem.total
+            }
+        }
+    });
 });
+
 
 export const UpdateCartItemController = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
@@ -69,13 +58,21 @@ export const UpdateCartItemController = asyncHandler(async (req: Request, res: R
 
     const updatedItem = await CartService.updateCartItem(userId, itemId, req.body);
 
-    return res.status(200).json(
-        new ApiResponse({
-            cartItem: updatedItem,
-            message: "Cart item updated successfully"
-        })
-    );
+    return res.status(200).json({
+        success: true,
+        message: "Cart item updated successfully",
+        data: {
+            cartItem: {
+                id: updatedItem.id,
+                product_id: updatedItem.product_id,
+                quantity: updatedItem.quantity,
+                price: updatedItem.price,
+                total: updatedItem.total
+            }
+        }
+    });
 });
+
 
 export const GetCartItemController = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
@@ -98,6 +95,7 @@ export const GetCartItemController = asyncHandler(async (req: Request, res: Resp
     );
 });
 
+
 export const RemoveFromCartController = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
@@ -111,12 +109,12 @@ export const RemoveFromCartController = asyncHandler(async (req: Request, res: R
 
     await CartService.removeFromCart(userId, itemId);
 
-    return res.status(200).json(
-        new ApiResponse({
-            message: "Item removed from cart successfully"
-        })
-    );
+    return res.status(200).json({
+        success: true,
+        message: "Item removed from cart successfully"
+    });
 });
+
 
 export const ClearCartController = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
@@ -126,12 +124,12 @@ export const ClearCartController = asyncHandler(async (req: Request, res: Respon
 
     await CartService.clearCart(userId);
 
-    return res.status(200).json(
-        new ApiResponse({
-            message: "Cart cleared successfully"
-        })
-    );
+    return res.status(200).json({
+        success: true,
+        message: "Cart cleared successfully"
+    });
 });
+
 
 export const GetCartItemCountController = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
@@ -141,10 +139,26 @@ export const GetCartItemCountController = asyncHandler(async (req: Request, res:
 
     const count = await CartService.getCartItemCount(userId);
 
-    return res.status(200).json(
-        new ApiResponse({
-            count,
-            message: "Cart item count retrieved successfully"
-        })
-    );
+    return res.status(200).json({
+        success: true,
+        message: "Cart item count retrieved successfully",
+        data: { count }
+    });
+});
+
+
+// New controller for cart validation before checkout
+export const ValidateCartController = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+        throw new ApiError(401, "User not authenticated");
+    }
+
+    const validation = await CartService.validateCartForCheckout(userId);
+
+    return res.status(200).json({
+        success: true,
+        message: validation.valid ? "Cart is valid for checkout" : "Cart has validation issues",
+        data: validation
+    });
 });

@@ -12,6 +12,7 @@ import {
 } from "../schema/category.schema";
 import { zodErrorFormatter } from "../utils/format-validation-error";
 
+
 export const CreateCategoryController = asyncHandler(async (req: Request, res: Response) => {
   const result = CreateCategorySchema.safeParse(req.body);
   if (!result.success) {
@@ -27,6 +28,7 @@ export const CreateCategoryController = asyncHandler(async (req: Request, res: R
     })
   );
 });
+
 
 export const UpdateCategoryController = asyncHandler(async (req: Request, res: Response) => {
   const idResult = GetCategorySchema.safeParse({ id: req.params.id });
@@ -52,6 +54,7 @@ export const UpdateCategoryController = asyncHandler(async (req: Request, res: R
   );
 });
 
+
 export const DeleteCategoryController = asyncHandler(async (req: Request, res: Response) => {
   const result = DeleteCategorySchema.safeParse({ id: req.params.id });
   if (!result.success) {
@@ -67,6 +70,7 @@ export const DeleteCategoryController = asyncHandler(async (req: Request, res: R
   );
 });
 
+
 export const GetCategoryController = asyncHandler(async (req: Request, res: Response) => {
   const result = GetCategorySchema.safeParse({ id: req.params.id });
   if (!result.success) {
@@ -81,6 +85,7 @@ export const GetCategoryController = asyncHandler(async (req: Request, res: Resp
     })
   );
 });
+
 
 export const GetCategoriesController = asyncHandler(async (req: Request, res: Response) => {
   const result = GetCategoryQuerySchema.safeParse(req.query);

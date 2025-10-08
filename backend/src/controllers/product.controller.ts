@@ -27,6 +27,7 @@ const sanitizeProduct = (product: any) => {
   };
 };
 
+
 export const CreateProductController = asyncHandler(async (req: Request, res: Response) => {
   const vendorId = req.user?.id;
   if (!vendorId) {
@@ -100,6 +101,7 @@ export const CreateProductController = asyncHandler(async (req: Request, res: Re
     })
   );
 });
+
 
 export const UpdateProductController = asyncHandler(async (req: Request, res: Response) => {
   const vendorId = req.user?.id;
@@ -197,6 +199,7 @@ export const UpdateProductController = asyncHandler(async (req: Request, res: Re
   );
 });
 
+
 export const DeleteProductController = asyncHandler(async (req: Request, res: Response) => {
   const vendorId = req.user?.id;
   if (!vendorId) {
@@ -237,6 +240,7 @@ export const DeleteProductController = asyncHandler(async (req: Request, res: Re
   );
 });
 
+
 export const GetProductController = asyncHandler(async (req: Request, res: Response) => {
   const result = GetProductSchema.safeParse({ id: req.params.id });
   if (!result.success) {
@@ -244,14 +248,16 @@ export const GetProductController = asyncHandler(async (req: Request, res: Respo
   }
 
   const product = await ProductService.getProduct(result.data.id);
-  const sanitizedProduct = sanitizeProduct(product);
 
   return res.status(200).json(
     new ApiResponse({
-      product: sanitizedProduct
+      success: true,
+      message: "Product fetched successfully",
+      data: product
     })
   );
 });
+
 
 export const GetProductsController = asyncHandler(async (req: Request, res: Response) => {
   const result = GetProductQuerySchema.safeParse(req.query);
@@ -260,15 +266,19 @@ export const GetProductsController = asyncHandler(async (req: Request, res: Resp
   }
 
   const { products, pagination } = await ProductService.getProducts(result.data);
-  const sanitizedProducts = products.map(sanitizeProduct);
 
   return res.status(200).json(
     new ApiResponse({
-      products: sanitizedProducts,
-      pagination
+      success: true,
+      message: "Products fetched successfully",
+      data: {
+        products,
+        pagination
+      }
     })
   );
 });
+
 
 export const GetVendorProductsController = asyncHandler(async (req: Request, res: Response) => {
   const vendorId = req.user?.id;
@@ -285,15 +295,19 @@ export const GetVendorProductsController = asyncHandler(async (req: Request, res
     vendorId,
     queryResult.data
   );
-  const sanitizedProducts = products.map(sanitizeProduct);
 
   return res.status(200).json(
     new ApiResponse({
-      products: sanitizedProducts,
-      pagination
+      success: true,
+      message: "Vendor products fetched successfully",
+      data: {
+        products,
+        pagination
+      }
     })
   );
 });
+
 
 export const GetProductsByCategoryController = asyncHandler(async (req: Request, res: Response) => {
   const result = GetProductSchema.safeParse({ id: req.params.categoryId });
@@ -310,12 +324,52 @@ export const GetProductsByCategoryController = asyncHandler(async (req: Request,
     result.data.id,
     queryResult.data
   );
-  const sanitizedProducts = products.map(sanitizeProduct);
 
   return res.status(200).json(
     new ApiResponse({
-      products: sanitizedProducts,
-      pagination
+      success: true,
+      message: "Category products fetched successfully",
+      data: {
+        products,
+        pagination
+      }
     })
   );
 });
+
+
+// Add new controllers for enhanced features
+export const GetFeaturedProductsController = asyncHandler(async (req: Request, res: Response) => {
+  const limit = parseInt(req.query.limit as string) || 10;
+  const products = await ProductService.getFeaturedProducts(limit);
+
+  return res.status(200).json(
+    new ApiResponse({
+      success: true,
+      message: "Featured products fetched successfully",
+      data: {
+        products
+      }
+    })
+  );
+});
+
+
+export const GetProductsOnSaleController = asyncHandler(async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  
+  const { products, pagination } = await ProductService.getProductsOnSale(page, limit);
+
+  return res.status(200).json(
+    new ApiResponse({
+      success: true,
+      message: "Sale products fetched successfully",
+      data: {
+        products,
+        pagination
+      }
+    })
+  );
+});
+

@@ -7,9 +7,9 @@ const UpdateProfileSchema = z.object({
 });
 
 const UpdatePasswordSchema = z.object({
-    currentPassword: z.string()
+    current_password: z.string()
         .min(6, "Current password must be at least 6 characters long"),
-    newPassword: z.string()
+    new_password: z.string()
         .min(6, "New password must be at least 6 characters long")
 });
 

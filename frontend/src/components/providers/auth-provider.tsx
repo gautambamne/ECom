@@ -1,5 +1,5 @@
 'use client';
-import { UserAction } from "@/api-actions/user-action";
+import { UserActions } from "@/api-actions/user-action";
 import { useAuthStore } from "../../store/auth-store"
 import React, { useEffect } from 'react'
 import { useQuery } from "@tanstack/react-query";
@@ -10,7 +10,7 @@ export default function AuthProvider({ children } : { children : React.ReactNode
 
     const {data, isLoading, isError, error} = useQuery({
         queryKey: ["current-user"],
-        queryFn: UserAction.GetCurrentUser,
+        queryFn: UserActions.GetCurrentUserAction,
         refetchOnWindowFocus: false,
         retry: false //prevent retrying on auth errors 
     })
@@ -18,13 +18,13 @@ export default function AuthProvider({ children } : { children : React.ReactNode
     useEffect(()=>{
         async function fetchCurrentUser() {
             try {
-                const data = await UserAction.GetCurrentUser()
-                setLogin(data)
+                const response = await UserActions.GetCurrentUserAction()
+                setLogin(response.user)
             } catch (error) {
                 setLogout()
             }
             if(!isLoading && data) {
-                setLogin(data)
+                setLogin(data.user)
             }
         }
 

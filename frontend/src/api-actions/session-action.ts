@@ -1,13 +1,18 @@
 import axiosInstance from "@/lib/axios-interceptor";
 
-export const SessionAction = {
-    GetAllUserSessionAction: async(): Promise<ISessionResponse>=>{
-        return (await(axiosInstance.get<ApiResponse<ISessionResponse>>("/session"))).data.data       
+export const SessionActions = {
+    GetAllUserSessionsAction: async(): Promise<ISessionResponse> => {
+        const response = await axiosInstance.get<ApiResponse<ISessionResponse>>("/session");
+        return response.data.data;       
     },
-    DeleteSessionAcceptCurrentAction: async(): Promise<IUniversalMessageResponse>=>{
-        return (await(axiosInstance.delete<ApiResponse<IUniversalMessageResponse>>("/session"))).data.data       
+    
+    DeleteAllSessionsExceptCurrentAction: async(): Promise<IUniversalMessageResponse> => {
+        const response = await axiosInstance.delete<ApiResponse<IUniversalMessageResponse>>("/session");
+        return response.data.data;       
     },
-    DeleteSpecificSessionAction: async(session_id: string): Promise<IUniversalMessageResponse>=>{
-        return (await(axiosInstance.get<ApiResponse<IUniversalMessageResponse>>(`/session/${session_id}`))).data.data       
+    
+    DeleteSpecificSessionAction: async(sessionId: string): Promise<IUniversalMessageResponse> => {
+        const response = await axiosInstance.delete<ApiResponse<IUniversalMessageResponse>>(`/session/${sessionId}`);
+        return response.data.data;       
     },
-}
+};

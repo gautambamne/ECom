@@ -50,7 +50,10 @@ CREATE TABLE "public"."Product" (
     "brand" TEXT,
     "images" TEXT[],
     "price" DOUBLE PRECISION NOT NULL,
+    "discount_price" DOUBLE PRECISION,
     "stock" INTEGER NOT NULL DEFAULT 0,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "currency" TEXT NOT NULL DEFAULT 'INR',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "vendor_id" TEXT NOT NULL,
@@ -81,7 +84,16 @@ CREATE TABLE "public"."Category" (
 -- CreateTable
 CREATE TABLE "public"."Cart" (
     "id" TEXT NOT NULL,
+    "cart_id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
+    "subtotal" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "discount" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "tax" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "shipping_fee" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "total_amount" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "currency" TEXT NOT NULL DEFAULT 'INR',
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Cart_pkey" PRIMARY KEY ("id")
 );
@@ -90,8 +102,12 @@ CREATE TABLE "public"."Cart" (
 CREATE TABLE "public"."CartItem" (
     "id" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL DEFAULT 1,
+    "price" DOUBLE PRECISION NOT NULL,
+    "total" DOUBLE PRECISION NOT NULL,
     "product_id" TEXT NOT NULL,
     "cart_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "CartItem_pkey" PRIMARY KEY ("id")
 );
@@ -99,7 +115,11 @@ CREATE TABLE "public"."CartItem" (
 -- CreateTable
 CREATE TABLE "public"."Wishlist" (
     "id" TEXT NOT NULL,
+    "wishlist_id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
+    "total_items" INTEGER NOT NULL DEFAULT 0,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Wishlist_pkey" PRIMARY KEY ("id")
 );
@@ -109,6 +129,10 @@ CREATE TABLE "public"."WishlistItem" (
     "id" TEXT NOT NULL,
     "product_id" TEXT NOT NULL,
     "wishlist_id" TEXT NOT NULL,
+    "price" DOUBLE PRECISION NOT NULL,
+    "discount_price" DOUBLE PRECISION,
+    "currency" TEXT NOT NULL DEFAULT 'INR',
+    "added_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "WishlistItem_pkey" PRIMARY KEY ("id")
 );
@@ -162,13 +186,64 @@ CREATE UNIQUE INDEX "Users_email_key" ON "public"."Users"("email");
 CREATE UNIQUE INDEX "Sessions_token_key" ON "public"."Sessions"("token");
 
 -- CreateIndex
+CREATE INDEX "Product_vendor_id_idx" ON "public"."Product"("vendor_id");
+
+-- CreateIndex
+CREATE INDEX "Product_is_active_idx" ON "public"."Product"("is_active");
+
+-- CreateIndex
+CREATE INDEX "Product_price_idx" ON "public"."Product"("price");
+
+-- CreateIndex
+CREATE INDEX "Product_created_at_idx" ON "public"."Product"("created_at");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Category_name_key" ON "public"."Category"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Cart_cart_id_key" ON "public"."Cart"("cart_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Cart_user_id_key" ON "public"."Cart"("user_id");
 
 -- CreateIndex
+CREATE INDEX "Cart_user_id_idx" ON "public"."Cart"("user_id");
+
+-- CreateIndex
+CREATE INDEX "Cart_updated_at_idx" ON "public"."Cart"("updated_at");
+
+-- CreateIndex
+CREATE INDEX "CartItem_cart_id_idx" ON "public"."CartItem"("cart_id");
+
+-- CreateIndex
+CREATE INDEX "CartItem_product_id_idx" ON "public"."CartItem"("product_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "CartItem_cart_id_product_id_key" ON "public"."CartItem"("cart_id", "product_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Wishlist_wishlist_id_key" ON "public"."Wishlist"("wishlist_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Wishlist_user_id_key" ON "public"."Wishlist"("user_id");
+
+-- CreateIndex
+CREATE INDEX "Wishlist_user_id_idx" ON "public"."Wishlist"("user_id");
+
+-- CreateIndex
+CREATE INDEX "Wishlist_updated_at_idx" ON "public"."Wishlist"("updated_at");
+
+-- CreateIndex
+CREATE INDEX "WishlistItem_wishlist_id_idx" ON "public"."WishlistItem"("wishlist_id");
+
+-- CreateIndex
+CREATE INDEX "WishlistItem_product_id_idx" ON "public"."WishlistItem"("product_id");
+
+-- CreateIndex
+CREATE INDEX "WishlistItem_added_at_idx" ON "public"."WishlistItem"("added_at");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "WishlistItem_wishlist_id_product_id_key" ON "public"."WishlistItem"("wishlist_id", "product_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Payment_order_id_key" ON "public"."Payment"("order_id");
