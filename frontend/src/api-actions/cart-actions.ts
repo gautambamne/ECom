@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axios-interceptor";
-import { IAddToCartSchema, IUpdateCartItemSchema } from "@/schema/cart-schema";
+import { IAddToCartSchema, IUpdateCartItemSchema } from "@/schema/cart.schema";
 
 export const CartActions = {
     GetUserCartAction: async (): Promise<IGetUserCartResponse>=>{

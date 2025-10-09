@@ -11,10 +11,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
     const {setLogin, setLogout} = useAuthStore();
     const queryClient = useQueryClient();
+    const router = useRouter();
     const form = useForm<ILoginSchema>({
         resolver: zodResolver(LoginSchema),
         defaultValues: {
@@ -30,8 +32,17 @@ export default function LoginForm() {
     onSuccess: async (data) => {
       setLogin(data.user, data.access_token)
       toast(data.message)
-      // Fetch current user data after successful login
+
+      // Invalidate and refetch current user data
       await queryClient.invalidateQueries({ queryKey: ["current-user"] })
+
+      // Check user role and redirect accordingly using Next.js router
+      const userRoles = data.user.role || []
+      if (userRoles.includes('VENDOR')) {
+        router.push('/vendor/dashboard')
+      } else {
+        router.push('/')
+      }
     },
     onError: (error: ApiError) => {
       setLogout()

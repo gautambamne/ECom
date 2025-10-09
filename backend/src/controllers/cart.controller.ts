@@ -147,18 +147,3 @@ export const GetCartItemCountController = asyncHandler(async (req: Request, res:
 });
 
 
-// New controller for cart validation before checkout
-export const ValidateCartController = asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) {
-        throw new ApiError(401, "User not authenticated");
-    }
-
-    const validation = await CartService.validateCartForCheckout(userId);
-
-    return res.status(200).json({
-        success: true,
-        message: validation.valid ? "Cart is valid for checkout" : "Cart has validation issues",
-        data: validation
-    });
-});

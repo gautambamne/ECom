@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axios-interceptor";
-import { ICreateCategorySchema, IUpdateCategorySchema } from "@/schema/category-schema";
+import { ICreateCategorySchema, IUpdateCategorySchema } from "@/schema/category.schema";
 
 export const CategoryActions = {
     // Public routes
@@ -8,7 +8,7 @@ export const CategoryActions = {
         return response.data.data;
     },
 
-    GetCategoryAction: async (categoryId: string): Promise<IGetCategoryResponse> => {
+    GetCategoryByIdAction: async (categoryId: string): Promise<IGetCategoryResponse> => {
         const response = await axiosInstance.get<ApiResponse<IGetCategoryResponse>>(`/categories/${categoryId}`);
         return response.data.data;
     },

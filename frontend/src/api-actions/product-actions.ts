@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axios-interceptor";
-import { ICreateProductSchema, IUpdateProductSchema, IProductsQuerySchema } from "@/schema/product-schema";
+import { ICreateProductSchema, IUpdateProductSchema, IProductsQuerySchema } from "@/schema/product.schema";
 
 export const ProductActions = {
     // Public routes
@@ -7,7 +7,7 @@ export const ProductActions = {
         const params = new URLSearchParams();
         if (query) {
             Object.entries(query).forEach(([key, value]) => {
-                if (value !== undefined) {
+                if (value !== undefined && value !== null) {
                     params.append(key, value.toString());
                 }
             });
@@ -20,7 +20,7 @@ export const ProductActions = {
         const params = new URLSearchParams();
         if (query) {
             Object.entries(query).forEach(([key, value]) => {
-                if (value !== undefined) {
+                if (value !== undefined && value !== null) {
                     params.append(key, value.toString());
                 }
             });
@@ -45,12 +45,12 @@ export const ProductActions = {
     },
 
     // Vendor routes (require authentication and vendor role)
-    CreateProductAction: async (data: ICreateProductSchema, image?: File): Promise<ICreateProductResponse> => {
+    CreateProductAction: async (data: ICreateProductSchema, images?: File[]): Promise<ICreateProductResponse> => {
         const formData = new FormData();
         
         // Append all product data
         Object.entries(data).forEach(([key, value]) => {
-            if (value !== undefined) {
+            if (value !== undefined && value !== null) {
                 if (Array.isArray(value)) {
                     formData.append(key, JSON.stringify(value));
                 } else {
@@ -59,9 +59,11 @@ export const ProductActions = {
             }
         });
 
-        // Append image file if provided
-        if (image) {
-            formData.append('image', image);
+        // Append multiple image files if provided
+        if (images && images.length > 0) {
+            images.forEach((image) => {
+                formData.append('images', image);
+            });
         }
 
         const response = await axiosInstance.post<ApiResponse<ICreateProductResponse>>("/products", formData, {
@@ -72,12 +74,12 @@ export const ProductActions = {
         return response.data.data;
     },
 
-    UpdateProductAction: async (productId: string, data: IUpdateProductSchema, image?: File): Promise<IUpdateProductResponse> => {
+    UpdateProductAction: async (productId: string, data: IUpdateProductSchema, images?: File[]): Promise<IUpdateProductResponse> => {
         const formData = new FormData();
         
         // Append all product data
         Object.entries(data).forEach(([key, value]) => {
-            if (value !== undefined) {
+            if (value !== undefined && value !== null) {
                 if (Array.isArray(value)) {
                     formData.append(key, JSON.stringify(value));
                 } else {
@@ -86,9 +88,11 @@ export const ProductActions = {
             }
         });
 
-        // Append image file if provided
-        if (image) {
-            formData.append('image', image);
+        // Append multiple image files if provided
+        if (images && images.length > 0) {
+            images.forEach((image) => {
+                formData.append('images', image);
+            });
         }
 
         const response = await axiosInstance.put<ApiResponse<IUpdateProductResponse>>(`/products/${productId}`, formData, {

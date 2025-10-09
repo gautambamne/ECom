@@ -91,21 +91,6 @@ export const OrderController = {
         });
     }),
 
-    // Get order statistics
-    getOrderStats: asyncHandler(async (req: Request, res: Response) => {
-        const userId = (req as any).user?.id;
-        if (!userId) {
-            throw new ApiError(401, "Unauthorized");
-        }
-
-        const stats = await OrderService.getOrderStats(userId);
-
-        res.status(200).json({
-            success: true,
-            message: "Order statistics retrieved successfully",
-            data: stats
-        });
-    }),
 
     // Track order
     trackOrder: asyncHandler(async (req: Request, res: Response) => {

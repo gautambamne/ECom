@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axios-interceptor";
-import { IAddToWishlistSchema } from "@/schema/wishlsit-schema";
+import { IAddToWishlistSchema } from "@/schema/wishlist.schema";
 
 export const WishlistActions = {
     GetUserWishlistAction: async (): Promise<IGetUserWishlistResponse> => {

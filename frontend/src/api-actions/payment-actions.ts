@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axios-interceptor";
-import { ICreatePaymentSchema } from "@/schema/payment-schema";
+import { ICreatePaymentSchema } from "@/schema/payment.schema";
 
 export const PaymentActions = {
     // User routes (require authentication)

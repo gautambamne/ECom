@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axios-interceptor";
-import { ICreateOrderSchema, IUpdateOrderStatusSchema } from "@/schema/order-schema";
+import { ICreateOrderSchema, IUpdateOrderStatusSchema } from "@/schema/order.schema";
 
 export const OrderActions = {
     // User routes (require authentication)
