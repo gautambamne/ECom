@@ -46,10 +46,10 @@ export const CreateProductController = asyncHandler(async (req: Request, res: Re
   //   bodyKeys: Object.keys(req.body)
   // });
 
-  // Include the file in the validation data
+  // Include the files in the validation data
   const validationData = {
     ...req.body,
-    image: req.file
+    images: req.files
   };
 
   const result = CreateProductSchema.safeParse(validationData);
@@ -57,38 +57,44 @@ export const CreateProductController = asyncHandler(async (req: Request, res: Re
     throw new ApiError(400, "Validation Error", zodErrorFormatter(result.error));
   }
 
-  let imageUrl: string | undefined;
-  let imagePublicId: string | undefined;
+  let imageUrls: string[] = [];
+  let imagePublicIds: string[] = [];
 
-  // Handle image upload if file is provided
-  if (req.file?.buffer) {
+  // Handle multiple image uploads if files are provided
+  if (req.files && Array.isArray(req.files) && req.files.length > 0) {
     try {
       const cloudinaryService = CloudinaryService.getInstance();
-      const uploadResult = await cloudinaryService.uploadImage(req.file.buffer, {
-        folder: 'products',
-        transformation: {
-          width: 800,
-          height: 600,
-          crop: 'fill',
-          quality: 'auto',
-          format: 'webp'
-        }
-      });
+      
+      // Upload all images in parallel
+      const uploadPromises = req.files.map(file => 
+        cloudinaryService.uploadImage(file.buffer, {
+          folder: 'products',
+          transformation: {
+            width: 800,
+            height: 600,
+            crop: 'fill',
+            quality: 'auto',
+            format: 'webp'
+          }
+        })
+      );
 
-      imageUrl = uploadResult.secure_url;
-      imagePublicId = uploadResult.public_id;
+      const uploadResults = await Promise.all(uploadPromises);
+      
+      imageUrls = uploadResults.map(result => result.secure_url);
+      imagePublicIds = uploadResults.map(result => result.public_id);
 
-      console.log('Image uploaded successfully:');
+      console.log(`${imageUrls.length} images uploaded successfully`);
     } catch (error: any) {
       console.error('Image upload failed:', error);
-      throw new ApiError(500, `Failed to upload product image: ${error.message}`);
+      throw new ApiError(500, `Failed to upload product images: ${error.message}`);
     }
   }
 
-  // Create product with image URL
+  // Create product with image URLs
   const productData = {
     ...result.data,
-    ...(imageUrl && { images: [imageUrl] })
+    ...(imageUrls.length > 0 && { images: imageUrls })
   };
 
   const product = await ProductService.createProduct(productData, vendorId);
@@ -114,10 +120,10 @@ export const UpdateProductController = asyncHandler(async (req: Request, res: Re
     throw new ApiError(400, "Validation Error", zodErrorFormatter(idResult.error));
   }
 
-  // Include the file in the validation data
+  // Include the files in the validation data
   const validationData = {
     ...req.body,
-    image: req.file
+    images: req.files
   };
 
   const updateResult = UpdateProductSchema.safeParse(validationData);
@@ -125,11 +131,11 @@ export const UpdateProductController = asyncHandler(async (req: Request, res: Re
     throw new ApiError(400, "Validation Error", zodErrorFormatter(updateResult.error));
   }
 
-  let imageUrl: string | undefined;
-  let imagePublicId: string | undefined;
+  let imageUrls: string[] = [];
+  let imagePublicIds: string[] = [];
 
-  // Handle image upload if new file is provided
-  if (req.file?.buffer) {
+  // Handle multiple image uploads if new files are provided
+  if (req.files && Array.isArray(req.files) && req.files.length > 0) {
     try {
       const cloudinaryService = CloudinaryService.getInstance();
       
@@ -152,36 +158,36 @@ export const UpdateProductController = asyncHandler(async (req: Request, res: Re
         }
       }
       
-      // Upload new image
-      const uploadResult = await cloudinaryService.uploadImage(req.file.buffer, {
-        folder: 'products',
-        transformation: {
-          width: 800,
-          height: 600,
-          crop: 'fill',
-          quality: 'auto',
-          format: 'webp'
-        }
-      });
+      // Upload new images in parallel
+      const uploadPromises = req.files.map(file => 
+        cloudinaryService.uploadImage(file.buffer, {
+          folder: 'products',
+          transformation: {
+            width: 800,
+            height: 600,
+            crop: 'fill',
+            quality: 'auto',
+            format: 'webp'
+          }
+        })
+      );
 
-      imageUrl = uploadResult.secure_url;
-      imagePublicId = uploadResult.public_id;
+      const uploadResults = await Promise.all(uploadPromises);
+      
+      imageUrls = uploadResults.map(result => result.secure_url);
+      imagePublicIds = uploadResults.map(result => result.public_id);
 
-      console.log('New image uploaded successfully:', {
-        url: imageUrl,
-        publicId: imagePublicId,
-        size: uploadResult.bytes
-      });
+      console.log(`${imageUrls.length} new images uploaded successfully`);
     } catch (error: any) {
       console.error('Image upload failed:', error);
-      throw new ApiError(500, `Failed to upload product image: ${error.message}`);
+      throw new ApiError(500, `Failed to upload product images: ${error.message}`);
     }
   }
 
   // Prepare update data
   const updateData = {
     ...updateResult.data,
-    ...(imageUrl && { images: [imageUrl] })
+    ...(imageUrls.length > 0 && { images: imageUrls })
   };
 
   const product = await ProductService.updateProduct(

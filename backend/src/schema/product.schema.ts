@@ -55,10 +55,9 @@ const CreateProductSchema = z.object({
     },
     z.array(ProductVariantSchema).min(1, "At least one variant is required")
   ),
-  // Note: image field is handled by multer middleware and not validated here
+  // Note: images field is handled by multer middleware and not validated here
   // The actual file validation happens in the multer middleware
-  image: z.any().optional(), // This will be populated by multer
-  images: z.array(z.string().url()).optional(), // Array of image URLs for database storage
+  images: z.any().optional(), // This will be populated by multer (array of file objects)
 });
 
 // Update Product Schema
@@ -102,9 +101,8 @@ const UpdateProductSchema = z.object({
     },
     z.array(ProductVariantSchema).optional()
   ),
-  // Note: image field is handled by multer middleware and not validated here
-  image: z.any().optional(), // This will be populated by multer
-  images: z.array(z.string().url()).optional(), // Array of image URLs for database storage
+  // Note: images field is handled by multer middleware and not validated here
+  images: z.any().optional(), // This will be populated by multer (array of file objects)
 });
 
 const DeleteProductSchema = z.object({

@@ -7,11 +7,11 @@ interface IProduct {
         color: string;
         stock: number
     }[];
-    description?: string
-    brand?: string
-    categories?: string[]
-    image?: any
-    images?: string[]
+    description?: string | undefined
+    brand?: string | undefined
+    categories?: string[] | undefined
+    image?: any | undefined
+    images?: string[] | undefined
 }
 
 interface ICreateProductResponse {

@@ -1,25 +1,5 @@
 import { z, infer as zodInfer } from 'zod';
-// import { ShoeColor, ShoeSize } from "../generated/prisma";
-
-// Define enums directly since the generated prisma types might not be available
-enum ShoeSize {
-  UK6 = "UK6",
-  UK7 = "UK7", 
-  UK8 = "UK8",
-  UK9 = "UK9",
-  UK10 = "UK10",
-  UK11 = "UK11"
-}
-
-enum ShoeColor {
-  RED = "RED",
-  BLACK = "BLACK",
-  WHITE = "WHITE", 
-  BLUE = "BLUE",
-  GREEN = "GREEN",
-  YELLOW = "YELLOW",
-  GREY = "GREY"
-}
+import { ShoeSize, ShoeColor } from '@/types/prisma-enums';
 
 // Enum schemas
 const ShoeSizeSchema = z.nativeEnum(ShoeSize);
@@ -32,8 +12,25 @@ const ProductVariantSchema = z.object({
   stock: z.number().int().nonnegative().default(0),
 });
 
-// Create Product Schema
+// Create Product Schema (simplified for frontend form)
 const CreateProductSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters"),
+  description: z.string().optional(),
+  brand: z.string().optional(),
+  price: z.number().positive("Price must be greater than 0"),
+  stock: z.number().int().nonnegative().default(0),
+  categories: z.array(z.string().uuid("Invalid category id")).optional(),
+  variants: z.array(ProductVariantSchema).min(1, "At least one variant is required"),
+  // Note: image field is handled by multer middleware and not validated here
+  // The actual file validation happens in the multer middleware
+  image: z.any().optional(), // This will be populated by multer
+  images: z.array(z.string().url()).optional(), // Array of image URLs for database storage
+});
+
+// Create Product Schema for API (with preprocessing for form data)
+const CreateProductAPISchema = z.object({
   name: z
     .string()
     .min(2, "Name must be at least 2 characters"),
@@ -168,6 +165,7 @@ export {
     ShoeColorSchema,
     ProductVariantSchema,
     CreateProductSchema,
+    CreateProductAPISchema,
     UpdateProductSchema,
     DeleteProductSchema,
     GetProductSchema,
