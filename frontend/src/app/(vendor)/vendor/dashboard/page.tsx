@@ -1,12 +1,15 @@
 "use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Package, DollarSign, ShoppingCart, TrendingUp, AlertCircle, Eye, Star, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Package, DollarSign, ShoppingCart, TrendingUp, AlertCircle, Eye, Star, Users, Plus, ArrowRight } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import RoleDebugComponent from "@/components/debug/role-debug";
 
 export default function VendorDashboardPage() {
   const [timeRange, setTimeRange] = useState("month");
+  const router = useRouter();
 
   const stats = [
     {
@@ -80,26 +83,31 @@ export default function VendorDashboardPage() {
         {/* Debug Component - Remove in production */}
         <RoleDebugComponent />
         
-        {/* Header */}
-        <div className="flex items-center justify-between">
+        {/* Enhanced Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">Sneaker Vendor Dashboard</h1>
             <p className="text-slate-600 mt-1">Welcome back! Here's your business overview.</p>
           </div>
-          <div className="flex gap-2">
-            {["week", "month", "year"].map((range) => (
-              <button
-                key={range}
-                onClick={() => setTimeRange(range)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  timeRange === range
-                    ? "bg-slate-900 text-white"
-                    : "bg-white text-slate-600 hover:bg-slate-200"
-                }`}
-              >
-                {range.charAt(0).toUpperCase() + range.slice(1)}
-              </button>
-            ))}
+          
+          <div className="flex flex-col sm:flex-row gap-3">
+         
+            {/* Time Range */}
+            <div className="flex gap-2">
+              {["week", "month", "year"].map((range) => (
+                <button
+                  key={range}
+                  onClick={() => setTimeRange(range)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    timeRange === range
+                      ? "bg-slate-900 text-white"
+                      : "bg-white text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {range.charAt(0).toUpperCase() + range.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -107,8 +115,16 @@ export default function VendorDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, idx) => {
             const Icon = stat.icon;
+            const isProductCard = stat.title === "Total Products";
+            
             return (
-              <Card key={idx} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+              <Card 
+                key={idx} 
+                className={`border-0 shadow-lg hover:shadow-xl transition-all duration-200 ${
+                  isProductCard ? 'cursor-pointer hover:scale-105' : ''
+                }`}
+                onClick={isProductCard ? () => router.push('/vendor/products') : undefined}
+              >
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-slate-600">{stat.title}</CardTitle>
                   <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center">
@@ -116,10 +132,17 @@ export default function VendorDashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-slate-900">{stat.value}</div>
-                  <p className="text-xs text-green-600 mt-1 font-medium">
-                    {stat.change}
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-3xl font-bold text-slate-900">{stat.value}</div>
+                      <p className="text-xs text-green-600 mt-1 font-medium">
+                        {stat.change}
+                      </p>
+                    </div>
+                    {isProductCard && (
+                      <ArrowRight className="h-5 w-5 text-slate-400" />
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             );

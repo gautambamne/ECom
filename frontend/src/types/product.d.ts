@@ -1,4 +1,5 @@
 interface IProduct {
+    id?: string
     name: string
     price: number
     stock: number
@@ -12,6 +13,10 @@ interface IProduct {
     categories?: string[] | undefined
     image?: any | undefined
     images?: string[] | undefined
+    is_active?: boolean
+    product_code?: string
+    createdAt?: string
+    updatedAt?: string
 }
 
 interface ICreateProductResponse {
@@ -40,13 +45,16 @@ interface IGetProductsResponse {
   };
 }
 interface IGetProductsVendorResponse {
-  products: IProduct[];
-  message: string
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
+  success: boolean;
+  message: string;
+  data: {
+    products: IProduct[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
   };
 }
 
