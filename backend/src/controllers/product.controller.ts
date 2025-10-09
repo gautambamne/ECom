@@ -241,7 +241,7 @@ export const DeleteProductController = asyncHandler(async (req: Request, res: Re
 });
 
 
-export const GetProductController = asyncHandler(async (req: Request, res: Response) => {
+export const GetProductByIdController = asyncHandler(async (req: Request, res: Response) => {
   const result = GetProductSchema.safeParse({ id: req.params.id });
   if (!result.success) {
     throw new ApiError(400, "Validation Error", zodErrorFormatter(result.error));
@@ -336,40 +336,3 @@ export const GetProductsByCategoryController = asyncHandler(async (req: Request,
     })
   );
 });
-
-
-// Add new controllers for enhanced features
-export const GetFeaturedProductsController = asyncHandler(async (req: Request, res: Response) => {
-  const limit = parseInt(req.query.limit as string) || 10;
-  const products = await ProductService.getFeaturedProducts(limit);
-
-  return res.status(200).json(
-    new ApiResponse({
-      success: true,
-      message: "Featured products fetched successfully",
-      data: {
-        products
-      }
-    })
-  );
-});
-
-
-export const GetProductsOnSaleController = asyncHandler(async (req: Request, res: Response) => {
-  const page = parseInt(req.query.page as string) || 1;
-  const limit = parseInt(req.query.limit as string) || 10;
-  
-  const { products, pagination } = await ProductService.getProductsOnSale(page, limit);
-
-  return res.status(200).json(
-    new ApiResponse({
-      success: true,
-      message: "Sale products fetched successfully",
-      data: {
-        products,
-        pagination
-      }
-    })
-  );
-});
-

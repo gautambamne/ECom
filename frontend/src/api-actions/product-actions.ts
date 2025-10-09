@@ -29,18 +29,8 @@ export const ProductActions = {
         return response.data.data;
     },
 
-    GetProductAction: async (productId: string): Promise<IGetProductResponse> => {
-        const response = await axiosInstance.get<ApiResponse<IGetProductResponse>>(`/products/${productId}`);
-        return response.data.data;
-    },
-
-    GetFeaturedProductsAction: async (): Promise<IGetProductsResponse> => {
-        const response = await axiosInstance.get<ApiResponse<IGetProductsResponse>>("/products/featured");
-        return response.data.data;
-    },
-
-    GetProductsOnSaleAction: async (): Promise<IGetProductsResponse> => {
-        const response = await axiosInstance.get<ApiResponse<IGetProductsResponse>>("/products/on-sale");
+    GetProductByIdAction: async (productId: string): Promise<IGetProductByIdResponse> => {
+        const response = await axiosInstance.get<ApiResponse<IGetProductByIdResponse>>(`/products/${productId}`);
         return response.data.data;
     },
 
@@ -108,9 +98,9 @@ export const ProductActions = {
         return response.data.data;
     },
 
-    GetVendorProductsAction: async (vendorId?: string): Promise<IGetProductsResponse> => {
+    GetVendorProductsAction: async (vendorId?: string): Promise<IGetProductsVendorResponse> => {
         const endpoint = vendorId ? `/products/vendor/${vendorId}` : "/products/vendor/me";
-        const response = await axiosInstance.get<ApiResponse<IGetProductsResponse>>(endpoint);
+        const response = await axiosInstance.get<ApiResponse<IGetProductsVendorResponse>>(endpoint);
         return response.data.data;
     },
 };
