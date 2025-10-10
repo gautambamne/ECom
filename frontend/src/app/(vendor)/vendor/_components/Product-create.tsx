@@ -117,8 +117,8 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
   const colorOptions = SHOE_COLORS;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="bg-background pb-8">
+      <div className="max-w-4xl mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -134,19 +134,19 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
               </Button>
             )}
             <div>
-              <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
-                <Package className="w-8 h-8 text-slate-700" />
+              <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+                <Package className="w-8 h-8 text-primary" />
                 Create New Product
               </h1>
-              <p className="text-slate-600 mt-1">Add a new sneaker to your inventory</p>
+              <p className="text-muted-foreground mt-1">Add a new sneaker to your inventory</p>
             </div>
           </div>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Basic Information */}
-          <Card className="shadow-lg border-0 bg-white">
-            <CardHeader className="bg-gradient-to-r from-slate-900 to-slate-700 text-white rounded-t-lg">
+          <Card>
+            <CardHeader className="bg-muted/50">
               <CardTitle className="flex items-center gap-2">
                 <Package2 className="w-5 h-5" />
                 Basic Information
@@ -155,17 +155,16 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
             <CardContent className="p-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-medium text-slate-700">
+                  <Label htmlFor="name" className="text-sm font-medium">
                     Product Name *
                   </Label>
                   <Input
                     id="name"
                     placeholder="e.g., Air Jordan 1 Retro High"
                     {...form.register("name")}
-                    className="border-slate-300 focus:border-slate-500"
                   />
                   {form.formState.errors.name && (
-                    <p className="text-red-500 text-xs flex items-center gap-1">
+                    <p className="text-destructive text-xs flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" />
                       {form.formState.errors.name.message}
                     </p>
@@ -238,8 +237,8 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
           </Card>
 
           {/* Product Images */}
-          <Card className="shadow-lg border-0 bg-white">
-            <CardHeader className="bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-t-lg">
+          <Card>
+            <CardHeader className="bg-muted/50">
               <CardTitle className="flex items-center gap-2">
                 <ImageIcon className="w-5 h-5" />
                 Product Images
@@ -247,11 +246,11 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="images" className="text-sm font-medium text-slate-700">
+                <Label htmlFor="images" className="text-sm font-medium">
                   Upload Images
                 </Label>
-                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-slate-400 transition-colors">
-                  <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
+                  <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
                   <input
                     id="images"
                     type="file"
@@ -262,7 +261,7 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
                   />
                   <Label
                     htmlFor="images"
-                    className="text-sm text-slate-600 cursor-pointer hover:text-slate-800"
+                    className="text-sm text-muted-foreground cursor-pointer hover:text-foreground"
                   >
                     Click to upload images or drag and drop
                   </Label>
@@ -275,7 +274,7 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
                         <img
                           src={preview}
                           alt={`Preview ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-lg border border-slate-200"
+                          className="w-full h-24 object-cover rounded-lg border"
                         />
                       </div>
                     ))}
@@ -286,8 +285,8 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
           </Card>
 
           {/* Product Variants */}
-          <Card className="shadow-lg border-0 bg-white">
-            <CardHeader className="bg-gradient-to-r from-green-900 to-green-700 text-white rounded-t-lg">
+          <Card>
+            <CardHeader className="bg-muted/50">
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Palette className="w-5 h-5" />
@@ -298,7 +297,6 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
                   onClick={addVariant}
                   size="sm"
                   variant="secondary"
-                  className="bg-white text-green-700 hover:bg-green-50"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   Add Variant

@@ -15,9 +15,7 @@ function VendorLayout({
         <SideBarIndex>
           <div className="relative w-full">
             <ScrollArea className="h-[calc(100vh-64px)] w-full">
-              <div className="p-2">
-                {children}
-              </div>
+              {children}
             </ScrollArea>
           </div>
         </SideBarIndex>

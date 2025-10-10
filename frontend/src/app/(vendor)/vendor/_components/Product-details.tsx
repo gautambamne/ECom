@@ -98,11 +98,11 @@ export default function SneakerProductDetail({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <Card className="p-8 shadow-2xl bg-white/80 backdrop-blur-sm border-0">
+      <div className="flex items-center justify-center min-h-screen bg-background p-6">
+        <Card className="p-8">
           <div className="text-center">
-            <Loader2 className="h-12 w-12 text-blue-600 mx-auto animate-spin mb-4" />
-            <p className="text-slate-700 font-medium">Loading product details...</p>
+            <Loader2 className="h-12 w-12 text-primary mx-auto animate-spin mb-4" />
+            <p className="text-muted-foreground font-medium">Loading product details...</p>
           </div>
         </Card>
       </div>
@@ -111,12 +111,12 @@ export default function SneakerProductDetail({
 
   if (error || !product) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <Card className="p-8 shadow-2xl bg-white/80 backdrop-blur-sm border-0">
+      <div className="flex items-center justify-center min-h-screen bg-background p-6">
+        <Card className="p-8">
           <div className="text-center">
-            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h3 className="text-slate-900 font-semibold mb-2 text-lg">Product Not Found</h3>
-            <p className="text-slate-600 mb-6">{error?.message || "Unable to load product"}</p>
+            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+            <h3 className="text-foreground font-semibold mb-2 text-lg">Product Not Found</h3>
+            <p className="text-muted-foreground mb-6">{error?.message || "Unable to load product"}</p>
             <div className="flex gap-3 justify-center">
               {onBack && (
                 <Button onClick={onBack} variant="outline">
@@ -184,15 +184,15 @@ export default function SneakerProductDetail({
   const isOutOfStock = currentStock === 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="bg-background pb-8">
       {/* Enhanced Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-white/20 sticky top-0 z-10 shadow-xl">
+      <div className="bg-card border-b sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
           <div className="flex items-center justify-between">
             <Button 
               onClick={onBack}
               variant="outline"
-              className="flex items-center gap-2 hover:bg-slate-50"
+              className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden sm:inline">Back to Products</span>
@@ -234,19 +234,19 @@ export default function SneakerProductDetail({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Enhanced Image Gallery */}
           <div className="space-y-6">
-            <Card className="p-6 shadow-2xl bg-white/80 backdrop-blur-sm border-0 rounded-2xl overflow-hidden">
-              <div className="aspect-square relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200">
+            <Card className="p-6">
+              <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
                 {product.images && product.images.length > 0 ? (
                   <img
                     src={product.images[selectedImage]}
                     alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    className="w-full h-full object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <div className="text-center">
-                      <BadgeIcon className="h-16 w-16 text-slate-400 mx-auto mb-3" />
-                      <p className="text-slate-500 font-medium">No image available</p>
+                      <BadgeIcon className="h-16 w-16 text-muted-foreground mx-auto mb-3" />
+                      <p className="text-muted-foreground font-medium">No image available</p>
                     </div>
                   </div>
                 )}
@@ -257,26 +257,26 @@ export default function SneakerProductDetail({
                     onClick={() => setIsFavorite(!isFavorite)}
                     size="sm"
                     variant="secondary"
-                    className="rounded-full bg-white/90 hover:bg-white shadow-lg hover:scale-110 transition-all duration-200"
+                    className="rounded-full h-9 w-9 p-0"
                   >
                     <Heart
-                      className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-slate-600'}`}
+                      className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`}
                     />
                   </Button>
                   
                   <Button
                     size="sm"
                     variant="secondary"
-                    className="rounded-full bg-white/90 hover:bg-white shadow-lg hover:scale-110 transition-all duration-200"
+                    className="rounded-full h-9 w-9 p-0"
                   >
-                    <Share2 className="h-4 w-4 text-slate-600" />
+                    <Share2 className="h-4 w-4" />
                   </Button>
                 </div>
 
                 {/* Image Counter */}
                 {product.images && product.images.length > 1 && (
                   <div className="absolute bottom-4 left-4">
-                    <Badge variant="secondary" className="bg-black/20 text-white border-0 backdrop-blur-sm">
+                    <Badge variant="secondary" className="bg-black/50 text-white backdrop-blur-sm">
                       {selectedImage + 1} / {product.images.length}
                     </Badge>
                   </div>
@@ -292,16 +292,16 @@ export default function SneakerProductDetail({
                     key={index}
                     onClick={() => setSelectedImage(index)}
                     variant="outline"
-                    className={`aspect-square p-2 h-auto transition-all duration-200 ${
+                    className={`aspect-square p-2 h-auto ${
                       selectedImage === index
-                        ? 'ring-4 ring-blue-500 shadow-lg border-blue-300'
-                        : 'border-slate-200 hover:border-slate-300 hover:shadow-md'
+                        ? 'ring-2 ring-primary'
+                        : ''
                     }`}
                   >
                     <img
                       src={image}
                       alt={`View ${index + 1}`}
-                      className="w-full h-full object-cover rounded-lg"
+                      className="w-full h-full object-cover rounded"
                     />
                   </Button>
                 ))}
@@ -310,49 +310,48 @@ export default function SneakerProductDetail({
           </div>
 
           {/* Enhanced Product Info */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             {/* Header Section */}
             <div>
               <div className="flex items-center gap-2 mb-4 flex-wrap">
                 {product.brand && (
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200">
+                  <Badge variant="secondary">
                     <Star className="w-3 h-3 mr-1" />
                     {product.brand}
                   </Badge>
                 )}
                 {product.is_active ? (
-                  <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-200">
+                  <Badge variant="default">
                     Active
                   </Badge>
                 ) : (
-                  <Badge variant="secondary" className="bg-gray-100 text-gray-700 hover:bg-gray-200">
+                  <Badge variant="secondary">
                     Draft
                   </Badge>
                 )}
                 <Badge 
-                  variant="secondary" 
-                  className={`${!isOutOfStock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
+                  variant={!isOutOfStock ? 'default' : 'destructive'}
                 >
                   {!isOutOfStock ? 'In Stock' : 'Out of Stock'}
                 </Badge>
               </div>
               
-              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-3">
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
                 {product.name}
               </h1>
               
               {product.product_code && (
-                <p className="text-slate-600 font-medium">SKU: {product.product_code}</p>
+                <p className="text-muted-foreground font-medium">SKU: {product.product_code}</p>
               )}
             </div>
 
             {/* Price Section */}
-            <Card className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-0 shadow-lg">
+            <Card className="p-6 bg-primary/5">
               <div className="flex items-baseline gap-3">
-                <span className="text-4xl md:text-5xl font-bold text-slate-900">
+                <span className="text-4xl md:text-5xl font-bold text-foreground">
                   {formatCurrency(product.price)}
                 </span>
-                <Badge variant="outline" className="text-green-600 border-green-300">
+                <Badge variant="outline" className="text-green-600 dark:text-green-500 border-green-300 dark:border-green-700">
                   Best Price
                 </Badge>
               </div>
@@ -360,21 +359,21 @@ export default function SneakerProductDetail({
 
             {/* Description */}
             {product.description && (
-              <Card className="p-6 bg-white/60 backdrop-blur-sm border-slate-200 shadow-lg">
-                <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+              <Card className="p-6">
+                <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
                   <BadgeIcon className="w-4 h-4" />
                   Description
                 </h3>
-                <p className="text-slate-700 leading-relaxed">{product.description}</p>
+                <p className="text-muted-foreground leading-relaxed">{product.description}</p>
               </Card>
             )}
 
             {/* Enhanced Color Selection */}
             {availableColors.length > 0 && (
-              <Card className="p-6 bg-white/60 backdrop-blur-sm border-slate-200 shadow-lg">
-                <label className="block text-lg font-semibold text-slate-900 mb-4">
+              <Card className="p-6">
+                <label className="block text-lg font-semibold text-foreground mb-4">
                   Color: {selectedVariant?.color && (
-                    <span className="font-normal text-blue-600">{selectedVariant.color}</span>
+                    <span className="font-normal text-primary">{selectedVariant.color}</span>
                   )}
                 </label>
                 <div className="flex flex-wrap gap-3">
@@ -383,11 +382,7 @@ export default function SneakerProductDetail({
                       key={color}
                       onClick={() => handleColorChange(color)}
                       variant={selectedVariant?.color === color ? "default" : "outline"}
-                      className={`px-6 py-3 font-medium transition-all duration-200 ${
-                        selectedVariant?.color === color
-                          ? 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200'
-                          : 'hover:border-slate-400 hover:shadow-md'
-                      }`}
+                      className="px-6 py-3 font-medium"
                     >
                       {color}
                     </Button>
@@ -398,10 +393,10 @@ export default function SneakerProductDetail({
 
             {/* Enhanced Size Selection */}
             {sizes.length > 0 && (
-              <Card className="p-6 bg-white/60 backdrop-blur-sm border-slate-200 shadow-lg">
-                <label className="block text-lg font-semibold text-slate-900 mb-4">
+              <Card className="p-6">
+                <label className="block text-lg font-semibold text-foreground mb-4">
                   Size: {selectedVariant?.size && (
-                    <span className="font-normal text-blue-600">{selectedVariant.size}</span>
+                    <span className="font-normal text-primary">{selectedVariant.size}</span>
                   )}
                 </label>
                 <div className="grid grid-cols-6 gap-3">
@@ -417,13 +412,7 @@ export default function SneakerProductDetail({
                         onClick={() => handleSizeChange(size)}
                         disabled={!isAvailable}
                         variant={selectedVariant?.size === size ? "default" : "outline"}
-                        className={`aspect-square h-12 font-semibold transition-all duration-200 ${
-                          selectedVariant?.size === size
-                            ? 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200'
-                            : isAvailable
-                            ? 'hover:border-slate-400 hover:shadow-md'
-                            : 'opacity-50 cursor-not-allowed'
-                        }`}
+                        className="aspect-square h-12 font-semibold"
                       >
                         {size}
                       </Button>
@@ -435,20 +424,20 @@ export default function SneakerProductDetail({
 
             {/* Enhanced Quantity Selection */}
             {!isVendorView && (
-              <Card className="p-6 bg-white/60 backdrop-blur-sm border-slate-200 shadow-lg">
-                <label className="block text-lg font-semibold text-slate-900 mb-4">Quantity</label>
+              <Card className="p-6">
+                <label className="block text-lg font-semibold text-foreground mb-4">Quantity</label>
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center bg-white rounded-xl border-2 border-slate-200 shadow-sm">
+                  <div className="flex items-center bg-muted rounded-lg border">
                     <Button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       disabled={isOutOfStock}
                       variant="ghost"
                       size="sm"
-                      className="px-4 py-2 font-bold hover:bg-slate-50"
+                      className="px-4 py-2 font-bold"
                     >
                       -
                     </Button>
-                    <span className="px-6 py-2 font-semibold text-slate-900 min-w-[60px] text-center">
+                    <span className="px-6 py-2 font-semibold text-foreground min-w-[60px] text-center">
                       {quantity}
                     </span>
                     <Button
@@ -461,7 +450,7 @@ export default function SneakerProductDetail({
                       +
                     </Button>
                   </div>
-                  <Badge variant="outline" className={currentStock > 0 ? 'text-green-600 border-green-300' : 'text-red-600 border-red-300'}>
+                  <Badge variant="outline" className={currentStock > 0 ? 'text-green-600 dark:text-green-500 border-green-300 dark:border-green-700' : 'text-destructive border-destructive/50'}>
                     {currentStock > 0 ? `${currentStock} available` : 'Out of stock'}
                   </Badge>
                 </div>
@@ -474,61 +463,61 @@ export default function SneakerProductDetail({
                 <Button
                   onClick={handleAddToCart}
                   disabled={isOutOfStock || !selectedVariant}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-6 rounded-2xl shadow-2xl shadow-blue-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
+                  className="flex-1 font-bold py-6 text-lg"
                 >
-                  <ShoppingCart className="h-5 w-5" />
+                  <ShoppingCart className="h-5 w-5 mr-2" />
                   {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
                 </Button>
               </div>
             )}
 
             {/* Enhanced Features */}
-            <Card className="p-6 bg-white/60 backdrop-blur-sm border-slate-200 shadow-lg">
-              <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-blue-600" />
+            <Card className="p-6">
+              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                <Shield className="w-5 h-5 text-primary" />
                 Product Features
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-                  <Truck className="h-8 w-8 mx-auto mb-3 text-blue-600" />
-                  <p className="font-semibold text-slate-900 mb-1">Free Shipping</p>
-                  <p className="text-sm text-slate-600">On orders over ₹2000</p>
+                <div className="text-center p-4 bg-primary/5 rounded-lg">
+                  <Truck className="h-8 w-8 mx-auto mb-3 text-primary" />
+                  <p className="font-semibold text-foreground mb-1">Free Shipping</p>
+                  <p className="text-sm text-muted-foreground">On orders over ₹2000</p>
                 </div>
-                <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
-                  <Shield className="h-8 w-8 mx-auto mb-3 text-green-600" />
-                  <p className="font-semibold text-slate-900 mb-1">100% Authentic</p>
-                  <p className="text-sm text-slate-600">Original products</p>
+                <div className="text-center p-4 bg-green-500/5 rounded-lg">
+                  <Shield className="h-8 w-8 mx-auto mb-3 text-green-600 dark:text-green-500" />
+                  <p className="font-semibold text-foreground mb-1">100% Authentic</p>
+                  <p className="text-sm text-muted-foreground">Original products</p>
                 </div>
-                <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
-                  <RefreshCw className="h-8 w-8 mx-auto mb-3 text-purple-600" />
-                  <p className="font-semibold text-slate-900 mb-1">Easy Returns</p>
-                  <p className="text-sm text-slate-600">30-day policy</p>
+                <div className="text-center p-4 bg-purple-500/5 rounded-lg">
+                  <RefreshCw className="h-8 w-8 mx-auto mb-3 text-purple-600 dark:text-purple-500" />
+                  <p className="font-semibold text-foreground mb-1">Easy Returns</p>
+                  <p className="text-sm text-muted-foreground">30-day policy</p>
                 </div>
               </div>
             </Card>
 
             {/* Enhanced Product Variants Table */}
             {product.variants && product.variants.length > 0 && (
-              <Card className="p-6 bg-white/60 backdrop-blur-sm border-slate-200 shadow-lg">
-                <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                  <BadgeIcon className="w-5 h-5 text-blue-600" />
+              <Card className="p-6">
+                <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <BadgeIcon className="w-5 h-5 text-primary" />
                   Available Variants
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b-2 border-slate-200 bg-slate-50">
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700 rounded-l-lg">Size</th>
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700">Color</th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-700 rounded-r-lg">Stock</th>
+                      <tr className="border-b bg-muted/50">
+                        <th className="text-left py-3 px-4 font-semibold text-foreground">Size</th>
+                        <th className="text-left py-3 px-4 font-semibold text-foreground">Color</th>
+                        <th className="text-right py-3 px-4 font-semibold text-foreground">Stock</th>
                       </tr>
                     </thead>
                     <tbody>
                       {product.variants.map((variant: any, index: number) => (
-                        <tr key={index} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
-                          <td className="py-3 px-4 text-slate-700 font-medium">{variant.size}</td>
+                        <tr key={index} className="border-b last:border-0 hover:bg-muted/30">
+                          <td className="py-3 px-4 text-foreground font-medium">{variant.size}</td>
                           <td className="py-3 px-4">
-                            <Badge variant="outline" className="text-slate-700">
+                            <Badge variant="outline">
                               {variant.color}
                             </Badge>
                           </td>
@@ -537,6 +526,11 @@ export default function SneakerProductDetail({
                               variant="outline" 
                               className={`${variant.stock > 0 ? 'text-green-600 border-green-300' : 'text-red-600 border-red-300'}`}
                             >
+                              {variant.stock}
+                            </Badge>
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            <Badge variant={variant.stock > 0 ? "default" : "destructive"}>
                               {variant.stock}
                             </Badge>
                           </td>
@@ -549,38 +543,38 @@ export default function SneakerProductDetail({
             )}
 
             {/* Enhanced Additional Product Details */}
-            <Card className="p-6 bg-white/60 backdrop-blur-sm border-slate-200 shadow-lg">
-              <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                <BadgeIcon className="w-5 h-5 text-blue-600" />
+            <Card className="p-6">
+              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                <BadgeIcon className="w-5 h-5 text-primary" />
                 Product Information
               </h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center py-3 px-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg">
-                  <span className="text-slate-600 font-medium">Total Stock</span>
-                  <Badge variant="outline" className="text-slate-900 font-semibold">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center py-2 px-3 bg-muted/50 rounded-lg">
+                  <span className="text-muted-foreground font-medium">Total Stock</span>
+                  <Badge variant="outline" className="font-semibold">
                     {product.stock}
                   </Badge>
                 </div>
                 {product.brand && (
-                  <div className="flex justify-between items-center py-3 px-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
-                    <span className="text-slate-600 font-medium">Brand</span>
-                    <Badge variant="outline" className="text-blue-600 border-blue-300 font-semibold">
+                  <div className="flex justify-between items-center py-2 px-3 bg-muted/50 rounded-lg">
+                    <span className="text-muted-foreground font-medium">Brand</span>
+                    <Badge variant="outline" className="font-semibold">
                       {product.brand}
                     </Badge>
                   </div>
                 )}
                 {product.product_code && (
-                  <div className="flex justify-between items-center py-3 px-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg">
-                    <span className="text-slate-600 font-medium">Product Code</span>
-                    <Badge variant="outline" className="text-purple-600 border-purple-300 font-mono text-xs">
+                  <div className="flex justify-between items-center py-2 px-3 bg-muted/50 rounded-lg">
+                    <span className="text-muted-foreground font-medium">Product Code</span>
+                    <Badge variant="outline" className="font-mono text-xs">
                       {product.product_code}
                     </Badge>
                   </div>
                 )}
                 {product.createdAt && (
-                  <div className="flex justify-between items-center py-3 px-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg">
-                    <span className="text-slate-600 font-medium">Created</span>
-                    <Badge variant="outline" className="text-green-600 border-green-300 text-xs">
+                  <div className="flex justify-between items-center py-2 px-3 bg-muted/50 rounded-lg">
+                    <span className="text-muted-foreground font-medium">Created</span>
+                    <Badge variant="outline" className="text-xs">
                       {new Date(product.createdAt).toLocaleDateString()}
                     </Badge>
                   </div>

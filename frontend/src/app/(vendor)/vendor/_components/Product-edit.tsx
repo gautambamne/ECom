@@ -153,11 +153,11 @@ export default function ProductEdit({ productId, onBack, onSuccess }: ProductEdi
 
   if (isLoadingProduct) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-        <Card className="p-8 shadow-2xl bg-white/80 backdrop-blur-sm border-0">
+      <div className="flex items-center justify-center min-h-screen bg-background p-6">
+        <Card className="p-8">
           <div className="text-center">
-            <Loader2 className="h-12 w-12 text-blue-600 mx-auto animate-spin mb-4" />
-            <p className="text-slate-700 font-medium">Loading product details...</p>
+            <Loader2 className="h-12 w-12 text-primary mx-auto animate-spin mb-4" />
+            <p className="text-muted-foreground font-medium">Loading product details...</p>
           </div>
         </Card>
       </div>
@@ -165,8 +165,8 @@ export default function ProductEdit({ productId, onBack, onSuccess }: ProductEdi
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="bg-background pb-8">
+      <div className="max-w-4xl mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -182,19 +182,19 @@ export default function ProductEdit({ productId, onBack, onSuccess }: ProductEdi
               </Button>
             )}
             <div>
-              <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
-                <Package className="w-8 h-8 text-slate-700" />
+              <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+                <Package className="w-8 h-8 text-primary" />
                 Edit Product
               </h1>
-              <p className="text-slate-600 mt-1">Update product information</p>
+              <p className="text-muted-foreground mt-1">Update product information</p>
             </div>
           </div>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Basic Information */}
-          <Card className="shadow-lg border-0 bg-white">
-            <CardHeader className="bg-gradient-to-r from-slate-900 to-slate-700 text-white rounded-t-lg">
+          <Card>
+            <CardHeader className="bg-muted/50">
               <CardTitle className="flex items-center gap-2">
                 <Package2 className="w-5 h-5" />
                 Basic Information
@@ -286,8 +286,8 @@ export default function ProductEdit({ productId, onBack, onSuccess }: ProductEdi
           </Card>
 
           {/* Product Images */}
-          <Card className="shadow-lg border-0 bg-white">
-            <CardHeader className="bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-t-lg">
+          <Card>
+            <CardHeader className="bg-muted/50">
               <CardTitle className="flex items-center gap-2">
                 <ImageIcon className="w-5 h-5" />
                 Product Images
@@ -355,8 +355,8 @@ export default function ProductEdit({ productId, onBack, onSuccess }: ProductEdi
           </Card>
 
           {/* Product Variants */}
-          <Card className="shadow-lg border-0 bg-white">
-            <CardHeader className="bg-gradient-to-r from-green-900 to-green-700 text-white rounded-t-lg">
+          <Card>
+            <CardHeader className="bg-muted/50">
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Palette className="w-5 h-5" />
@@ -367,7 +367,6 @@ export default function ProductEdit({ productId, onBack, onSuccess }: ProductEdi
                   onClick={addVariant}
                   size="sm"
                   variant="secondary"
-                  className="bg-white text-green-700 hover:bg-green-50"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   Add Variant

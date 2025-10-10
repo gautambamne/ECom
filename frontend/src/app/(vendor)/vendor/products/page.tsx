@@ -8,14 +8,17 @@ import {
   Plus, 
   Search, 
   Filter, 
-  MoreHorizontal, 
   Edit, 
   Eye, 
   Trash2,
   Package,
   AlertCircle,
   Loader2,
-  Star
+  Sparkles,
+  Grid3x3,
+  ArrowRight,
+  TrendingUp,
+  Image as ImageIcon
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -106,15 +109,24 @@ export default function VendorProductsPage() {
     product.brand?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Calculate quick stats
+  const activeProducts = products.filter((p: IProduct) => p.is_active).length;
+  const totalStock = products.reduce((sum: number, p: IProduct) => sum + (p.stock || 0), 0);
+  const lowStockCount = products.filter((p: IProduct) => p.stock <= 10).length;
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-black dark:via-black dark:to-black">
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob dark:bg-purple-700 dark:opacity-10" />
+          <div className="absolute top-40 right-10 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000 dark:bg-yellow-700 dark:opacity-10" />
+        </div>
+        <div className="relative max-w-7xl mx-auto p-6">
           <div className="flex items-center justify-center h-64">
-            <Card className="p-8 shadow-2xl bg-white/80 backdrop-blur-sm border-0">
+            <Card className="p-8 shadow-2xl bg-white/80 dark:bg-black/80 backdrop-blur-xl border-0">
               <div className="text-center">
-                <Loader2 className="h-12 w-12 text-blue-600 mx-auto animate-spin mb-4" />
-                <p className="text-slate-700 font-medium">Loading your products...</p>
+                <Loader2 className="h-12 w-12 text-violet-600 dark:text-violet-400 mx-auto animate-spin mb-4" />
+                <p className="text-slate-700 dark:text-gray-300 font-medium">Loading your products...</p>
               </div>
             </Card>
           </div>
@@ -122,17 +134,21 @@ export default function VendorProductsPage() {
       </div>
     );
   }
+
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-black dark:via-black dark:to-black">
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob dark:bg-purple-700 dark:opacity-10" />
+        </div>
+        <div className="relative max-w-7xl mx-auto p-6">
           <div className="flex items-center justify-center h-64">
-            <Card className="p-8 shadow-2xl bg-white/80 backdrop-blur-sm border-0">
+            <Card className="p-8 shadow-2xl bg-white/80 dark:bg-black/80 backdrop-blur-xl border-0">
               <div className="text-center">
-                <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-                <h3 className="text-slate-900 font-semibold mb-2 text-lg">Failed to Load Products</h3>
-                <p className="text-slate-600 mb-6">{error?.message || "Unable to load products"}</p>
-                <Button onClick={() => refetch()} variant="default">
+                <AlertCircle className="h-12 w-12 text-red-500 dark:text-red-400 mx-auto mb-4" />
+                <h3 className="text-slate-900 dark:text-white font-semibold mb-2 text-lg">Failed to Load Products</h3>
+                <p className="text-slate-600 dark:text-gray-400 mb-6">{error?.message || "Unable to load products"}</p>
+                <Button onClick={() => refetch()} variant="default" className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white">
                   <Loader2 className="w-4 h-4 mr-2" />
                   Retry
                 </Button>
@@ -145,180 +161,266 @@ export default function VendorProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-black dark:via-black dark:to-black">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob dark:bg-purple-700 dark:opacity-10" />
+        <div className="absolute top-40 right-10 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000 dark:bg-yellow-700 dark:opacity-10" />
+        <div className="absolute -bottom-20 left-1/2 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000 dark:bg-pink-700 dark:opacity-10" />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+        
         {/* Enhanced Header */}
-        <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-slate-800 via-slate-900 to-slate-800 text-white p-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <CardTitle className="flex items-center gap-3 text-2xl font-bold">
-                  <div className="p-2 bg-white/20 rounded-lg">
-                    <Package className="w-6 h-6" />
-                  </div>
-                  My Products
-                  <Badge variant="secondary" className="bg-white/20 text-white border-0">
-                    {products.length}
-                  </Badge>
-                </CardTitle>
-                <p className="text-slate-200 mt-2">Manage your sneaker inventory</p>
-              </div>
-              <Button
-                onClick={() => router.push('/vendor/products/new')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 flex items-center gap-2 rounded-xl shadow-lg"
-              >
-                <Plus className="w-5 h-5" />
-                Add New Product
-              </Button>
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 pt-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 backdrop-blur-sm rounded-full border border-violet-200 dark:border-violet-700 mb-4">
+              <Grid3x3 className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+              <span className="text-sm font-semibold text-violet-900 dark:text-violet-100">Product Management</span>
             </div>
-          </CardHeader>
-        </Card>
+            <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 dark:from-violet-400 dark:via-purple-400 dark:to-fuchsia-400">
+              My Products
+            </h1>
+            <p className="text-muted-foreground mt-2 text-lg">Manage your sneaker inventory and listings</p>
+          </div>
+          
+          <Button
+            onClick={() => router.push('/vendor/products/new')}
+            className="group bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white px-8 py-6 text-base font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 rounded-2xl"
+          >
+            <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+            Add New Product
+          </Button>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="border-0 bg-white/80 dark:bg-black/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Total Products</p>
+                  <p className="text-3xl font-bold text-foreground">{products.length}</p>
+                </div>
+                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center shadow-lg">
+                  <Package className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 bg-white/80 dark:bg-black/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Active Products</p>
+                  <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400">{activeProducts}</p>
+                </div>
+                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg">
+                  <TrendingUp className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 bg-white/80 dark:bg-black/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Total Stock</p>
+                  <p className="text-3xl font-bold text-foreground">{totalStock}</p>
+                </div>
+                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg">
+                  <Grid3x3 className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-l-4 border-l-orange-500">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Low Stock</p>
+                  <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">{lowStockCount}</p>
+                </div>
+                <div className="h-12 w-12 rounded-2xl bg-orange-500 flex items-center justify-center shadow-lg animate-pulse">
+                  <AlertCircle className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Search and Filters */}
-        <Card className="shadow-xl bg-white/60 backdrop-blur-sm border-0 rounded-2xl p-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Search products by name or brand..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl"
-              />
+        <Card className="border-0 bg-white/80 dark:bg-black/80 backdrop-blur-xl shadow-xl">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-gray-500" />
+                <Input
+                  placeholder="Search products by name or brand..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 h-14 border-slate-200 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-800 rounded-2xl text-base"
+                />
+              </div>
+              <Button 
+                variant="outline" 
+                className="h-14 px-8 rounded-2xl dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 border-2 font-semibold"
+              >
+                <Filter className="w-5 h-5 mr-2" />
+                Filters
+              </Button>
             </div>
-            <Button variant="outline" className="h-12 px-6 rounded-xl">
-              <Filter className="w-4 h-4 mr-2" />
-              Filters
-            </Button>
-          </div>
+          </CardContent>
         </Card>
 
         {/* Products Grid */}
         {filteredProducts.length === 0 ? (
-          <Card className="shadow-xl bg-white/60 backdrop-blur-sm border-0 rounded-2xl p-12">
-            <div className="text-center">
-              <Package className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">
-                {searchQuery ? 'No products found' : 'No products yet'}
-              </h3>
-              <p className="text-slate-600 mb-6">
-                {searchQuery 
-                  ? 'Try adjusting your search terms'
-                  : 'Start by adding your first sneaker product'
-                }
-              </p>
-              {!searchQuery && (
-                <Button
-                  onClick={() => router.push('/vendor/products/new')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Your First Product
-                </Button>
-              )}
-            </div>
+          <Card className="border-0 bg-white/80 dark:bg-black/80 backdrop-blur-xl shadow-xl">
+            <CardContent className="p-16">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center h-24 w-24 rounded-3xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-800 dark:to-gray-900 mb-6">
+                  <Package className="h-12 w-12 text-slate-400 dark:text-gray-500" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                  {searchQuery ? 'No products found' : 'No products yet'}
+                </h3>
+                <p className="text-slate-600 dark:text-gray-400 mb-8 text-lg">
+                  {searchQuery 
+                    ? 'Try adjusting your search terms'
+                    : 'Start by adding your first sneaker product to your inventory'
+                  }
+                </p>
+                {!searchQuery && (
+                  <Button
+                    onClick={() => router.push('/vendor/products/new')}
+                    className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white px-8 py-6 text-base font-semibold shadow-xl"
+                  >
+                    <Plus className="w-5 h-5 mr-2" />
+                    Add Your First Product
+                  </Button>
+                )}
+              </div>
+            </CardContent>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product: IProduct) => (
-              <Card key={product.id} className="shadow-xl bg-white/80 backdrop-blur-sm border-0 rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
+            {filteredProducts.map((product: IProduct, idx: number) => (
+              <Card 
+                key={product.id} 
+                className="group relative border-0 bg-white/80 dark:bg-black/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden rounded-3xl"
+                style={{ animationDelay: `${idx * 50}ms` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-800 dark:to-gray-900">
                   {product.images && product.images.length > 0 ? (
                     <img
                       src={product.images[0]}
                       alt={product.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Package className="h-16 w-16 text-slate-400" />
+                      <ImageIcon className="h-20 w-20 text-slate-400 dark:text-gray-500" />
                     </div>
                   )}
                   
                   {/* Status Badge */}
-                  <div className="absolute top-3 left-3">
+                  <div className="absolute top-4 left-4">
                     <Badge 
-                      variant="secondary" 
-                      className={`${product.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'} border-0`}
+                      className={`${
+                        product.is_active 
+                          ? 'bg-emerald-500/90 text-white border-0' 
+                          : 'bg-gray-500/90 text-white border-0'
+                      } backdrop-blur-sm px-4 py-1.5 text-sm font-bold shadow-lg`}
                     >
                       {product.is_active ? 'Active' : 'Draft'}
                     </Badge>
                   </div>
 
-                  {/* Actions */}
-                  <div className="absolute top-3 right-3 flex flex-col gap-2">
+                  {/* Low Stock Badge */}
+                  {product.stock <= 10 && (
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-orange-500/90 text-white border-0 backdrop-blur-sm px-4 py-1.5 text-sm font-bold shadow-lg animate-pulse">
+                        Low Stock
+                      </Badge>
+                    </div>
+                  )}
+
+                  {/* Quick View Button */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <Button
                       onClick={() => router.push(`/vendor/products/${product.id}`)}
-                      size="sm"
-                      variant="secondary"
-                      className="rounded-full bg-white/90 hover:bg-white shadow-lg"
+                      className="bg-white/90 hover:bg-white text-slate-900 px-6 py-3 rounded-xl shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300"
                     >
-                      <Eye className="h-4 w-4" />
+                      <Eye className="h-5 w-5 mr-2" />
+                      Quick View
                     </Button>
                   </div>
                 </div>
 
-                <CardContent className="p-4 space-y-3">
+                <CardContent className="relative p-6 space-y-4">
                   <div>
-                    <h3 className="font-semibold text-slate-900 truncate">{product.name}</h3>
+                    <h3 className="font-bold text-foreground text-lg mb-1 truncate group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-violet-600 group-hover:to-fuchsia-600 dark:group-hover:from-violet-400 dark:group-hover:to-fuchsia-400 transition-all duration-300">
+                      {product.name}
+                    </h3>
                     {product.brand && (
-                      <p className="text-sm text-slate-600">{product.brand}</p>
+                      <p className="text-sm text-muted-foreground">{product.brand}</p>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-xl font-bold text-slate-900">
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-800">
+                    <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400">
                       {formatCurrency(product.price)}
                     </span>
-                    <Badge variant="outline" className="text-slate-600">
+                    <Badge 
+                      variant="outline" 
+                      className={`px-3 py-1 font-bold ${
+                        product.stock <= 10 
+                          ? 'border-orange-300 dark:border-orange-800 text-orange-700 dark:text-orange-400' 
+                          : 'border-gray-300 dark:border-gray-700 text-slate-600 dark:text-gray-400'
+                      }`}
+                    >
                       Stock: {product.stock}
                     </Badge>
                   </div>
 
                   {/* Variants Summary */}
                   {product.variants && product.variants.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="text-xs">
-                        {product.variants.length} variants
+                    <div className="flex items-center gap-2 pt-2">
+                      <Badge variant="outline" className="text-xs px-3 py-1 dark:border-gray-700 dark:text-gray-400 font-semibold">
+                        {product.variants.length} variant{product.variants.length > 1 ? 's' : ''}
                       </Badge>
-                      <div className="flex gap-1">
+                      <div className="flex gap-1.5">
                         {product.variants.slice(0, 3).map((variant: any, index: number) => (
-                          <div key={index} className="w-2 h-2 bg-slate-300 rounded-full"></div>
+                          <div key={index} className="w-3 h-3 bg-gradient-to-br from-violet-400 to-fuchsia-400 rounded-full shadow-sm"></div>
                         ))}
                         {product.variants.length > 3 && (
-                          <span className="text-xs text-slate-500 ml-1">+{product.variants.length - 3}</span>
+                          <span className="text-xs text-slate-500 dark:text-gray-500 ml-1 font-semibold">+{product.variants.length - 3}</span>
                         )}
                       </div>
                     </div>
                   )}
 
-                  <div className="flex gap-2 pt-2">
-                    <Button
-                      onClick={() => router.push(`/vendor/products/${product.id}`)}
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 h-8 text-xs"
-                    >
-                      <Eye className="w-3 h-3 mr-1" />
-                      View
-                    </Button>
+                  <div className="flex gap-2 pt-4">
                     <Button
                       onClick={() => router.push(`/vendor/products/${product.id}/edit`)}
                       variant="outline"
-                      size="sm"
-                      className="flex-1 h-8 text-xs"
+                      className="flex-1 h-11 text-sm font-semibold dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 rounded-xl border-2 group/btn"
                     >
-                      <Edit className="w-3 h-3 mr-1" />
+                      <Edit className="w-4 h-4 mr-1.5 group-hover/btn:rotate-12 transition-transform" />
                       Edit
                     </Button>
                     <Button
                       onClick={() => handleDeleteProduct(product.id, product.name)}
                       disabled={isDeleting}
                       variant="outline"
-                      size="sm"
-                      className="h-8 text-xs text-red-600 border-red-300 hover:bg-red-50"
+                      className="h-11 px-4 text-sm font-semibold text-red-600 dark:text-red-400 border-red-300 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl border-2 group/btn"
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
                     </Button>
                   </div>
                 </CardContent>
