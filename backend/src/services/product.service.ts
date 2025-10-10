@@ -15,6 +15,7 @@ interface ProductSummary {
 }
 
 interface FormattedProduct {
+    id: string; // Actual UUID for API operations
     product_id: number;
     name: string;
     description?: string;
@@ -44,6 +45,14 @@ interface FormattedProduct {
 }
 
 export const ProductService = {
+    // Helper function to safely format dates
+    formatDate(date: any): string {
+        if (!date) return new Date().toISOString();
+        if (typeof date === 'string') return date;
+        if (date instanceof Date) return date.toISOString();
+        return new Date().toISOString();
+    },
+
     // Format product for API response
     formatProductResponse(product: any): FormattedProduct {
         const totalStock = product.variants?.reduce((sum: number, variant: any) => sum + variant.stock, 0) || product.stock;
@@ -54,6 +63,7 @@ export const ProductService = {
             : undefined;
 
         return {
+            id: product.id, // Actual UUID for API operations
             product_id: Math.abs(product.id.split('-').join('').slice(0, 8).split('').reduce((a: number, b: string) => ((a << 5) - a) + b.charCodeAt(0), 0)),
             name: product.name,
             description: product.description,
@@ -84,8 +94,8 @@ export const ProductService = {
             in_stock: totalStock > 0,
             is_active: product.is_active !== false,
             currency: product.currency || "INR",
-            created_at: product.created_at?.toISOString() || new Date().toISOString(),
-            updated_at: product.updated_at?.toISOString() || new Date().toISOString()
+            created_at: this.formatDate(product.created_at),
+            updated_at: this.formatDate(product.updated_at)
         };
     },
 
@@ -243,7 +253,12 @@ export const ProductService = {
             throw new ApiError(403, "Not authorized to delete this product");
         }
 
-        return await ProductRepository.deleteProductById(id);
+        const deleted = await ProductRepository.deleteProductById(id);
+        if (!deleted) {
+            throw new ApiError(500, "Failed to delete product. Please try again later.");
+        }
+
+        return true;
     },
 
     async getProduct(id: string): Promise<FormattedProduct> {

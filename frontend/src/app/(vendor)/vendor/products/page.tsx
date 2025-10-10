@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { 
@@ -34,6 +34,7 @@ const formatCurrency = (amount: number) => {
 export default function VendorProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   // Fetch vendor products
   const {
@@ -45,10 +46,59 @@ export default function VendorProductsPage() {
     queryKey: ['vendor-products'],
     queryFn: () => ProductActions.GetVendorProductsAction(),
     retry: 2,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
   });
 
+  // Delete product mutation
+  const { mutate: deleteProduct, isPending: isDeleting } = useMutation({
+    mutationFn: (productId: string) => ProductActions.DeleteProductAction(productId),
+    onMutate: async (productId) => {
+      await queryClient.cancelQueries({ queryKey: ['vendor-products'] });
+
+      const previousProducts = queryClient.getQueryData<IGetProductsVendorResponse>(['vendor-products']);
+
+      if (previousProducts?.data?.products) {
+        queryClient.setQueryData(['vendor-products'], {
+          ...previousProducts,
+          data: {
+            ...previousProducts.data,
+            products: previousProducts.data.products.filter((product) => product.id !== productId)
+          }
+        });
+      }
+
+      return { previousProducts };
+    },
+    onSuccess: (_, productId) => {
+      toast.success("Product deleted successfully!");
+      queryClient.removeQueries({ queryKey: ['product', productId] });
+    },
+    onError: (error: any, _productId, context) => {
+      toast.error(error.message || "Failed to delete product");
+
+      if (context?.previousProducts) {
+        queryClient.setQueryData(['vendor-products'], context.previousProducts);
+      }
+    }
+  });
+
+  const handleDeleteProduct = (productId: string, productName: string) => {
+    console.log('🎯 handleDeleteProduct called with:', { productId, productName });
+    if (window.confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`)) {
+      console.log('✅ User confirmed deletion');
+      deleteProduct(productId);
+    } else {
+      console.log('❌ User cancelled deletion');
+    }
+  };
+
   const products = productsResponse?.data?.products || [];
+
+  console.log('📦 Products data:', {
+    productsResponse,
+    products,
+    count: products.length
+  });
 
   // Filter products based on search query
   const filteredProducts = products.filter((product: IProduct) =>
@@ -260,6 +310,15 @@ export default function VendorProductsPage() {
                     >
                       <Edit className="w-3 h-3 mr-1" />
                       Edit
+                    </Button>
+                    <Button
+                      onClick={() => handleDeleteProduct(product.id, product.name)}
+                      disabled={isDeleting}
+                      variant="outline"
+                      size="sm"
+                      className="h-8 text-xs text-red-600 border-red-300 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-3 h-3" />
                     </Button>
                   </div>
                 </CardContent>

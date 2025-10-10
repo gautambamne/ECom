@@ -65,16 +65,16 @@ export const CreateProductController = asyncHandler(async (req: Request, res: Re
     try {
       const cloudinaryService = CloudinaryService.getInstance();
       
-      // Upload all images in parallel
+      // Upload all images in parallel with high quality settings
       const uploadPromises = req.files.map(file => 
         cloudinaryService.uploadImage(file.buffer, {
           folder: 'products',
           transformation: {
-            width: 800,
-            height: 600,
-            crop: 'fill',
-            quality: 'auto',
-            format: 'webp'
+            width: 1200,
+            height: 1200,
+            crop: 'limit', // Limit instead of fill to preserve aspect ratio
+            quality: 90, // High quality (90 out of 100)
+            fetch_format: 'auto' // Let Cloudinary choose best format
           }
         })
       );
@@ -158,16 +158,16 @@ export const UpdateProductController = asyncHandler(async (req: Request, res: Re
         }
       }
       
-      // Upload new images in parallel
+      // Upload new images in parallel with high quality settings
       const uploadPromises = req.files.map(file => 
         cloudinaryService.uploadImage(file.buffer, {
           folder: 'products',
           transformation: {
-            width: 800,
-            height: 600,
-            crop: 'fill',
-            quality: 'auto',
-            format: 'webp'
+            width: 1200,
+            height: 1200,
+            crop: 'limit', // Limit instead of fill to preserve aspect ratio
+            quality: 90, // High quality (90 out of 100)
+            fetch_format: 'auto' // Let Cloudinary choose best format
           }
         })
       );

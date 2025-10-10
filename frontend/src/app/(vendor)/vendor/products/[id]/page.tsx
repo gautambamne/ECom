@@ -1,28 +1,30 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { use } from "react";
 import SneakerProductDetail from "../../_components/Product-details";
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
   const router = useRouter();
+  const resolvedParams = use(params);
 
   const handleBack = () => {
-    router.back();
+    router.push('/vendor/products');
   };
 
   const handleEdit = (product: IProduct) => {
-    router.push(`/products/vendor/${params.id}/edit`);
+    router.push(`/vendor/products/${resolvedParams.id}/edit`);
   };
 
   return (
     <SneakerProductDetail
-      productId={params.id}
+      productId={resolvedParams.id}
       onBack={handleBack}
       onEdit={handleEdit}
       isVendorView={true}

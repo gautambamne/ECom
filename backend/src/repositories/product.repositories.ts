@@ -94,14 +94,23 @@ export const ProductRepository = {
         return product;
     },
 
-    // Delete product by ID
+    // Delete product by ID along with dependent data
     deleteProductById: async(id: string): Promise<boolean> => {
         try {
-            await prisma.product.delete({ where: { id } });
+            await prisma.$transaction(async (tx) => {
+                await tx.productVariant.deleteMany({ where: { product_id: id } });
+                await tx.cartItem.deleteMany({ where: { product_id: id } });
+                await tx.wishlistItem.deleteMany({ where: { product_id: id } });
+                await tx.orderItem.deleteMany({ where: { product_id: id } });
+
+                await tx.product.delete({ where: { id } });
+            });
+
             // Remove from cache
             await RedisService.delete(`product:${id}`);
             return true;
         } catch (error) {
+            console.error('Failed to delete product', { id, error });
             return false;
         }
     },

@@ -110,7 +110,7 @@ const DeleteProductSchema = z.object({
 });
 
 const GetProductSchema = z.object({
-  id: z.string().uuid("Invalid product id"),
+  id: z.string().min(1, "Product id is required"),
 });
 
 const GetProductQuerySchema = z.object({

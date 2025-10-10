@@ -50,7 +50,7 @@ export default function SneakerProductDetail({
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const product = productResponse?.product;
+  const product = productResponse?.data;
 
   // Set first variant as default when product loads
   useEffect(() => {
@@ -62,13 +62,37 @@ export default function SneakerProductDetail({
   // Delete product mutation (vendor only)
   const { mutate: deleteProduct, isPending: isDeleting } = useMutation({
     mutationFn: (productId: string) => ProductActions.DeleteProductAction(productId),
-    onSuccess: () => {
-      toast.success("Product deleted successfully!");
-      queryClient.invalidateQueries({ queryKey: ['vendor-products'] });
-      onBack?.();
+    onMutate: async (productId) => {
+      await queryClient.cancelQueries({ queryKey: ['vendor-products'] });
+
+      const previousProducts = queryClient.getQueryData<IGetProductsVendorResponse>(['vendor-products']);
+
+      if (previousProducts?.data?.products) {
+        queryClient.setQueryData(['vendor-products'], {
+          ...previousProducts,
+          data: {
+            ...previousProducts.data,
+            products: previousProducts.data.products.filter((item) => item.id !== productId)
+          }
+        });
+      }
+
+      return { previousProducts };
     },
-    onError: (error: any) => {
+    onSuccess: (_, productId) => {
+      toast.success("Product deleted successfully!");
+      queryClient.removeQueries({ queryKey: ['product', productId] });
+      
+      setTimeout(() => {
+        onBack?.();
+      }, 300);
+    },
+    onError: (error: any, _productId, context) => {
       toast.error(error.message || "Failed to delete product");
+
+      if (context?.previousProducts) {
+        queryClient.setQueryData(['vendor-products'], context.previousProducts);
+      }
     }
   });
 
