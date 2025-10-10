@@ -12,7 +12,10 @@ export const authMiddleware = (req:Request, res:Response, next:NextFunction)=>{
         let bearer_token : string | undefined;
 
         if(bearerToken && bearerToken.startsWith("Bearer")){
-            bearer_token = bearerToken.split("")[1]; 
+            const parts = bearerToken.split(" ");
+            if(parts.length === 2){
+                bearer_token = parts[1];
+            }
         }
 
         if(!accessToken && !bearer_token){

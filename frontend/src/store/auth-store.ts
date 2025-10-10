@@ -6,7 +6,8 @@ interface IAuthStore {
     isLoggedIn: boolean,
     user: IUser | null,
     setLogin: (data:IUser, token ?: string) => void,
-    setLogout: () => void
+    setLogout: () => void,
+    forceLogout: () => void
 }
 
 
@@ -27,6 +28,11 @@ export const useAuthStore = create<IAuthStore>((set)=>{
             await AuthActions.LogoutAction()
             set({user:null})
             deleteCookie("auth_token")
+            set({isLoggedIn:false})
+        },
+        forceLogout: ()=>{
+            deleteCookie("auth_token")
+            set({user:null})
             set({isLoggedIn:false})
         }
 
