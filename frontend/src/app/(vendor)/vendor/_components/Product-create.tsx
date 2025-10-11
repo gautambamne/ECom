@@ -117,45 +117,40 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
   const colorOptions = SHOE_COLORS;
 
   return (
-    <div className="bg-background pb-8">
-      <div className="max-w-4xl mx-auto p-6 space-y-6">
+    <div className="flex-1 space-y-4 p-8 pt-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            {onBack && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onBack}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back
-              </Button>
-            )}
-            <div>
-              <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-                <Package className="w-8 h-8 text-primary" />
-                Create New Product
-              </h1>
-              <p className="text-muted-foreground mt-1">Add a new sneaker to your inventory</p>
-            </div>
+        <div className="flex items-center justify-between space-y-2">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">Create Product</h2>
+            <p className="text-muted-foreground">
+              Add a new product to your inventory
+            </p>
           </div>
+          {onBack && (
+            <Button
+              variant="outline"
+              onClick={onBack}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+          )}
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Basic Information */}
           <Card>
-            <CardHeader className="bg-muted/50">
+            <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Package2 className="w-5 h-5" />
+                <Package2 className="h-4 w-4" />
                 Basic Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="space-y-6">
+              <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-medium">
+                  <Label htmlFor="name">
                     Product Name *
                   </Label>
                   <Input
@@ -164,43 +159,41 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
                     {...form.register("name")}
                   />
                   {form.formState.errors.name && (
-                    <p className="text-destructive text-xs flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />
+                    <p className="text-sm text-destructive flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
                       {form.formState.errors.name.message}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="brand" className="text-sm font-medium text-slate-700">
+                  <Label htmlFor="brand">
                     Brand
                   </Label>
                   <Input
                     id="brand"
                     placeholder="e.g., Nike, Adidas, Jordan"
                     {...form.register("brand")}
-                    className="border-slate-300 focus:border-slate-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description" className="text-sm font-medium text-slate-700">
+                <Label htmlFor="description">
                   Description
                 </Label>
                 <Textarea
                   id="description"
                   placeholder="Describe your product features, materials, and unique selling points..."
-                  rows={4}
+                  className="min-h-[100px]"
                   {...form.register("description")}
-                  className="border-slate-300 focus:border-slate-500"
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="price" className="text-sm font-medium text-slate-700 flex items-center gap-1">
-                    <DollarSign className="w-4 h-4" />
+                  <Label htmlFor="price" className="flex items-center gap-1">
+                    <DollarSign className="h-4 w-4" />
                     Price *
                   </Label>
                   <Input
@@ -209,19 +202,18 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
                     step="0.01"
                     placeholder="0.00"
                     {...form.register("price", { valueAsNumber: true })}
-                    className="border-slate-300 focus:border-slate-500"
                   />
                   {form.formState.errors.price && (
-                    <p className="text-red-500 text-xs flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />
+                    <p className="text-sm text-destructive flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
                       {form.formState.errors.price.message}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="stock" className="text-sm font-medium text-slate-700 flex items-center gap-1">
-                    <Package className="w-4 h-4" />
+                  <Label htmlFor="stock" className="flex items-center gap-1">
+                    <Package className="h-4 w-4" />
                     Total Stock
                   </Label>
                   <Input
@@ -229,7 +221,6 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
                     type="number"
                     placeholder="0"
                     {...form.register("stock", { valueAsNumber: true })}
-                    className="border-slate-300 focus:border-slate-500"
                   />
                 </div>
               </div>
@@ -238,43 +229,43 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
 
           {/* Product Images */}
           <Card>
-            <CardHeader className="bg-muted/50">
+            <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <ImageIcon className="w-5 h-5" />
+                <ImageIcon className="h-4 w-4" />
                 Product Images
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6 space-y-4">
+            <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="images" className="text-sm font-medium">
-                  Upload Images
-                </Label>
-                <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
-                  <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                  <input
-                    id="images"
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  <Label
-                    htmlFor="images"
-                    className="text-sm text-muted-foreground cursor-pointer hover:text-foreground"
-                  >
-                    Click to upload images or drag and drop
-                  </Label>
+                <Label htmlFor="images">Upload Images</Label>
+                <div className="flex items-center justify-center w-full">
+                  <label htmlFor="images" className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-muted-foreground/25 rounded-lg cursor-pointer bg-muted/50 hover:bg-muted">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <Upload className="w-8 h-8 mb-4 text-muted-foreground" />
+                      <p className="mb-2 text-sm text-muted-foreground">
+                        <span className="font-semibold">Click to upload</span> or drag and drop
+                      </p>
+                      <p className="text-xs text-muted-foreground">PNG, JPG or JPEG (MAX. 10MB)</p>
+                    </div>
+                    <input
+                      id="images"
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
 
                 {imagePreview.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {imagePreview.map((preview, index) => (
                       <div key={index} className="relative">
                         <img
                           src={preview}
                           alt={`Preview ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-lg border"
+                          className="h-20 w-full rounded-lg object-cover"
                         />
                       </div>
                     ))}
@@ -286,29 +277,29 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
 
           {/* Product Variants */}
           <Card>
-            <CardHeader className="bg-muted/50">
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Palette className="w-5 h-5" />
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="h-4 w-4" />
                   Product Variants
-                </div>
+                </CardTitle>
                 <Button
                   type="button"
                   onClick={addVariant}
                   size="sm"
-                  variant="secondary"
+                  variant="outline"
                 >
-                  <Plus className="w-4 h-4 mr-1" />
+                  <Plus className="mr-2 h-4 w-4" />
                   Add Variant
                 </Button>
-              </CardTitle>
+              </div>
             </CardHeader>
-            <CardContent className="p-6 space-y-4">
+            <CardContent className="space-y-4">
               {fields.map((field, index) => (
-                <div key={field.id} className="border border-slate-200 rounded-lg p-4 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-slate-700 flex items-center gap-2">
-                      <Badge variant="outline">Variant {index + 1}</Badge>
+                <div key={field.id} className="rounded-lg border p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-medium flex items-center gap-2">
+                      <Badge variant="secondary">Variant {index + 1}</Badge>
                     </h4>
                     {fields.length > 1 && (
                       <Button
@@ -316,24 +307,23 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
                         onClick={() => removeVariant(index)}
                         size="sm"
                         variant="outline"
-                        className="text-red-600 border-red-300 hover:bg-red-50"
                       >
-                        <Minus className="w-4 h-4" />
+                        <Minus className="h-4 w-4" />
                       </Button>
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid gap-4 md:grid-cols-3">
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium text-slate-700 flex items-center gap-1">
-                        <Ruler className="w-4 h-4" />
+                      <Label className="flex items-center gap-1">
+                        <Ruler className="h-4 w-4" />
                         Size
                       </Label>
                       <Select
                         value={form.watch(`variants.${index}.size` as any) || ""}
                         onValueChange={(value) => form.setValue(`variants.${index}.size` as any, value as any)}
                       >
-                        <SelectTrigger className="border-slate-300">
+                        <SelectTrigger>
                           <SelectValue placeholder="Select size" />
                         </SelectTrigger>
                         <SelectContent>
@@ -347,15 +337,15 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium text-slate-700 flex items-center gap-1">
-                        <Palette className="w-4 h-4" />
+                      <Label className="flex items-center gap-1">
+                        <Palette className="h-4 w-4" />
                         Color
                       </Label>
                       <Select
                         value={form.watch(`variants.${index}.color` as any) || ""}
                         onValueChange={(value) => form.setValue(`variants.${index}.color` as any, value as any)}
                       >
-                        <SelectTrigger className="border-slate-300">
+                        <SelectTrigger>
                           <SelectValue placeholder="Select color" />
                         </SelectTrigger>
                         <SelectContent>
@@ -369,15 +359,14 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium text-slate-700 flex items-center gap-1">
-                        <Package className="w-4 h-4" />
+                      <Label className="flex items-center gap-1">
+                        <Package className="h-4 w-4" />
                         Stock
                       </Label>
                       <Input
                         type="number"
                         placeholder="0"
                         {...form.register(`variants.${index}.stock` as any, { valueAsNumber: true })}
-                        className="border-slate-300 focus:border-slate-500"
                       />
                     </div>
                   </div>
@@ -385,8 +374,8 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
               ))}
 
               {form.formState.errors.variants && (
-                <p className="text-red-500 text-xs flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
+                <p className="text-sm text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
                   At least one variant is required
                 </p>
               )}
@@ -406,16 +395,15 @@ export default function ProductCreate({ onBack, onSuccess }: ProductCreateProps)
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-2 flex items-center gap-2"
             >
               {isPending ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
                   Creating...
                 </>
               ) : (
                 <>
-                  <Save className="w-4 h-4" />
+                  <Save className="mr-2 h-4 w-4" />
                   Create Product
                 </>
               )}

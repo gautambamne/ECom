@@ -98,39 +98,43 @@ export default function SneakerProductDetail({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background p-6">
-        <Card className="p-8">
-          <div className="text-center">
-            <Loader2 className="h-12 w-12 text-primary mx-auto animate-spin mb-4" />
-            <p className="text-muted-foreground font-medium">Loading product details...</p>
-          </div>
-        </Card>
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Card className="p-8">
+            <div className="text-center">
+              <Loader2 className="h-12 w-12 mx-auto animate-spin mb-4" />
+              <p className="text-muted-foreground">Loading product details...</p>
+            </div>
+          </Card>
+        </div>
       </div>
     );
   }
 
   if (error || !product) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background p-6">
-        <Card className="p-8">
-          <div className="text-center">
-            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <h3 className="text-foreground font-semibold mb-2 text-lg">Product Not Found</h3>
-            <p className="text-muted-foreground mb-6">{error?.message || "Unable to load product"}</p>
-            <div className="flex gap-3 justify-center">
-              {onBack && (
-                <Button onClick={onBack} variant="outline">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Go Back
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Card className="p-8">
+            <div className="text-center">
+              <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Product Not Found</h3>
+              <p className="text-muted-foreground mb-6">{error?.message || "Unable to load product"}</p>
+              <div className="flex gap-3 justify-center">
+                {onBack && (
+                  <Button onClick={onBack} variant="outline">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Go Back
+                  </Button>
+                )}
+                <Button onClick={() => refetch()}>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Retry
                 </Button>
-              )}
-              <Button onClick={() => refetch()} variant="default">
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Retry
-              </Button>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -184,107 +188,110 @@ export default function SneakerProductDetail({
   const isOutOfStock = currentStock === 0;
 
   return (
-    <div className="bg-background pb-8">
-      {/* Enhanced Header */}
-      <div className="bg-card border-b sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Button 
-              onClick={onBack}
-              variant="outline"
-              className="flex items-center gap-2"
+    <div className="flex-1 space-y-4 p-8 pt-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Button 
+            onClick={onBack}
+            variant="outline"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          {isVendorView && onEdit && (
+            <Button
+              onClick={() => onEdit(product)}
             >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Back to Products</span>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit Product
             </Button>
-            
-            <div className="flex items-center gap-2">
-              {isVendorView && onEdit && (
-                <Button
-                  onClick={() => onEdit(product)}
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
-                >
-                  <Edit className="h-4 w-4" />
-                  <span className="hidden sm:inline">Edit Product</span>
-                </Button>
+          )}
+          
+          {isVendorView && (
+            <Button
+              onClick={handleDeleteProduct}
+              disabled={isDeleting}
+              variant="destructive"
+            >
+              {isDeleting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <AlertCircle className="mr-2 h-4 w-4" />
               )}
-              
-              {isVendorView && (
-                <Button
-                  onClick={handleDeleteProduct}
-                  disabled={isDeleting}
-                  variant="destructive"
-                  className="flex items-center gap-2"
-                >
-                  {isDeleting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <AlertCircle className="h-4 w-4" />
-                  )}
-                  <span className="hidden sm:inline">Delete</span>
-                </Button>
-              )}
-            </div>
-          </div>
+              Delete
+            </Button>
+          )}
         </div>
       </div>
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">Product Details</h2>
+            <p className="text-muted-foreground">
+              View and manage product information
+            </p>
+          </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Enhanced Image Gallery */}
-          <div className="space-y-6">
-            <Card className="p-6">
-              <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
-                {product.images && product.images.length > 0 ? (
-                  <img
-                    src={product.images[selectedImage]}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="text-center">
-                      <BadgeIcon className="h-16 w-16 text-muted-foreground mx-auto mb-3" />
-                      <p className="text-muted-foreground font-medium">No image available</p>
-                    </div>
-                  </div>
-                )}
-                
-                {/* Enhanced Action Buttons */}
-                <div className="absolute top-4 right-4 flex flex-col gap-2">
-                  <Button
-                    onClick={() => setIsFavorite(!isFavorite)}
-                    size="sm"
-                    variant="secondary"
-                    className="rounded-full h-9 w-9 p-0"
-                  >
-                    <Heart
-                      className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`}
+      <div className="grid gap-6 md:grid-cols-2">
+          {/* Image Gallery */}
+          <div className="space-y-4">
+            <Card>
+              <CardContent className="p-6">
+                <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
+                  {product.images && product.images.length > 0 ? (
+                    <img
+                      src={product.images[selectedImage]}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
                     />
-                  </Button>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="text-center">
+                        <BadgeIcon className="h-16 w-16 text-muted-foreground mx-auto mb-3" />
+                        <p className="text-muted-foreground">No image available</p>
+                      </div>
+                    </div>
+                  )}
                   
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="rounded-full h-9 w-9 p-0"
-                  >
-                    <Share2 className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                {/* Image Counter */}
-                {product.images && product.images.length > 1 && (
-                  <div className="absolute bottom-4 left-4">
-                    <Badge variant="secondary" className="bg-black/50 text-white backdrop-blur-sm">
-                      {selectedImage + 1} / {product.images.length}
-                    </Badge>
+                  {/* Action Buttons */}
+                  <div className="absolute top-4 right-4 flex flex-col gap-2">
+                    <Button
+                      onClick={() => setIsFavorite(!isFavorite)}
+                      size="sm"
+                      variant="secondary"
+                      className="rounded-full h-9 w-9 p-0"
+                    >
+                      <Heart
+                        className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`}
+                      />
+                    </Button>
+                    
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="rounded-full h-9 w-9 p-0"
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                )}
-              </div>
+
+                  {/* Image Counter */}
+                  {product.images && product.images.length > 1 && (
+                    <div className="absolute bottom-4 left-4">
+                      <Badge variant="secondary" className="bg-black/50 text-white backdrop-blur-sm">
+                        {selectedImage + 1} / {product.images.length}
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
             </Card>
 
-            {/* Enhanced Thumbnail Gallery */}
+            {/* Thumbnail Gallery */}
             {product.images && product.images.length > 1 && (
               <div className="grid grid-cols-4 gap-3">
                 {product.images.map((image, index) => (
@@ -309,7 +316,7 @@ export default function SneakerProductDetail({
             )}
           </div>
 
-          {/* Enhanced Product Info */}
+          {/* Product Info */}
           <div className="space-y-6">
             {/* Header Section */}
             <div>
@@ -321,7 +328,7 @@ export default function SneakerProductDetail({
                   </Badge>
                 )}
                 {product.is_active ? (
-                  <Badge variant="default">
+                  <Badge>
                     Active
                   </Badge>
                 ) : (
@@ -336,134 +343,144 @@ export default function SneakerProductDetail({
                 </Badge>
               </div>
               
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              <h1 className="text-3xl md:text-4xl font-bold mb-3">
                 {product.name}
               </h1>
               
               {product.product_code && (
-                <p className="text-muted-foreground font-medium">SKU: {product.product_code}</p>
+                <p className="text-muted-foreground">SKU: {product.product_code}</p>
               )}
             </div>
 
             {/* Price Section */}
-            <Card className="p-6 bg-primary/5">
-              <div className="flex items-baseline gap-3">
-                <span className="text-4xl md:text-5xl font-bold text-foreground">
-                  {formatCurrency(product.price)}
-                </span>
-                <Badge variant="outline" className="text-green-600 dark:text-green-500 border-green-300 dark:border-green-700">
-                  Best Price
-                </Badge>
-              </div>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-baseline gap-3">
+                  <span className="text-4xl md:text-5xl font-bold">
+                    {formatCurrency(product.price)}
+                  </span>
+                  <Badge variant="outline" className="text-green-600 dark:text-green-500 border-green-300 dark:border-green-700">
+                    Best Price
+                  </Badge>
+                </div>
+              </CardContent>
             </Card>
 
             {/* Description */}
             {product.description && (
-              <Card className="p-6">
-                <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                  <BadgeIcon className="w-4 h-4" />
-                  Description
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <BadgeIcon className="w-4 h-4" />
+                    Description
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+                </CardContent>
               </Card>
             )}
 
-            {/* Enhanced Color Selection */}
+            {/* Color Selection */}
             {availableColors.length > 0 && (
-              <Card className="p-6">
-                <label className="block text-lg font-semibold text-foreground mb-4">
-                  Color: {selectedVariant?.color && (
-                    <span className="font-normal text-primary">{selectedVariant.color}</span>
-                  )}
-                </label>
-                <div className="flex flex-wrap gap-3">
-                  {availableColors.map((color: string) => (
-                    <Button
-                      key={color}
-                      onClick={() => handleColorChange(color)}
-                      variant={selectedVariant?.color === color ? "default" : "outline"}
-                      className="px-6 py-3 font-medium"
-                    >
-                      {color}
-                    </Button>
-                  ))}
-                </div>
-              </Card>
-            )}
-
-            {/* Enhanced Size Selection */}
-            {sizes.length > 0 && (
-              <Card className="p-6">
-                <label className="block text-lg font-semibold text-foreground mb-4">
-                  Size: {selectedVariant?.size && (
-                    <span className="font-normal text-primary">{selectedVariant.size}</span>
-                  )}
-                </label>
-                <div className="grid grid-cols-6 gap-3">
-                  {sizes.map((size: string) => {
-                    const sizeVariant = product.variants?.find((v: any) => 
-                      v.size === size && (!selectedVariant?.color || v.color === selectedVariant.color)
-                    );
-                    const isAvailable = sizeVariant && sizeVariant.stock > 0;
-                    
-                    return (
+              <Card>
+                <CardContent className="p-6">
+                  <label className="block text-lg font-semibold mb-4">
+                    Color: {selectedVariant?.color && (
+                      <span className="font-normal text-primary">{selectedVariant.color}</span>
+                    )}
+                  </label>
+                  <div className="flex flex-wrap gap-3">
+                    {availableColors.map((color: string) => (
                       <Button
-                        key={size}
-                        onClick={() => handleSizeChange(size)}
-                        disabled={!isAvailable}
-                        variant={selectedVariant?.size === size ? "default" : "outline"}
-                        className="aspect-square h-12 font-semibold"
+                        key={color}
+                        onClick={() => handleColorChange(color)}
+                        variant={selectedVariant?.color === color ? "default" : "outline"}
+                        className="px-6 py-3"
                       >
-                        {size}
+                        {color}
                       </Button>
-                    );
-                  })}
-                </div>
-              </Card>
-            )}
-
-            {/* Enhanced Quantity Selection */}
-            {!isVendorView && (
-              <Card className="p-6">
-                <label className="block text-lg font-semibold text-foreground mb-4">Quantity</label>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center bg-muted rounded-lg border">
-                    <Button
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      disabled={isOutOfStock}
-                      variant="ghost"
-                      size="sm"
-                      className="px-4 py-2 font-bold"
-                    >
-                      -
-                    </Button>
-                    <span className="px-6 py-2 font-semibold text-foreground min-w-[60px] text-center">
-                      {quantity}
-                    </span>
-                    <Button
-                      onClick={() => setQuantity(Math.min(currentStock || 10, quantity + 1))}
-                      disabled={isOutOfStock}
-                      variant="ghost"
-                      size="sm"
-                      className="px-4 py-2 font-bold hover:bg-slate-50"
-                    >
-                      +
-                    </Button>
+                    ))}
                   </div>
-                  <Badge variant="outline" className={currentStock > 0 ? 'text-green-600 dark:text-green-500 border-green-300 dark:border-green-700' : 'text-destructive border-destructive/50'}>
-                    {currentStock > 0 ? `${currentStock} available` : 'Out of stock'}
-                  </Badge>
-                </div>
+                </CardContent>
               </Card>
             )}
 
-            {/* Enhanced Action Buttons */}
+            {/* Size Selection */}
+            {sizes.length > 0 && (
+              <Card>
+                <CardContent className="p-6">
+                  <label className="block text-lg font-semibold mb-4">
+                    Size: {selectedVariant?.size && (
+                      <span className="font-normal text-primary">{selectedVariant.size}</span>
+                    )}
+                  </label>
+                  <div className="grid grid-cols-6 gap-3">
+                    {sizes.map((size: string) => {
+                      const sizeVariant = product.variants?.find((v: any) => 
+                        v.size === size && (!selectedVariant?.color || v.color === selectedVariant.color)
+                      );
+                      const isAvailable = sizeVariant && sizeVariant.stock > 0;
+                      
+                      return (
+                        <Button
+                          key={size}
+                          onClick={() => handleSizeChange(size)}
+                          disabled={!isAvailable}
+                          variant={selectedVariant?.size === size ? "default" : "outline"}
+                          className="aspect-square h-12"
+                        >
+                          {size}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Quantity Selection */}
+            {!isVendorView && (
+              <Card>
+                <CardContent className="p-6">
+                  <label className="block text-lg font-semibold mb-4">Quantity</label>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center bg-muted rounded-lg border">
+                      <Button
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        disabled={isOutOfStock}
+                        variant="ghost"
+                        size="sm"
+                        className="px-4 py-2"
+                      >
+                        -
+                      </Button>
+                      <span className="px-6 py-2 min-w-[60px] text-center">
+                        {quantity}
+                      </span>
+                      <Button
+                        onClick={() => setQuantity(Math.min(currentStock || 10, quantity + 1))}
+                        disabled={isOutOfStock}
+                        variant="ghost"
+                        size="sm"
+                        className="px-4 py-2"
+                      >
+                        +
+                      </Button>
+                    </div>
+                    <Badge variant="outline" className={currentStock > 0 ? 'text-green-600 dark:text-green-500 border-green-300 dark:border-green-700' : 'text-destructive border-destructive/50'}>
+                      {currentStock > 0 ? `${currentStock} available` : 'Out of stock'}
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Action Buttons */}
             {!isVendorView && (
               <div className="flex gap-4">
                 <Button
                   onClick={handleAddToCart}
                   disabled={isOutOfStock || !selectedVariant}
-                  className="flex-1 font-bold py-6 text-lg"
+                  className="flex-1 py-6 text-lg"
                 >
                   <ShoppingCart className="h-5 w-5 mr-2" />
                   {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
@@ -471,119 +488,116 @@ export default function SneakerProductDetail({
               </div>
             )}
 
-            {/* Enhanced Features */}
-            <Card className="p-6">
-              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-primary" />
-                Product Features
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-primary/5 rounded-lg">
-                  <Truck className="h-8 w-8 mx-auto mb-3 text-primary" />
-                  <p className="font-semibold text-foreground mb-1">Free Shipping</p>
-                  <p className="text-sm text-muted-foreground">On orders over ₹2000</p>
+            {/* Product Features */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-primary" />
+                  Product Features
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <Truck className="h-8 w-8 mx-auto mb-3 text-primary" />
+                    <p className="font-semibold mb-1">Free Shipping</p>
+                    <p className="text-sm text-muted-foreground">On orders over ₹2000</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <Shield className="h-8 w-8 mx-auto mb-3 text-green-600 dark:text-green-500" />
+                    <p className="font-semibold mb-1">100% Authentic</p>
+                    <p className="text-sm text-muted-foreground">Original products</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <RefreshCw className="h-8 w-8 mx-auto mb-3 text-purple-600 dark:text-purple-500" />
+                    <p className="font-semibold mb-1">Easy Returns</p>
+                    <p className="text-sm text-muted-foreground">30-day policy</p>
+                  </div>
                 </div>
-                <div className="text-center p-4 bg-green-500/5 rounded-lg">
-                  <Shield className="h-8 w-8 mx-auto mb-3 text-green-600 dark:text-green-500" />
-                  <p className="font-semibold text-foreground mb-1">100% Authentic</p>
-                  <p className="text-sm text-muted-foreground">Original products</p>
-                </div>
-                <div className="text-center p-4 bg-purple-500/5 rounded-lg">
-                  <RefreshCw className="h-8 w-8 mx-auto mb-3 text-purple-600 dark:text-purple-500" />
-                  <p className="font-semibold text-foreground mb-1">Easy Returns</p>
-                  <p className="text-sm text-muted-foreground">30-day policy</p>
-                </div>
-              </div>
+              </CardContent>
             </Card>
 
-            {/* Enhanced Product Variants Table */}
+            {/* Product Variants Table */}
             {product.variants && product.variants.length > 0 && (
-              <Card className="p-6">
-                <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <BadgeIcon className="w-5 h-5 text-primary" />
-                  Available Variants
-                </h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b bg-muted/50">
-                        <th className="text-left py-3 px-4 font-semibold text-foreground">Size</th>
-                        <th className="text-left py-3 px-4 font-semibold text-foreground">Color</th>
-                        <th className="text-right py-3 px-4 font-semibold text-foreground">Stock</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {product.variants.map((variant: any, index: number) => (
-                        <tr key={index} className="border-b last:border-0 hover:bg-muted/30">
-                          <td className="py-3 px-4 text-foreground font-medium">{variant.size}</td>
-                          <td className="py-3 px-4">
-                            <Badge variant="outline">
-                              {variant.color}
-                            </Badge>
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            <Badge 
-                              variant="outline" 
-                              className={`${variant.stock > 0 ? 'text-green-600 border-green-300' : 'text-red-600 border-red-300'}`}
-                            >
-                              {variant.stock}
-                            </Badge>
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            <Badge variant={variant.stock > 0 ? "default" : "destructive"}>
-                              {variant.stock}
-                            </Badge>
-                          </td>
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-4 flex items-center gap-2">
+                    <BadgeIcon className="w-5 h-5 text-primary" />
+                    Available Variants
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b bg-muted/50">
+                          <th className="text-left py-3 px-4 font-semibold">Size</th>
+                          <th className="text-left py-3 px-4 font-semibold">Color</th>
+                          <th className="text-right py-3 px-4 font-semibold">Stock</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {product.variants.map((variant: any, index: number) => (
+                          <tr key={index} className="border-b last:border-0 hover:bg-muted/30">
+                            <td className="py-3 px-4 font-medium">{variant.size}</td>
+                            <td className="py-3 px-4">
+                              <Badge variant="outline">
+                                {variant.color}
+                              </Badge>
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                              <Badge variant={variant.stock > 0 ? "default" : "destructive"}>
+                                {variant.stock}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
               </Card>
             )}
 
-            {/* Enhanced Additional Product Details */}
-            <Card className="p-6">
-              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                <BadgeIcon className="w-5 h-5 text-primary" />
-                Product Information
-              </h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center py-2 px-3 bg-muted/50 rounded-lg">
-                  <span className="text-muted-foreground font-medium">Total Stock</span>
-                  <Badge variant="outline" className="font-semibold">
-                    {product.stock}
-                  </Badge>
+            {/* Product Information */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <BadgeIcon className="w-5 h-5 text-primary" />
+                  Product Information
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg">
+                    <span className="text-muted-foreground">Total Stock</span>
+                    <Badge variant="outline">
+                      {product.stock}
+                    </Badge>
+                  </div>
+                  {product.brand && (
+                    <div className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg">
+                      <span className="text-muted-foreground">Brand</span>
+                      <Badge variant="outline">
+                        {product.brand}
+                      </Badge>
+                    </div>
+                  )}
+                  {product.product_code && (
+                    <div className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg">
+                      <span className="text-muted-foreground">Product Code</span>
+                      <Badge variant="outline" className="font-mono text-xs">
+                        {product.product_code}
+                      </Badge>
+                    </div>
+                  )}
+                  {product.createdAt && (
+                    <div className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg">
+                      <span className="text-muted-foreground">Created</span>
+                      <Badge variant="outline" className="text-xs">
+                        {new Date(product.createdAt).toLocaleDateString()}
+                      </Badge>
+                    </div>
+                  )}
                 </div>
-                {product.brand && (
-                  <div className="flex justify-between items-center py-2 px-3 bg-muted/50 rounded-lg">
-                    <span className="text-muted-foreground font-medium">Brand</span>
-                    <Badge variant="outline" className="font-semibold">
-                      {product.brand}
-                    </Badge>
-                  </div>
-                )}
-                {product.product_code && (
-                  <div className="flex justify-between items-center py-2 px-3 bg-muted/50 rounded-lg">
-                    <span className="text-muted-foreground font-medium">Product Code</span>
-                    <Badge variant="outline" className="font-mono text-xs">
-                      {product.product_code}
-                    </Badge>
-                  </div>
-                )}
-                {product.createdAt && (
-                  <div className="flex justify-between items-center py-2 px-3 bg-muted/50 rounded-lg">
-                    <span className="text-muted-foreground font-medium">Created</span>
-                    <Badge variant="outline" className="text-xs">
-                      {new Date(product.createdAt).toLocaleDateString()}
-                    </Badge>
-                  </div>
-                )}
-              </div>
+              </CardContent>
             </Card>
           </div>
         </div>
-      </div>
     </div>
   );
 }
