@@ -76,11 +76,19 @@ export class RedisService {
 
   /**
    * Delete data from cache
-   * @param key - Cache key
+   * @param key - Cache key or pattern (e.g., "prefix:*")
    */
   static async delete(key: string): Promise<void> {
     try {
-      await redisClient.del(key);
+      // Check if it's a pattern (contains *)
+      if (key.includes('*')) {
+        const keys = await redisClient.keys(key);
+        if (keys.length > 0) {
+          await redisClient.del(keys);
+        }
+      } else {
+        await redisClient.del(key);
+      }
     } catch (error) {
       console.error('Redis DELETE Error:', error);
     }

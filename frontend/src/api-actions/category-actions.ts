@@ -14,49 +14,13 @@ export const CategoryActions = {
     },
 
     // Admin/Vendor routes (require authentication and appropriate role)
-    CreateCategoryAction: async (data: ICreateCategorySchema, image?: File): Promise<ICreateCategoryResponse> => {
-        const formData = new FormData();
-        
-        // Append all category data
-        Object.entries(data).forEach(([key, value]) => {
-            if (value !== undefined) {
-                formData.append(key, value.toString());
-            }
-        });
-
-        // Append image file if provided
-        if (image) {
-            formData.append('image', image);
-        }
-
-        const response = await axiosInstance.post<ApiResponse<ICreateCategoryResponse>>("/categories", formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+    CreateCategoryAction: async (data: ICreateCategorySchema): Promise<ICreateCategoryResponse> => {
+        const response = await axiosInstance.post<ApiResponse<ICreateCategoryResponse>>("/categories", data);
         return response.data.data;
     },
 
-    UpdateCategoryAction: async (categoryId: string, data: IUpdateCategorySchema, image?: File): Promise<IUpdateCategoryResponse> => {
-        const formData = new FormData();
-        
-        // Append all category data
-        Object.entries(data).forEach(([key, value]) => {
-            if (value !== undefined) {
-                formData.append(key, value.toString());
-            }
-        });
-
-        // Append image file if provided
-        if (image) {
-            formData.append('image', image);
-        }
-
-        const response = await axiosInstance.put<ApiResponse<IUpdateCategoryResponse>>(`/categories/${categoryId}`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+    UpdateCategoryAction: async (categoryId: string, data: IUpdateCategorySchema): Promise<IUpdateCategoryResponse> => {
+        const response = await axiosInstance.patch<ApiResponse<IUpdateCategoryResponse>>(`/categories/${categoryId}`, data);
         return response.data.data;
     },
 
