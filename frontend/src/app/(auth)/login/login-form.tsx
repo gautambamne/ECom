@@ -38,7 +38,9 @@ export default function LoginForm() {
 
       // Check user role and redirect accordingly using Next.js router
       const userRoles = data.user.role || []
-      if (userRoles.includes('VENDOR')) {
+      if (userRoles.includes('ADMIN')) {
+        router.push('/admin/dashboard')
+      } else if (userRoles.includes('VENDOR')) {
         router.push('/vendor/dashboard')
       } else {
         router.push('/')

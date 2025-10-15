@@ -36,7 +36,7 @@ export const CategoryProductsTab = ({ category }: CategoryProductsTabProps) => {
             </div>
             {productCount > 0 && (
               <Button asChild variant="outline">
-                <Link href={`/admin/products?category=${category.id}`}>
+                <Link href={`/admin/products?category=${category.id}`} prefetch={false}>
                   View Products
                   <ExternalLink className="ml-2 h-4 w-4" />
                 </Link>
@@ -48,7 +48,7 @@ export const CategoryProductsTab = ({ category }: CategoryProductsTabProps) => {
             <div className="text-center py-8 text-muted-foreground">
               <p>No products in this category yet.</p>
               <Button asChild variant="link" className="mt-2">
-                <Link href="/admin/products/new">
+                <Link href="/admin/products/new" prefetch={false}>
                   Add your first product
                 </Link>
               </Button>

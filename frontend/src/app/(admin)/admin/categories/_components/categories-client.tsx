@@ -24,6 +24,8 @@ export const CategoriesClient = () => {
     },
     // Optimistic updates handle immediate UI changes, so we can be less aggressive
     refetchOnWindowFocus: false,
+    refetchOnMount: false, // Don't refetch on mount if data exists
+    retry: false, // Don't retry on failure to prevent duplicate API calls
     staleTime: 30000, // 30 seconds
   });
 
@@ -49,8 +51,7 @@ export const CategoriesClient = () => {
 
   // Updated handleCreateSuccess - optimistic updates handle the UI
   const handleCreateSuccess = () => {
-    // Invalidate to ensure server state is synced
-    queryClient.invalidateQueries({ queryKey: ["categories"] });
+    // Optimistic updates already handle the UI, no need to refetch
   };
 
   if (isLoading) {

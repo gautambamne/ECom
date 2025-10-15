@@ -39,6 +39,14 @@ const refreshAccessToken = async (): Promise<string | null> => {
                 }
                 return null;
             })
+            .catch((error) => {
+                // If refresh fails, clear the token and user data
+                if (typeof window !== 'undefined') {
+                    // Clear localStorage user data
+                    localStorage.removeItem('user_data');
+                }
+                return null;
+            })
             .finally(() => {
                 refreshPromise = null;
             });
@@ -47,10 +55,17 @@ const refreshAccessToken = async (): Promise<string | null> => {
     return refreshPromise;
 };
 
+const shouldSkipAuth = (url?: string) => {
+    if (!url) return false;
+    return [
+        '/categories', // Public category endpoints
+    ].some((endpoint) => url.includes(endpoint));
+};
+
 axiosInstance.interceptors.request.use(
     (config) => {
         const token = getStoredToken();
-        if (token) {
+        if (token && !shouldSkipAuth(config.url)) {
             config.headers = config.headers || {};
             config.headers['Authorization'] = token;
         }
@@ -87,15 +102,18 @@ axiosInstance.interceptors.response.use(
                 const newToken = await refreshAccessToken();
 
                 if (!newToken) {
+                    // Refresh failed, logout user
                     useAuthStore.getState().forceLogout();
                     return Promise.reject(error);
                 }
 
+                // Retry the original request with new token
                 originalRequest.headers = originalRequest.headers || {};
                 originalRequest.headers['Authorization'] = newToken;
 
                 return axiosInstance(originalRequest);
             } catch (refreshError) {
+                // Refresh failed, logout user
                 useAuthStore.getState().forceLogout();
                 return Promise.reject(refreshError);
             }

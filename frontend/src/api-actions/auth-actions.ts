@@ -47,5 +47,9 @@ export const AuthActions = {
         return response.data.data;
     },
 
+    GetCurrentUser: async (): Promise<IGetUserResponse> => {
+        const response = await axiosInstance.get<ApiResponse<IGetUserResponse>>("/users/me");
+        return response.data.data;
+    },
     
 }

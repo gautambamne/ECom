@@ -94,10 +94,28 @@ export function Navbar({ menuState, setMenuState }: { menuState: boolean, setMen
                 <ShoppingCart className="h-4 w-4" />
                 <span className="hidden sm:inline">Cart</span>
               </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <Store className="h-4 w-4" />
-                <span className="hidden sm:inline">Become a Seller</span>
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <Store className="h-4 w-4" />
+                    <span className="hidden sm:inline">Dashboard</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin/dashboard" className="flex items-center gap-2">
+                      <Store className="h-4 w-4" />
+                      <span>Admin Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/vendor/dashboard" className="flex items-center gap-2">
+                      <Store className="h-4 w-4" />
+                      <span>Vendor Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="flex items-center gap-2">

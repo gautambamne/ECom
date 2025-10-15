@@ -41,7 +41,7 @@ export default function NavMain({
       <SidebarGroupLabel>Navigation</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
-          const isActive = pathname.includes(`/vendor/${item.url}`) || 
+          const isActive = pathname.includes(`/admin/${item.url}`) || 
             item.items?.some(subItem => pathname === subItem.url)
           
           return (

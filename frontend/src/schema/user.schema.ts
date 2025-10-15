@@ -19,9 +19,21 @@ const PasswordChangeSchema = z.object({
 type IUpdateUserSchema = zodInfer<typeof UpdateUserSchema>;
 type IPasswordChangeSchema = zodInfer<typeof PasswordChangeSchema>;
 
+// Response types
+interface IGetUserResponse {
+    user: IUser;
+}
+
+interface IUpdateUserResponse {
+    user: IUser;
+    message: string;
+}
+
 export type {
     IUpdateUserSchema,
-    IPasswordChangeSchema
+    IPasswordChangeSchema,
+    IGetUserResponse,
+    IUpdateUserResponse
 }
 
 export {

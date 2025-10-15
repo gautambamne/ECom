@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Eye } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { EditCategoryModal } from "./edit-category-modal";
 import { CategoryDeleteDialog } from "./category-delete-modal";
 
@@ -12,18 +12,21 @@ interface CategoryActionsProps {
 }
 
 export function CategoryActions({ category }: CategoryActionsProps) {
+  const router = useRouter();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleViewClick = () => {
+    router.push(`/admin/categories/${category.id}`);
+  };
 
   return (
     <>
       <div className="flex items-center gap-2">
-        <Link href={`/admin/categories/${category.id}`} passHref>
-          <Button variant="outline" size="sm">
-            <Eye className="h-4 w-4" />
-            <span className="sr-only">View</span>
-          </Button>
-        </Link>
+        <Button variant="outline" size="sm" onClick={handleViewClick}>
+          <Eye className="h-4 w-4" />
+          <span className="sr-only">View</span>
+        </Button>
 
         <Button
           variant="outline"

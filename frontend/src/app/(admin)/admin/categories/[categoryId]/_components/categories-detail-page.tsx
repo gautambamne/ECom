@@ -26,7 +26,8 @@ export function CategoryDetailPage({ categoryId }: CategoryDetailPageProps) {
       return response.category;
     },
     enabled: !!categoryId,
-    retry: 1, // Only retry once
+    refetchOnMount: false, // Don't refetch on mount if data exists
+    retry: false, // Don't retry on failure to prevent duplicate API calls
     staleTime: 30000, // 30 seconds
   });
 
